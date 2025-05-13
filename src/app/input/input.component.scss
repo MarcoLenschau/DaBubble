@@ -1,7 +1,16 @@
 div {
     display: flex;
+    align-items: center;
     img {
         margin-right: -26px;
         z-index: 1;
+        height: 26px;
+        width: 24px;
+    }
+
+    input {
+        padding-left: 28px;
+        width: 250px;
+        height: 32px;
     }
 }
