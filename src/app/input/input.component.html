@@ -1,4 +1,4 @@
 <div>
-    <img src="./assets/img/input/{{type}}.svg" alt="{{type}}">
-    <input id="{{type}}" type="{{type}}" [placeholder]="getPlaceholder()">
+    <img [class.none]="type === 'new-password' || type === 'retry-password' || type === 'description'" src="./assets/img/input/{{type}}.svg" alt="{{type}}">
+    <input [class.padding]="type === 'new-password' || type === 'retry-password' || type === 'description'" id="{{type}}" type="{{type}}" [placeholder]="getPlaceholder()">
 </div>
