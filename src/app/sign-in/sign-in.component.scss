@@ -1,0 +1,14 @@
+.color-blue {
+    color: blue;
+}
+
+
+div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    >span {
+        width: 350px;
+    }
+}

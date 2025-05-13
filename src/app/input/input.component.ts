@@ -8,23 +8,6 @@ import { Component, Input } from '@angular/core';
   styleUrl: './input.component.scss'
 })
 export class InputComponent {
-  @Input() type: string = '';
-
-  getPlaceholder(): string {
-    if (this.type === "email") {
-      return "max-mustmann@mustermail.com";
-    } else if (this.type === "password") {
-      return "Password";
-    } else if (this.type === "new-password") {
-      return "New password";
-    }  else if (this.type === "retry-password") {
-      return "Retry password";
-    } else if (this.type === "channel-name") {
-      return "Project";
-    } else if (this.type === "description") {
-      return "Your text";
-    } else {
-      return "";
-    }
-  }
+  @Input() placholder: string = '';
+  @Input() img: string = '';
 }
