@@ -1,3 +1,5 @@
+@import "../shared/styles/mix-in.scss";
+
 .main-container {
     >span {
         width: 400px;
@@ -9,8 +11,7 @@
 }
 
 .button-container {
-    display: flex;
-    justify-content: flex-end;
+    @include dFlex($jc: flex-end, $ai: none);
     width: 100%;
     >button {
         background-color: blue;

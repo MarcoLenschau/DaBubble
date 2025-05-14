@@ -1,6 +1,7 @@
+@import "../shared/styles/mix-in.scss";
+
 div {
-    display: flex;
-    align-items: center;
+    @include dFlex($jc: none);
     padding: 0 20px;
     img {
         margin-right: -38px;

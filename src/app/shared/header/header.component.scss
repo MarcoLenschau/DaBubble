@@ -1,0 +1,11 @@
+@import "../styles/mix-in.scss";
+
+header {
+    @include dFlex($jc: space-between);
+    background-color: gray;
+    margin: -8px;
+    padding: 12px 24px;
+    >div {
+        @include dFlex($jc: none, $g: 12px, $f: column);
+    }
+}
