@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { RouterService } from '../services/router.service';
 
 @Component({
   selector: 'app-input',
@@ -14,5 +13,5 @@ export class InputComponent {
   @Input() height: number = 32;
   @Input() reverse: boolean = false;
 
-  constructor(public router: RouterService) {}
+  constructor() {}
 }

@@ -1,4 +1,5 @@
 @import "./app/shared/styles/mix-in.scss";
+@import "./app/shared/styles/color.scss";
 
 a {
     text-decoration: none;
@@ -13,7 +14,7 @@ body {
     @include dFlex($g: 24px, $f: column);
     height: 100vh;
     >.main-container {
-        background-color: white;
+        background-color: $white;
         border-radius: 24px;
         padding: 12px;
         height: 65vh;
@@ -24,5 +25,5 @@ body {
 }
 
 .color-blue {
-    color: blue;
+    color: $blue;
 }
