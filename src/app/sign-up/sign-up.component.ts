@@ -10,4 +10,8 @@ import { RouterService } from '../services/router.service';
 })
 export class SignUpComponent {
   constructor(public router: RouterService) {}
+
+  acceptPrivacy() {
+    document.getElementById("checkbox")?.classList.toggle("checked");
+  }
 }

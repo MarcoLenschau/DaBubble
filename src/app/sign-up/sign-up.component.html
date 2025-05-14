@@ -8,8 +8,8 @@
         <app-input [placholder]="'Name und Nachnahme'" [img]="'name.svg'"></app-input>
         <app-input [placholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'"></app-input>
         <app-input [placholder]="'Password'" [img]="'password.svg'"></app-input>
-        <div class="checkbox">
-            <img src="./assets/img/checkbox/checkbox.svg" alt="checkbox">
+        <div class="checkbox-container">
+            <div id="checkbox" (click)="acceptPrivacy()" class="checkbox"></div>
             <div>
                 <span>Ich stimme der </span>
                 <a (click)="router.switchRoute('/privacy')">Datenschutzerklärung</a>
