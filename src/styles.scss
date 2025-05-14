@@ -5,6 +5,10 @@ a {
     cursor: pointer;
 }
 
+body {
+    overflow: hidden;
+}
+
 .main-container {
     @include dFlex($g: 24px, $f: column);
     height: 100vh;
