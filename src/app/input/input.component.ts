@@ -9,7 +9,7 @@ import { RouterService } from '../services/router.service';
   styleUrl: './input.component.scss'
 })
 export class InputComponent {
-  @Input() placholder: string = '';
+  @Input() placeholder: string = '';
   @Input() img: string = '';
   @Input() imgPosition: string = 'start';
 
