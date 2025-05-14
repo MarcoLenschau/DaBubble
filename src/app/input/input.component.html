@@ -1,4 +1,4 @@
-<div [class.flex-row]="router.isMainPage()">
+<div [class.flex-row]="reverse">
     <img [class.none]="img === 'none'" src="./assets/img/input/{{img}}" alt="{{img}}">
-    <input [class.input-distance]="router.isMainPage()" [class.distance]="img === 'none'" type="text" [placeholder]="placeholder">
+    <input [class.input-distance]="reverse" [class.distance]="img === 'none'" type="text" [placeholder]="placeholder">
 </div>
