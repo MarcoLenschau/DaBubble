@@ -9,11 +9,7 @@ a {
 }
 
 .main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
+    @include dFlex($g: 24px, $f: column);
     height: 100vh;
     >.main-container {
         background-color: white;
