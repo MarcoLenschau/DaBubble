@@ -9,3 +9,9 @@ header {
         @include dFlex($jc: none, $g: 12px, $f: column);
     }
 }
+
+a {
+    &:hover {
+        color: white;
+    }
+}

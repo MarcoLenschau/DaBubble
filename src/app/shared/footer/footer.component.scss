@@ -1,0 +1,8 @@
+@import "../styles/mix-in.scss";
+@import "../styles/color.scss";
+
+footer {
+    @include dFlex($g: 48px);
+    height: 100px;
+    background-color: $grey;
+}
