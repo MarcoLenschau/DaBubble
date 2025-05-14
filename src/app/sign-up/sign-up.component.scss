@@ -1,4 +1,5 @@
 @import "../shared/styles/mix-in.scss";
+@import "../shared/styles/color.scss";
 
 .main-container {
     >span {
@@ -14,8 +15,8 @@
     @include dFlex($jc: flex-end, $ai: none);
     width: 100%;
     >button {
-        background-color: blue;
-        color: white;
+        background-color: $blue;
+        color: $white;
         width: 75px;
         height: 45px;
         border: 0;

@@ -1,5 +1,48 @@
+@import "../shared/styles/mix-in.scss";
+@import "../shared/styles/color.scss";
+
 .main-container {
     >span {
         width: 350px;
+    }
+}
+
+.separating-line-container {
+    @include dFlex($jc: none, $g: 12px);
+    >div {
+        width: 124px;
+        height: 1px;
+        background-color: black;
+    }
+}
+
+.google-sign-in {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    width: 315px;
+    height: 40px;
+    @include dFlex($g: 12px);
+    >span {
+        color: $blue;
+    }
+}
+
+.button-container {
+    @include dFlex($ai: none, $g: 24px);
+    >button {
+        height: 35px;
+        width: 100px;
+        border: 0;
+        border-radius: 24px;
+        font-weight: bold;
+    }
+    :first-child {
+        background-color: $blue;
+        color: $white;
+    }
+    :last-child {
+        background-color: $white;
+        color: $blue;
+        border: 1px $blue solid;
     }
 }
