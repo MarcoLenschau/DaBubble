@@ -1,7 +1,7 @@
 <header>
     <img src="./assets/img/header/logo.svg" alt="logo">
-    <div *ngIf="isSignInPage()">
+    <div *ngIf="router.isSignInPage()">
         <span>Neu bei DABubble?</span>
-        <a (click)="switchRoute('sign-up')">Konto erstellen</a>
+        <a (click)="router.switchRoute('sign-up')">Konto erstellen</a>
     </div>
 </header>

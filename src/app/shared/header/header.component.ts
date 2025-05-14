@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { RouterService } from '../../services/router.service';
 
 @Component({
   selector: 'app-header',
@@ -9,13 +10,6 @@ import { Router } from '@angular/router';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  constructor(private router: Router) {}
+  constructor(public router: RouterService) {}
 
-  isSignInPage() {
-    return this.router.url == "/"
-  }
-
-  switchRoute(route: string) {
-    this.router.navigate([route]);
-  }
 }

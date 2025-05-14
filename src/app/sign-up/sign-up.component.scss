@@ -24,3 +24,17 @@
         cursor: pointer;
     }
 }
+
+.back-button-container {
+  @include dFlex($jc: flex-start, $g: 48px);
+  width: 400px;
+  >img {
+    height: 40px;
+    margin-left: 12px;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+        border-radius: 24px;
+    }
+  }
+}
