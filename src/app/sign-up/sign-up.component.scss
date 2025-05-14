@@ -7,9 +7,27 @@
     }
 }
 
-.checkbox {
-    display: flex;
+.checkbox-container {
+    @include dFlex($jc: none, $g: 6px);
+    >.checkbox {
+        background-image: url("/assets/img/checkbox/checkbox.svg");
+        background-size: cover;
+        background-position: center;
+        height: 20px;
+        width: 20px;
+        &:hover {
+            background-image: url("/assets/img/checkbox/checkbox-hover.svg");
+        }
+    }
+
+    .checked {
+        background-image: url("/assets/img/checkbox/checkbox-checked.svg");
+        &:hover {
+            background-image: url("/assets/img/checkbox/checkbox-checked-hover.svg");
+        }
+    }
 }
+
 
 .button-container {
     @include dFlex($jc: flex-end, $ai: none);
