@@ -1,8 +1,15 @@
 <header>
     <img src="./assets/img/header/logo.svg" alt="logo">
-    <div *ngIf="router.isSignInPage()">
+    <div class="sign-in-page" *ngIf="router.isSignInPage()">
         <span>Neu bei DABubble?</span>
         <a (click)="router.switchRoute('sign-up')">Konto erstellen</a>
-        
+    </div>
+    <div *ngIf="router.isMainPage()">
+        <app-input [placholder]="'Devspace durchsuchen'" [img]="'search.svg'"></app-input>
+    </div>
+    <div class="user-login-menu" *ngIf="router.isMainPage()">
+        <span>Frederic</span>
+        <img src="./assets/img/header/user-icons/profile.svg" alt="arrow-down">
+        <img src="./assets/img/header/arrow-down.svg" alt="arrow-down">
     </div>
 </header>

@@ -10,4 +10,5 @@ import { Component, Input } from '@angular/core';
 export class InputComponent {
   @Input() placholder: string = '';
   @Input() img: string = '';
+  @Input() imgPosition: string = 'start';
 }

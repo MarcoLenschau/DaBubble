@@ -5,8 +5,11 @@ header {
     background-color: gray;
     margin: -8px;
     padding: 12px 24px;
-    >div {
+    >.sign-in-page {
         @include dFlex($jc: none, $g: 12px, $f: column);
+    }
+    >.user-login-menu {
+        @include dFlex($jc: none, $g: 12px);
     }
 }
 
