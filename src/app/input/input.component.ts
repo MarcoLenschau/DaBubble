@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { RouterService } from '../services/router.service';
 
 @Component({
   selector: 'app-input',
@@ -11,4 +12,6 @@ export class InputComponent {
   @Input() placholder: string = '';
   @Input() img: string = '';
   @Input() imgPosition: string = 'start';
+
+  constructor(public router: RouterService) {}
 }
