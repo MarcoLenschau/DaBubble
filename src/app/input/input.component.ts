@@ -11,6 +11,7 @@ import { RouterService } from '../services/router.service';
 export class InputComponent {
   @Input() placeholder: string = '';
   @Input() img: string = '';
+  @Input() height: number = 32;
   @Input() reverse: boolean = false;
 
   constructor(public router: RouterService) {}
