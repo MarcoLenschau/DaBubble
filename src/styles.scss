@@ -1,6 +1,11 @@
 @import "./app/shared/styles/mix-in.scss";
 @import "./app/shared/styles/color.scss";
 
+@font-face {
+    font-family: 'Nunito';
+    src: url('assets/fonts/nunito/Nunito-VariableFont_wght.ttf') format('woff2'),
+}
+
 a {
     text-decoration: none;
     cursor: pointer;
