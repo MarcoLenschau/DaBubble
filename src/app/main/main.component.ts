@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import { DevspaceComponent } from './devspace/devspace.component';
 import { ThreadComponent } from './thread/thread.component';
 import { MessageComponent } from './message/message.component';

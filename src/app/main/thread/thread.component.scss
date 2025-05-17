@@ -1,0 +1,167 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
+* {
+  margin: 0;
+}
+
+.thread-container {
+  background-color: #ffffff;
+  width: 485px;
+  height: 940px;
+  border-radius: 30px;
+}
+
+.thread-content {
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 0px, $f: column);
+  padding: 24px 0;
+  height: 100%;
+}
+
+.thread-header {
+  height: 107px;
+  width: 100%;
+  box-shadow: 0px 2px 10px 0px #00000014;
+  clip-path: inset(0px 0px -10px 0px);
+  // clip-path: polygon(0% 0%, 100% 0%, 100% 120%, 0% 120%);
+
+  .thread-header-content {
+    width: 100%;
+    @include dFlex($jc: space-between, $ai: center, $g: 0px, $f: row);
+    padding: 32px 40px;
+
+    .thread-header-content-text {
+      @include dFlex($jc: flex-start, $ai: center, $g: 5px, $f: row);
+
+      h2 {
+        @include text-style(24px, 700, $black);
+      }
+
+      p {
+        @include text-style(14px, 400, $purple-2);
+      }
+    }
+  }
+}
+
+.thread-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 40px;
+
+  .message-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: $purple-2;
+  }
+
+  .message-body {
+    @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
+
+    .message-body-header {
+      @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+
+      h4 {
+        @include text-style(18px, 700, $black);
+      }
+
+      p {
+        @include text-style(14px, 400, $text-gray);
+      }
+    }
+
+    .message-body-header.my-message-body-header {
+      @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row-reverse);
+    }
+  }
+
+  .message-body.my-message-body {
+    @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
+  }
+
+  .top-message {
+    padding-top: 27px;
+    width: 100%;
+    @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
+  }
+}
+
+.thread-replies-divider {
+  padding: 10px 0;
+  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+
+  p {
+    white-space: nowrap;
+    @include text-style(18px, 400, $light-purple);
+  }
+
+  .line {
+    flex-grow: 1;
+    height: 0;
+    border-top: 1px solid $light-purple;
+  }
+}
+
+.thread-message-text,
+.reply-text {
+  border-radius: 0 20px 20px 20px;
+  background-color: $grey;
+  padding: 15px;
+  max-width: 100%;
+  width: fit-content;
+  @include text-style(14px, 400, $black);
+}
+
+.thread-replies {
+  > div {
+    padding-top: 22px;
+    @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
+  }
+
+  > div:last-child {
+    padding-top: 40px;
+    @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
+  }
+}
+
+.my-reply {
+  .my-reply-text {
+    border-radius: 20px 0 20px 20px;
+    background-color: $purple-2;
+    padding: 15px;
+    max-width: 100%;
+    width: fit-content;
+    @include text-style(14px, 400, $white);
+  }
+}
+
+.thread-textarea {
+  width: 100%;
+  padding: 0 20px;
+
+  textarea {
+    width: 100%;
+    height: 145px;
+    overflow-wrap: break-word;
+    resize: none;
+    overflow: hidden;
+    padding: 15px;
+    border-color: $light-purple;
+    border-radius: 20px;
+
+    @include text-style(18px, 400, $black);
+
+    &:focus {
+      // overflow: scroll;
+      outline: none;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+  }
+
+  textarea::placeholder {
+    font-family: "Nunito", sans-serif;
+    @include text-style(18px, 400, $text-gray);
+  }
+}
