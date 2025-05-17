@@ -1,3 +1,6 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
 .message-box {
   display: flex;
   flex-direction: column;
@@ -156,7 +159,6 @@ textarea {
   top: 6.75rem;
   left: 1.75rem;
   right: 1.75rem;
-  background-color: $bgcolor;
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
@@ -180,7 +182,7 @@ textarea {
 }
 
 .search-results li:hover {
-  background-color: $lightPurple;
+  background-color: $light-purple;
 }
 
 .search-results li:last-child {
