@@ -11,10 +11,14 @@
         <img src="" alt="X" />
       </div>
     </div>
-    <!-- <div class="shadow"></div> -->
 
-    <div class="thread-messages">
-      <div class="top-message">
+    <!-- <div class="thread-messages">
+      <div
+        class="top-message"
+        (mouseenter)="hovered = true"
+        (mouseleave)="resetHoverState()"
+        [ngClass]="{ 'hover-message': hovered }"
+      >
         <img class="message-img" src="" alt="" />
         <div class="message-body">
           <div class="message-body-header">
@@ -26,12 +30,16 @@
       </div>
 
       <div class="thread-replies-divider">
-        <p>2 Antworten</p>
+        <p>3 Antworten</p>
         <div class="line"></div>
       </div>
 
       <div class="thread-replies">
-        <div>
+        <div
+          (mouseenter)="hovered = true"
+          (mouseleave)="resetHoverState()"
+          [ngClass]="{ 'hover-message': hovered }"
+        >
           <img class="message-img" src="" alt="" />
           <div class="message-body">
             <div class="message-body-header">
@@ -43,6 +51,25 @@
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores
               corrupti quasi eum at veritatis ea reiciendis placeat ipsam
               accusamus deserunt! Atque, placeat quia.
+            </p>
+          </div>
+        </div>
+        <div
+          (mouseenter)="hovered = true"
+          (mouseleave)="resetHoverState()"
+          [ngClass]="{ 'hover-message': hovered }"
+        >
+          <img class="message-img" src="" alt="" />
+          <div class="message-body">
+            <div class="message-body-header">
+              <h4>Anna Müller</h4>
+              <p>15:37 Uhr</p>
+            </div>
+
+            <p class="reply-text">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex,
+              temporibus? Libero, accusamus. Odio dolor odit totam perspiciatis
+              consequatur ipsam illo, doloremque expedita deserunt?
             </p>
           </div>
         </div>
@@ -59,6 +86,46 @@
           </div>
         </div>
       </div>
+    </div> -->
+
+    <div class="thread-messages">
+      <ng-container *ngFor="let msg of messages; let i = index">
+        <div
+          class="message-wrapper"
+          [ngClass]="{
+            'thread-message': !msg.isSelf,
+            'own-message': msg.isSelf,
+            'hover-message': msg.hovered
+          }"
+          (mouseenter)="setHoverState(i, true)"
+          (mouseleave)="setHoverState(i, false)"
+        >
+          <img class="message-img" src="" alt="Profilbild {{ msg.name }}" />
+          <div
+            class="message-body"
+            [ngClass]="{ 'own-message-body': msg.isSelf }"
+          >
+            <div
+              class="message-body-header"
+              [ngClass]="{ 'own-message-body-header': msg.isSelf }"
+            >
+              <h4>{{ msg.name }}</h4>
+              <p>{{ msg.time }}</p>
+            </div>
+            <p
+              class="thread-message-text"
+              [ngClass]="{ 'own-message-text': msg.isSelf }"
+            >
+              {{ msg.text }}
+            </p>
+          </div>
+        </div>
+
+        <div *ngIf="i === 0" class="thread-replies-divider">
+          <p>{{ messages.length - 1 }} Antworten</p>
+          <div class="line"></div>
+        </div>
+      </ng-container>
     </div>
 
     <div class="thread-textarea">

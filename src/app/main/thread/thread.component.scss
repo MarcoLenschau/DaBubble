@@ -57,34 +57,47 @@
   }
 
   .message-body {
+    //!!!
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
 
     .message-body-header {
+      //!!!
       @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
 
       h4 {
+        //!!!
         @include text-style(18px, 700, $black);
       }
 
       p {
+        //!!!
         @include text-style(14px, 400, $text-gray);
       }
     }
 
-    .message-body-header.my-message-body-header {
+    .own-message-body-header {
+      //!!!
       @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row-reverse);
     }
   }
 
-  .message-body.my-message-body {
+  .own-message-body {
+    //!!!
     @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
   }
 
-  .top-message {
+  .thread-message {
+    //!!
     padding-top: 27px;
     width: 100%;
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
   }
+}
+
+.own-message {
+  //!!!
+  padding-top: 40px;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
 }
 
 .thread-replies-divider {
@@ -103,8 +116,9 @@
   }
 }
 
-.thread-message-text,
-.reply-text {
+.thread-message-text //!!!
+// .reply-text
+{
   border-radius: 0 20px 20px 20px;
   background-color: $grey;
   padding: 15px;
@@ -113,26 +127,38 @@
   @include text-style(14px, 400, $black);
 }
 
+.own-message-text {
+  border-radius: 20px 0 20px 20px;
+  background-color: $purple-2;
+  padding: 15px;
+  max-width: 100%;
+  width: fit-content;
+  @include text-style(14px, 400, $white);
+}
+
+.hover-message {
+  background-color: $grey;
+}
+.message-text-hovered {
+  background-color: $white;
+  color: $black;
+}
+
 .thread-replies {
   > div {
     padding-top: 22px;
+    width: 100%;
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
-  }
-
-  > div:last-child {
-    padding-top: 40px;
-    @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
   }
 }
 
-.my-reply {
-  .my-reply-text {
-    border-radius: 20px 0 20px 20px;
-    background-color: $purple-2;
-    padding: 15px;
-    max-width: 100%;
-    width: fit-content;
-    @include text-style(14px, 400, $white);
+.hover-message {
+  background-color: $grey;
+
+  &:not(.own-message) {
+    .thread-message-text {
+      background-color: $white;
+    }
   }
 }
 
