@@ -1,0 +1,14 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
+.thread-container {
+  background-color: #ffffff;
+  width: 485px;
+  height: 940px;
+  border-radius: 30px;
+}
+
+.thread-content {
+  @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
+  padding: 24px 50px;
+}
