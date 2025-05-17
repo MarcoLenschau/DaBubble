@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { InputComponent } from '../input/input.component';
-import { Router } from '@angular/router';
+import { RouterService } from '../services/router.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -9,9 +9,6 @@ import { Router } from '@angular/router';
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
- router = inject(Router);
 
- goToMain(){
-  this.router.navigate(['/message']);
- }
+  constructor(public router: RouterService) {}
 }
