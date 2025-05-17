@@ -2,5 +2,5 @@
 @import "./../shared/styles/color.scss";
 
 .main-component {
-  @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
+  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
 }

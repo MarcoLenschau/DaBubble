@@ -2,29 +2,38 @@
 @import "./app/shared/styles/color.scss";
 
 @font-face {
-    font-family: 'Nunito';
-    src: url('assets/fonts/nunito/Nunito-VariableFont_wght.ttf') format('woff2'),
+  font-family: "Nunito";
+  src: url("assets/fonts/nunito/Nunito-VariableFont_wght.ttf") format("woff2");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Nunito", sans-serif;
 }
 
 a {
-    text-decoration: none;
-    cursor: pointer;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .main-container {
-    @include dFlex($g: 24px, $f: column);
-    height: 100vh;
-    >.main-container {
-        background-color: $white;
-        border-radius: 24px;
-        padding: 12px;
-        height: 65vh;
-    }
-    >span {
-        text-align: center;
-    }
+  @include dFlex($g: 24px, $f: column);
+  height: 100vh;
+  > .main-container {
+    background-color: $white;
+    border-radius: 24px;
+    padding: 12px;
+    height: 65vh;
+  }
+  > span {
+    text-align: center;
+  }
 }
 
 .color-blue {
-    color: $blue;
+  color: $blue;
 }

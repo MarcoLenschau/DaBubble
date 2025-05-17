@@ -70,10 +70,119 @@ textarea {
   font-size: 1.5rem;
   font-weight: 700;
 }
+
+.message-box {
+  height: 100%;
+  width: 100%;
+  border-radius: 1.875rem;
+  background-color: #FFFFFF;
+}
+
+.header {
+  height: 10rem;
+  width: 100%;
+  border-top-left-radius: 1.875rem;
+  border-top-right-radius: 1.875rem;
+  padding: 2rem 2.8125rem 1.25rem 2.8125rem;
+  box-sizing: border-box;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.gap-20 {
+  gap: 1.25rem;
+  position: relative;
+}
+
+.title {
+  height: 2.0625rem;
+  width: 100%;
+  font-family: 'nunito';
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
 input {
   height: 3.4375rem;
   width: 100%;
   font-family: 'nunito';
   font-size: 1.125rem;
   font-weight: 400;
+}
+
+.content {
+  height: 100%;
+  max-height: 570px;
+  width: calc(100% - 8.875rem);
+  margin: 0 4.4375rem;
+}
+
+.main-message-box {
+  position: relative;
+  height: 14.0625rem;
+  width: 100%;
+  padding: 2.5rem 4.4375rem 2.5rem 4.4375rem;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 9.0625rem;
+  width: 100%;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid #adb0d9;
+  box-sizing: border-box;
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+.toolbar {
+  position: absolute;
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+  margin-top: 5.3125rem;
+  width: calc(100% - 11.375rem);
+  height: 2.5rem;
+  z-index: 5;
+}
+
+.icon {
+  height: 2.5rem;
+  width: 2.5rem;
+  cursor: pointer;
+}
+
+.search-results {
+  position: absolute;
+  top: 6.75rem;
+  left: 1.75rem;
+  right: 1.75rem;
+  background-color: $bgcolor;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  border-radius: 0 0 2.5rem 2.5rem;
+}
+
+.search-results ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-results li {
+  padding: 8px;
+  cursor: pointer;
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.125rem;
+  border-radius: 2.5rem;
+}
+
+.search-results li:hover {
+  background-color: $lightPurple;
+}
+
+.search-results li:last-child {
+  margin-bottom: 2.5rem;
 }
