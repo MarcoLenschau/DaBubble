@@ -1,0 +1,13 @@
+@import "../../shared/styles/color.scss";
+@import "../../shared/styles/mix-in.scss";
+
+div {
+    width: 180px;
+    height: 100px;
+    @include dFlex($f: column, $g: 12px);
+    position: fixed;
+    top: 82px;
+    right: 3px;
+    background-color: $white;
+    border-radius: 34px;
+}

@@ -10,6 +10,6 @@
     <div class="user-login-menu" *ngIf="router.isMainPage()">
         <span>Frederic</span>
         <img src="./assets/img/header/user-icons/profile.svg" alt="arrow-down">
-        <img src="./assets/img/header/arrow-down.svg" alt="arrow-down">
+        <img (click)="openDialog();" src="./assets/img/header/arrow-down.svg" alt="arrow-down">
     </div>
 </header>
