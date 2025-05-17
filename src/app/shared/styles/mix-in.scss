@@ -6,7 +6,7 @@
   flex-direction: $f;
 }
 
-@mixin text-style($size, $weight, $color) {
+@mixin text-style($size: 18px, $weight: 400px, $color: 'black' ) {
   font-size: $size;
   font-weight: $weight;
   color: $color;
