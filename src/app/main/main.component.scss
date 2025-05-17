@@ -1,0 +1,6 @@
+@import "./../shared/styles/mix-in.scss";
+@import "./../shared/styles/color.scss";
+
+.main-component {
+  @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
+}
