@@ -42,3 +42,8 @@ testem.log
 Thumbs.db
 
 push.sh
+
+# Personal scripts
+push.dev.bat
+update-dev-with-main.bat
+*bat
