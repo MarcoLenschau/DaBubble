@@ -1,29 +1,40 @@
-
 <div class="df_fd_c message-box">
   <div class="header">
-      <div class="df_fd_c gap-20">
-          <div class="title">Neue Nachricht</div>
-          <input #searchInput type="search" Placeholder="An: #channel oder @jemand oder E-Mail Adresse" >
-          <div class="search-icon-wrapper"></div>
-          <div class="search-results">
-            <ul>
-              <li>
-                <strong></strong>
-              </li>
-              <li >
-                <strong></strong>
-              </li>
-              <li >
-                <strong></strong>
-              </li>
-            </ul>
-          </div>
+    <div class="df_fd_c gap-20">
+      <div class="title">Neue Nachricht</div>
+      <input
+        #searchInput
+        type="search"
+        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        (input)="onSearch($event)"
+      />
+      <div class="search-icon-wrapper"></div>
+
+      <div
+        *ngIf="searchResultsUser.length || searchResultsEmail.length || searchResultsChannels.length"
+        class="search-results"
+      >
+        <ul>
+          <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user, searchInput)">
+            <strong>{{ user.email }}</strong>
+          </li>
+          <li *ngFor="let user of searchResultsUser" (click)="selectUser(user, searchInput)">
+            <strong>&#64;{{ user.name }}</strong>
+          </li>
+          <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
+            <strong>#{{ channel.channelName }}</strong>
+          </li>
+        </ul>
       </div>
+    </div>
   </div>
+
   <div class="content"></div>
-    <textarea
-      class="textarea"
-      placeholder="Starte eine neue Nachricht"
-      rows="5">
-    </textarea>
+
+  <app-textarea
+    [textInput]="textInput"
+    [mainMessageBoxPadding]="'2.5rem 4.4375rem 2.5rem 4.4375rem'"
+    [toolbarWidth]="'calc(100% - 11.375rem)'"
+    placeholder="Nachricht an..."
+  ></app-textarea>
 </div>

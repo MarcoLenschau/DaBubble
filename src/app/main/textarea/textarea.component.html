@@ -1,0 +1,12 @@
+<div class="main-message-box" [ngStyle]="{ padding: mainMessageBoxPadding }">
+  <textarea
+    class="textarea"
+    [(ngModel)]="textInput"
+    [placeholder]="placeholder"
+    rows="5"
+  ></textarea>
+
+  <div class="toolbar" [ngStyle]="{ width: toolbarWidth }">
+    <!-- Optional: Icons oder Buttons -->
+  </div>
+</div>

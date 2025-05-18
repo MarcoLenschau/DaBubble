@@ -6,7 +6,7 @@ import { MessageComponent } from "./main/message/message.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, MessageComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent,],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
