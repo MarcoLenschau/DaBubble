@@ -20,8 +20,8 @@ export class MessageComponent {
     { id: 'u5', name: 'Marco', email: 'marco@example.com' },
   ];
   allChannels = [
-    { id: 'c1', channelName: 'general' },
-    { id: 'c2', channelName: 'support' },
+    { id: 'c1', channelName: 'Dev-News' },
+    { id: 'c2', channelName: 'DaBubble-Support' },
   ];
 
   searchResultsUser: any[] = [];
