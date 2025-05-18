@@ -239,15 +239,19 @@
 .emoji-row {
   //!!!!!!!
   position: absolute;
-  top: 0px;
+  top: -20px;
+  // top: -20px;
   right: 40px;
-  display: flex;
-  gap: 5px;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
   padding: 3px 15px 3px 20px;
   border: 1px solid $light-purple;
   background-color: $white;
   width: fit-content;
   border-radius: 25px 25px 0 25px;
+
+  &.left-aligned {
+    left: 40px;
+  }
 }
 
 .emoji-icon {

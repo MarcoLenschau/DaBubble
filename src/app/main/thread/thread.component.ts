@@ -14,6 +14,7 @@ import { EMOJIS, Emoji } from '../../interfaces/emojis';
 export class ThreadComponent {
   hoveredIndex: number | null = null;
   showThread = true;
+  emojiMenuOpen: boolean[] = [];
 
   @Input() starterMessage?: ThreadMessage;
   @Input() userId?: string;
@@ -23,6 +24,11 @@ export class ThreadComponent {
   emojis: Emoji[] = EMOJIS;
 
   constructor(private dialog: MatDialog) {}
+
+  // this.messageService.getMessages().subscribe((msgs) => {
+  //   this.messages = msgs;
+  //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
+  // });
 
   openUserDialog(): void {
     this.dialog.open(DialogUserDetailsComponent);
@@ -40,6 +46,10 @@ export class ThreadComponent {
 
   setHoverState(index: number | null) {
     this.hoveredIndex = index;
+
+    if (index === null) {
+      this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
+    }
   }
 
   formatTime(timestamp: number): string {
@@ -61,8 +71,6 @@ export class ThreadComponent {
   getEmojiByName(name: string): Emoji | undefined {
     return this.emojis.find((e) => e.name === name);
   }
-
-  emojiMenuOpen: { [key: number]: boolean } = {};
 
   toggleEmojiMenu(index: number): void {
     this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
@@ -88,7 +96,7 @@ export class ThreadComponent {
       id: 'msg2',
       name: 'Sofia Müller',
       timestamp: 1684413060000,
-      text: 'Bei uns läuft alles gut, wir sind fast mit der neuen Funktion fertig.',
+      text: 'Bei uns läuft alles gut.',
       isSelf: false,
       isThreadStarter: false,
       userId: 'user2',
@@ -142,13 +150,25 @@ export class ThreadComponent {
       id: 'msg6',
       name: 'Martin Kurz',
       timestamp: 1684414200000,
-      text: 'Ich stimme Lena zu, eine saubere Dokumentation ist sehr wichtig, sonst gibt es später viele Probleme bei der Wartung.',
+      text: 'Ich stimme Lena zu. Lorem ipsum.',
       isSelf: false,
       isThreadStarter: false,
       userId: 'user6',
       public: true,
       privateWithSelf: false,
       reactions: [{ emojiName: 'check-mark', count: 3 }],
+    },
+    {
+      id: 'msg7',
+      name: 'Frederik Beck',
+      timestamp: 1684414264000,
+      text: 'Lorem ipsum dolor, sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+      isSelf: true,
+      isThreadStarter: false,
+      userId: 'user4',
+      public: true,
+      privateWithSelf: false,
+      reactions: [],
     },
   ];
 }

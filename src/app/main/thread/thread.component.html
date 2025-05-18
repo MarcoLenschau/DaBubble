@@ -46,33 +46,63 @@
               {{ msg.text }}
             </p>
           </div>
-          <div class="emoji-row">
-            <ng-container *ngIf="emojiMenuOpen[i]">
-              <img
-                *ngFor="let emoji of emojis"
-                [src]="emoji.src"
-                [alt]="emoji.name"
-                class="emoji-icon"
-              />
-            </ng-container>
-            <div class="toggle-icon" (click)="toggleEmojiMenu(i)">
-              <img
-                src="assets/img/message-icons/add-reaction.svg"
-                class="default"
-              />
-              <img
-                src="assets/img/message-icons/add-reaction-hover.svg"
-                class="hover"
-              />
-            </div>
+          <ng-container *ngIf="hoveredIndex === i"
+            ><div
+              class="emoji-row"
+              [ngClass]="{
+            'left-aligned': msg.isSelf,
+          }"
+            >
+              <ng-container *ngIf="emojiMenuOpen[i]">
+                <img
+                  *ngFor="let emoji of emojis"
+                  [src]="emoji.src"
+                  [alt]="emoji.name"
+                  class="emoji-icon"
+                />
+              </ng-container>
+              <div class="toggle-icon" (click)="toggleEmojiMenu(i)">
+                <img
+                  src="assets/img/message-icons/add-reaction.svg"
+                  class="default"
+                />
+                <img
+                  src="assets/img/message-icons/add-reaction-hover.svg"
+                  class="hover"
+                />
+              </div>
 
-            <!-- <img
+              <ng-container *ngIf="!msg.isSelf"
+                ><div class="toggle-icon">
+                  <img
+                    src="assets/img/message-icons/answer.svg"
+                    class="default"
+                  />
+                  <img
+                    src="assets/img/message-icons/answer-hover.svg"
+                    class="hover"
+                  /></div
+              ></ng-container>
+              <ng-container *ngIf="msg.isSelf">
+                <div class="toggle-icon">
+                  <img
+                    src="assets/img/message-icons/option.svg"
+                    class="default"
+                  />
+                  <img
+                    src="assets/img/message-icons/option-hover.svg"
+                    class="hover"
+                  /></div
+              ></ng-container>
+
+              <!-- <img
               src="assets/img/message-icons/add-reaction.svg"
               alt="Reaktion hinzufügen"
               class="emoji-icon"
               (click)="toggleEmojiMenu(i)"
             /> -->
-          </div>
+            </div></ng-container
+          >
         </div>
 
         <div *ngIf="i === 0" class="thread-replies-divider">
