@@ -88,7 +88,7 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'thumbs-up', count: 3 },
+        { emojiName: 'emoji-thumb', count: 3 },
         { emojiName: 'check-mark', count: 1 },
       ],
     },
@@ -129,7 +129,10 @@ export class ThreadComponent {
       userId: 'user4',
       public: true,
       privateWithSelf: false,
-      reactions: [],
+      reactions: [
+        { emojiName: 'hands-up', count: 5 },
+        { emojiName: 'emoji-thumb', count: 1 },
+      ],
     },
     {
       id: 'msg5',
@@ -142,8 +145,8 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'emoji-thumb', count: 2 },
-        { emojiName: 'thumbs-up', count: 1 },
+        { emojiName: 'emoji-rocket', count: 2 },
+        { emojiName: 'emoji-thumb', count: 1 },
       ],
     },
     {

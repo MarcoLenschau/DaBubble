@@ -43,52 +43,35 @@
   }
 
   .close-button {
-    position: relative;
-    width: 40px;
-    height: 40px;
-
-    img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      @include transition();
-      width: 100%;
-      height: 100%;
-    }
-
-    .hover {
-      opacity: 0;
-    }
-
-    &:hover {
-      cursor: pointer;
-
-      .default {
-        opacity: 0;
-      }
-      .hover {
-        opacity: 1;
-      }
-    }
+    @include hover-image-swap(40px, 40px);
   }
 }
 
 .thread-messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding-top: 17px;
-
+  padding-top: 22px;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 0px;
+    background: transparent;
   }
 
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
+  scrollbar-width: none;
 
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  -ms-overflow-style: none;
+
+  // &::-webkit-scrollbar {
+  //   width: 6px;
+  // }
+
+  // &::-webkit-scrollbar-thumb {
+  //   background-color: rgba(0, 0, 0, 0.2);
+  //   border-radius: 3px;
+  // }
+
+  // scrollbar-width: thin;
+  // scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 
   .message-img {
     width: 70px;
@@ -132,27 +115,37 @@
   }
 
   .thread-message {
-    padding: 12px 40px 32px;
+    padding: 12px 40px 12px;
     width: 100%;
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
 
-    &.thread-starter {
-      padding-bottom: 12px;
+    &.has-reactions {
+      padding-bottom: 50px;
     }
 
-    &:not(.thread-starter) {
-      margin-bottom: 16px;
-    }
+    // &.thread-starter {
+    //   padding-bottom: 12px;
+    // }
+
+    // &:not(.thread-starter) {
+    //   margin-bottom: 16px;
+    // }
   }
 }
 
 .own-message {
-  padding: 12px 40px 32px;
+  padding: 12px 40px 12px;
+  width: 100%;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
+
+  &.has-reactions {
+    padding-bottom: 50px;
+  }
 }
 
 .thread-replies-divider {
-  padding: 10px 40px 20px;
+  padding: 0px 40px 0px;
+  width: 100%;
   @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
 
   p {
@@ -191,48 +184,13 @@
 
 .hover-message {
   background-color: $grey;
+  @include transition();
 
   &:not(.own-message) {
     .thread-message-text {
       background-color: $white;
+      @include transition();
     }
-  }
-}
-
-.emoji-wrapper {
-  position: relative;
-  width: 40px;
-  height: 40px;
-
-  img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transition: opacity 0.3s ease;
-  }
-
-  .hover {
-    opacity: 0;
-  }
-
-  &.has-hover:hover {
-    cursor: pointer;
-
-    .default {
-      opacity: 0;
-    }
-    .hover {
-      opacity: 1;
-    }
-  }
-
-  &:not(.has-hover):hover {
-    cursor: pointer;
-    background-color: #e0e0e0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
   }
 }
 
@@ -240,17 +198,27 @@
   //!!!!!!!
   position: absolute;
   top: -20px;
-  // top: -20px;
-  right: 40px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
   padding: 3px 15px 3px 20px;
   border: 1px solid $light-purple;
   background-color: $white;
   width: fit-content;
   border-radius: 25px 25px 0 25px;
+  opacity: 0;
+  transform: translateX(80px);
+  @include transition();
 
-  &.left-aligned {
-    left: 40px;
+  &.emoji-row-left-aligned {
+    left: 30px;
+  }
+
+  &.emoji-row-right-aligned {
+    right: 60px;
+  }
+
+  &.make-visible {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -264,66 +232,89 @@
   @include transition();
 }
 
-.emoji-icon:hover {
+.top-emojis.emoji-icon:hover {
   //!!!!!!!!!!!
   background-color: $grey;
+}
+
+.bottom-toggle-icon {
+  @include hover-image-swap(37px, 37px);
+  border-radius: 50%;
+  background-color: $white;
+}
+
+.bottom-emojis {
+  width: 24px;
+  height: 24px;
 }
 
 .toggle-icon {
   @include hover-image-swap(40px, 40px);
 }
-
-//-----------------------------------------------------------------------
+// .message-height {
+//   height: 80px;
+//   width: 10px;
+//   background-color: red;
+// }
 .reactions {
-  display: flex;
-  gap: 8px;
-  margin-top: 4px;
+  position: absolute;
+  bottom: 6px;
+  @include dFlex($jc: flex-start, $ai: center, $g: 12px, $f: row);
+
+  // &.increase-gap {
+  //   bottom: -32px;
+  // }
+
+  &.reactions-right-aligned {
+    right: 115px;
+  }
+
+  &.reactions-left-aligned {
+    left: 125px;
+  }
 
   .emoji-wrapper {
-    position: relative;
-    width: 24px;
-    height: 24px;
+    padding: 5px 10px;
+    border: 1px solid $light-purple;
+    background-color: $white;
+    width: fit-content;
+    border-radius: 20px;
+
+    @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
+    // width: 24px;
+    // height: 24px;
     cursor: pointer;
 
     img {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      transition: opacity 0.3s ease;
+      // position: absolute;
+      // width: 100%;
+      // height: 100%;
+      // top: 0;
+      // left: 0;
+      // transition: opacity 0.3s ease;
     }
-    .hover {
-      opacity: 0;
-    }
-    &.has-hover:hover .default {
-      opacity: 0;
-    }
-    &.has-hover:hover .hover {
-      opacity: 1;
-    }
-    &:not(.has-hover):hover {
-      background-color: #e0e0e0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
+
     .count {
-      position: absolute;
-      bottom: -6px;
-      right: -6px;
-      background-color: #333;
-      color: #fff;
+      // position: absolute;
+
+      @include text-style(16px, 400, $black);
+
       border-radius: 50%;
-      font-size: 10px;
-      width: 16px;
-      height: 16px;
-      text-align: center;
-      line-height: 16px;
-      pointer-events: none;
+
+      // width: 16px;
+      // height: 16px;
+      // text-align: center;
+      // line-height: 16px;
+      // pointer-events: none;
     }
   }
+
+  .reduce-gap {
+    position: relative;
+    right: 6px;
+  }
 }
-//-----------------------------------------------------------------------
+
 .thread-textarea {
   width: 100%;
   padding: 24px 20px;
