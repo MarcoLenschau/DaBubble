@@ -6,8 +6,12 @@
   flex-direction: $f;
 }
 
-@mixin text-style($size: 18px, $weight: 400px, $color: 'black' ) {
+@mixin text-style($size: 18px, $weight: 400px, $color: "black") {
   font-size: $size;
   font-weight: $weight;
   color: $color;
+}
+
+@mixin transition() {
+  transition: all 100ms ease-in;
 }

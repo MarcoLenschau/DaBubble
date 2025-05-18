@@ -1,6 +1,8 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { ThreadMessage } from '../../models/thread-message.model';
+import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-thread',
@@ -10,8 +12,28 @@ import { ThreadMessage } from '../../models/thread-message.model';
 })
 export class ThreadComponent {
   hoveredIndex: number | null = null;
+  showThread = true;
+
   @Input() starterMessage?: ThreadMessage;
   @Input() userId?: string;
+
+  @Output() showThreadChange = new EventEmitter<boolean>();
+
+  constructor(private dialog: MatDialog) {}
+
+  openUserDialog(): void {
+    this.dialog.open(DialogUserDetailsComponent);
+  }
+
+  closeThread() {
+    this.showThreadChange.emit(false);
+  }
+
+  // openUserDialog(msg: ThreadMessage): void {
+  //   this.dialog.open(DialogUserDetailsComponent, {
+  //     data: { name: msg.name, userId: msg.userId },
+  //   });
+  // }
 
   setHoverState(index: number | null) {
     this.hoveredIndex = index;
@@ -60,6 +82,36 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [{ emoji: '😊', count: 2 }],
+    },
+    {
+      id: 'msg3',
+      name: 'Anna Müller',
+      timestamp: 1684413420000,
+      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
+      isSelf: false,
+      isThreadStarter: false,
+      userId: 'user3',
+      public: true,
+      privateWithSelf: false,
+      reactions: [
+        { emoji: '🔥', count: 4 },
+        { emoji: '🎉', count: 1 },
+      ],
+    },
+    {
+      id: 'msg3',
+      name: 'Anna Müller',
+      timestamp: 1684413420000,
+      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
+      isSelf: false,
+      isThreadStarter: false,
+      userId: 'user3',
+      public: true,
+      privateWithSelf: false,
+      reactions: [
+        { emoji: '🔥', count: 4 },
+        { emoji: '🎉', count: 1 },
+      ],
     },
     {
       id: 'msg3',

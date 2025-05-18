@@ -7,86 +7,12 @@
           <p>#</p>
           <p>Entwicklerteam</p>
         </div>
-
-        <img src="" alt="X" />
+        <div class="close-button" (click)="closeThread()">
+          <img src="assets/img/close/close.svg" class="default" />
+          <img src="assets/img/close/close-hover.svg" class="hover" />
+        </div>
       </div>
     </div>
-
-    <!-- <div class="thread-messages">
-      <div
-        class="top-message"
-        (mouseenter)="hovered = true"
-        (mouseleave)="resetHoverState()"
-        [ngClass]="{ 'hover-message': hovered }"
-      >
-        <img class="message-img" src="" alt="" />
-        <div class="message-body">
-          <div class="message-body-header">
-            <h4>Noah Braun</h4>
-            <p>14:24 Uhr</p>
-          </div>
-          <p class="thread-message-text">Lorem ipsum dolor sit?</p>
-        </div>
-      </div>
-
-      <div class="thread-replies-divider">
-        <p>3 Antworten</p>
-        <div class="line"></div>
-      </div>
-
-      <div class="thread-replies">
-        <div
-          (mouseenter)="hovered = true"
-          (mouseleave)="resetHoverState()"
-          [ngClass]="{ 'hover-message': hovered }"
-        >
-          <img class="message-img" src="" alt="" />
-          <div class="message-body">
-            <div class="message-body-header">
-              <h4>Sofia Müller</h4>
-              <p>15:31 Uhr</p>
-            </div>
-
-            <p class="reply-text">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores
-              corrupti quasi eum at veritatis ea reiciendis placeat ipsam
-              accusamus deserunt! Atque, placeat quia.
-            </p>
-          </div>
-        </div>
-        <div
-          (mouseenter)="hovered = true"
-          (mouseleave)="resetHoverState()"
-          [ngClass]="{ 'hover-message': hovered }"
-        >
-          <img class="message-img" src="" alt="" />
-          <div class="message-body">
-            <div class="message-body-header">
-              <h4>Anna Müller</h4>
-              <p>15:37 Uhr</p>
-            </div>
-
-            <p class="reply-text">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex,
-              temporibus? Libero, accusamus. Odio dolor odit totam perspiciatis
-              consequatur ipsam illo, doloremque expedita deserunt?
-            </p>
-          </div>
-        </div>
-
-        <div class="my-reply">
-          <img class="message-img" src="" alt="" />
-          <div class="message-body my-message-body">
-            <div class="message-body-header my-message-body-header">
-              <h4>Frederik Beck</h4>
-              <p>15:44 Uhr</p>
-            </div>
-
-            <p class="my-reply-text">Ja genau</p>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
     <div class="thread-messages">
       <ng-container *ngFor="let msg of messages; let i = index">
@@ -95,7 +21,8 @@
           [ngClass]="{
             'thread-message': !msg.isSelf,
             'own-message': msg.isSelf,
-            'hover-message': hoveredIndex === i
+            'hover-message': hoveredIndex === i,
+            'thread-starter': msg.isThreadStarter,
           }"
           (mouseenter)="setHoverState(i)"
           (mouseleave)="setHoverState(null)"
@@ -109,7 +36,7 @@
               class="message-body-header"
               [ngClass]="{ 'own-message-body-header': msg.isSelf }"
             >
-              <h4>{{ msg.name }}</h4>
+              <h4 (click)="openUserDialog()">{{ msg.name }}</h4>
               <p>{{ formatTime(msg.timestamp) }}</p>
             </div>
             <p
