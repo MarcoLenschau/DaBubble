@@ -95,10 +95,10 @@
           [ngClass]="{
             'thread-message': !msg.isSelf,
             'own-message': msg.isSelf,
-            'hover-message': msg.hovered
+            'hover-message': hoveredIndex === i
           }"
-          (mouseenter)="setHoverState(i, true)"
-          (mouseleave)="setHoverState(i, false)"
+          (mouseenter)="setHoverState(i)"
+          (mouseleave)="setHoverState(null)"
         >
           <img class="message-img" src="" alt="Profilbild {{ msg.name }}" />
           <div
@@ -110,7 +110,7 @@
               [ngClass]="{ 'own-message-body-header': msg.isSelf }"
             >
               <h4>{{ msg.name }}</h4>
-              <p>{{ msg.time }}</p>
+              <p>{{ formatTime(msg.timestamp) }}</p>
             </div>
             <p
               class="thread-message-text"
