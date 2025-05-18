@@ -15,7 +15,7 @@ export class MessageComponent {
   currentUser = { id: 'u1', name: 'Anna' };
   allUsers = [
     { id: 'u2', name: 'Emrah', email: 'emrah@example.com' },
-    { id: 'u3', name: 'Lena', email: 'lena@example.com' },
+    { id: 'u3', name: 'Frederic', email: 'frederic@example.com' },
     { id: 'u4', name: 'Martin', email: 'martin@example.com' },
     { id: 'u5', name: 'Marco', email: 'marco@example.com' },
   ];
