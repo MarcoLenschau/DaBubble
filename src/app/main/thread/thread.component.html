@@ -46,12 +46,60 @@
               {{ msg.text }}
             </p>
           </div>
+          <div class="emoji-row">
+            <ng-container *ngIf="emojiMenuOpen[i]">
+              <img
+                *ngFor="let emoji of emojis"
+                [src]="emoji.src"
+                [alt]="emoji.name"
+                class="emoji-icon"
+              />
+            </ng-container>
+            <div class="toggle-icon" (click)="toggleEmojiMenu(i)">
+              <img
+                src="assets/img/message-icons/add-reaction.svg"
+                class="default"
+              />
+              <img
+                src="assets/img/message-icons/add-reaction-hover.svg"
+                class="hover"
+              />
+            </div>
+
+            <!-- <img
+              src="assets/img/message-icons/add-reaction.svg"
+              alt="Reaktion hinzufügen"
+              class="emoji-icon"
+              (click)="toggleEmojiMenu(i)"
+            /> -->
+          </div>
         </div>
 
         <div *ngIf="i === 0" class="thread-replies-divider">
           <p>{{ messages.length - 1 }} Antworten</p>
           <div class="line"></div>
         </div>
+
+        <!-- <div class="reactions" *ngIf="msg.reactions?.length">
+          <div
+            *ngFor="let reaction of msg.reactions"
+            class="emoji-wrapper"
+            [class.has-hover]="getEmojiByName(reaction.emojiName)?.hoverSrc"
+          >
+            <img
+              [src]="getEmojiByName(reaction.emojiName)?.src"
+              class="default"
+              alt="Emoji {{ reaction.emojiName }}"
+            />
+            <img
+              *ngIf="getEmojiByName(reaction.emojiName)?.hoverSrc"
+              [src]="getEmojiByName(reaction.emojiName)?.hoverSrc"
+              class="hover"
+              alt="Emoji Hover {{ reaction.emojiName }}"
+            />
+            <span class="count">{{ reaction.count }}</span>
+          </div>
+        </div> -->
       </ng-container>
     </div>
 

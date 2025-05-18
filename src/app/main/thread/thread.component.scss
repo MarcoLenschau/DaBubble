@@ -127,6 +127,10 @@
     @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
   }
 
+  .message-wrapper {
+    position: relative;
+  }
+
   .thread-message {
     padding: 12px 40px 32px;
     width: 100%;
@@ -195,6 +199,127 @@
   }
 }
 
+.emoji-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  .hover {
+    opacity: 0;
+  }
+
+  &.has-hover:hover {
+    cursor: pointer;
+
+    .default {
+      opacity: 0;
+    }
+    .hover {
+      opacity: 1;
+    }
+  }
+
+  &:not(.has-hover):hover {
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+}
+
+.emoji-row {
+  //!!!!!!!
+  position: absolute;
+  top: 0px;
+  right: 40px;
+  display: flex;
+  gap: 5px;
+  padding: 3px 15px 3px 20px;
+  border: 1px solid $light-purple;
+  background-color: $white;
+  width: fit-content;
+  border-radius: 25px 25px 0 25px;
+}
+
+.emoji-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: $white;
+  padding: 8px;
+  cursor: pointer;
+  @include transition();
+}
+
+.emoji-icon:hover {
+  //!!!!!!!!!!!
+  background-color: $grey;
+}
+
+.toggle-icon {
+  @include hover-image-swap(40px, 40px);
+}
+
+//-----------------------------------------------------------------------
+.reactions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+
+  .emoji-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+
+    img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      transition: opacity 0.3s ease;
+    }
+    .hover {
+      opacity: 0;
+    }
+    &.has-hover:hover .default {
+      opacity: 0;
+    }
+    &.has-hover:hover .hover {
+      opacity: 1;
+    }
+    &:not(.has-hover):hover {
+      background-color: #e0e0e0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .count {
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      background-color: #333;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 10px;
+      width: 16px;
+      height: 16px;
+      text-align: center;
+      line-height: 16px;
+      pointer-events: none;
+    }
+  }
+}
+//-----------------------------------------------------------------------
 .thread-textarea {
   width: 100%;
   padding: 24px 20px;

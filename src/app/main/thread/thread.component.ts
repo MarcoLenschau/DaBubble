@@ -3,6 +3,7 @@ import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { ThreadMessage } from '../../models/thread-message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
+import { EMOJIS, Emoji } from '../../interfaces/emojis';
 
 @Component({
   selector: 'app-thread',
@@ -18,6 +19,8 @@ export class ThreadComponent {
   @Input() userId?: string;
 
   @Output() showThreadChange = new EventEmitter<boolean>();
+
+  emojis: Emoji[] = EMOJIS;
 
   constructor(private dialog: MatDialog) {}
 
@@ -55,6 +58,16 @@ export class ThreadComponent {
 
   // this.threadMessage = new ThreadMessage(activeThreadData);
 
+  getEmojiByName(name: string): Emoji | undefined {
+    return this.emojis.find((e) => e.name === name);
+  }
+
+  emojiMenuOpen: { [key: number]: boolean } = {};
+
+  toggleEmojiMenu(index: number): void {
+    this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
+  }
+
   messages: ThreadMessage[] = [
     {
       id: 'msg1',
@@ -67,8 +80,8 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emoji: '👍', count: 3 },
-        { emoji: '❤️', count: 1 },
+        { emojiName: 'thumbs-up', count: 3 },
+        { emojiName: 'check-mark', count: 1 },
       ],
     },
     {
@@ -81,51 +94,21 @@ export class ThreadComponent {
       userId: 'user2',
       public: true,
       privateWithSelf: false,
-      reactions: [{ emoji: '😊', count: 2 }],
+      reactions: [{ emojiName: 'hands-up', count: 2 }],
     },
     {
       id: 'msg3',
       name: 'Anna Müller',
       timestamp: 1684413420000,
-      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
+      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
       isSelf: false,
       isThreadStarter: false,
       userId: 'user3',
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emoji: '🔥', count: 4 },
-        { emoji: '🎉', count: 1 },
-      ],
-    },
-    {
-      id: 'msg3',
-      name: 'Anna Müller',
-      timestamp: 1684413420000,
-      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
-      isSelf: false,
-      isThreadStarter: false,
-      userId: 'user3',
-      public: true,
-      privateWithSelf: false,
-      reactions: [
-        { emoji: '🔥', count: 4 },
-        { emoji: '🎉', count: 1 },
-      ],
-    },
-    {
-      id: 'msg3',
-      name: 'Anna Müller',
-      timestamp: 1684413420000,
-      text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
-      isSelf: false,
-      isThreadStarter: false,
-      userId: 'user3',
-      public: true,
-      privateWithSelf: false,
-      reactions: [
-        { emoji: '🔥', count: 4 },
-        { emoji: '🎉', count: 1 },
+        { emojiName: 'emoji-nerd', count: 4 },
+        { emojiName: 'emoji-rocket', count: 1 },
       ],
     },
     {
@@ -139,6 +122,33 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [],
+    },
+    {
+      id: 'msg5',
+      name: 'Lena Schmidt',
+      timestamp: 1684414000000,
+      text: 'Könntest du bitte die Dokumentation noch einmal überprüfen? Ich habe einige Fehler gefunden, besonders bei den API-Endpunkten.',
+      isSelf: false,
+      isThreadStarter: false,
+      userId: 'user5',
+      public: true,
+      privateWithSelf: false,
+      reactions: [
+        { emojiName: 'emoji-thumb', count: 2 },
+        { emojiName: 'thumbs-up', count: 1 },
+      ],
+    },
+    {
+      id: 'msg6',
+      name: 'Martin Kurz',
+      timestamp: 1684414200000,
+      text: 'Ich stimme Lena zu, eine saubere Dokumentation ist sehr wichtig, sonst gibt es später viele Probleme bei der Wartung.',
+      isSelf: false,
+      isThreadStarter: false,
+      userId: 'user6',
+      public: true,
+      privateWithSelf: false,
+      reactions: [{ emojiName: 'check-mark', count: 3 }],
     },
   ];
 }
