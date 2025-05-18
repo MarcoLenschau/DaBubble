@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './dialog-user-details.component.scss'
 })
 export class DialogUserDetailsComponent {
-
+  
 }
