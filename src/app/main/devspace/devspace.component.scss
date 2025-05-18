@@ -1,5 +1,5 @@
 nav {
-    background-color:#FFFFFF;
+    background-color: #FFFFFF;
     width: 366px;
     height: 940px;
     margin: 16px;
@@ -10,7 +10,122 @@ nav {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 24px 50px;
+    padding: 24px 10px;
     font-family: 'Nunito';
+}
 
+
+.devspace-headline {
+    display: flex;
+    align-items: center;
+    gap: 84px;
+
+    >.headline-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+
+
+.devspace-channel-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.devspace-channel {
+    display: flex;
+    align-items: center;
+    gap: 100px;
+
+
+    >.channel-title-arrow {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        >.channel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            >h2 {
+                font-size: 20px;
+            }
+        }
+    }
+}
+
+.devspace-channel-content,
+.devspace-channel-add {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    gap: 4px;
+    padding-left: 42px;
+}
+
+
+.devspace-messages {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-title-arrow {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .message-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        >h2 {
+            font-size: 20px;
+        }
+    }
+}
+
+.profile-users {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 16px;
+
+    >.profile-user {
+        display: flex;
+        gap: 18px;
+        padding-left: 42px;
+
+        >.profile-icon {
+            position: relative;
+
+            >.profile-pic {
+                width: 50px;
+                height: 50px;
+                border-radius: 30px;
+            }
+
+            >.profile-online {
+                position: absolute;
+                bottom: 8px;
+                left: 36px;
+            }
+        }
+
+    }
+}
+
+.profile-user {
+    display: flex;
+    gap: 18px;
+    padding-left: 42px;
+
+    >img {
+        width: 50px;
+        height: 50px;
+        border-radius: 30px;
+    }
 }
