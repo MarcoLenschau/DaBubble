@@ -15,6 +15,6 @@ export class HeaderComponent {
   constructor(private dialog: MatDialog,public router: RouterService) {}
 
   openDialog() {
-      this.dialog.open(DialogUserOptionsComponent);
+    this.dialog.open(DialogUserOptionsComponent);
   }
 }

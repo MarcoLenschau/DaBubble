@@ -3,6 +3,7 @@ import { RouterService } from '../../services/router.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-dialog-user-options',
@@ -11,6 +12,12 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './dialog-user-options.component.scss'
 })
 export class DialogUserOptionsComponent {
+  user: User = {
+    name: "Gast",
+    email: "gast@mail.com",
+    img: "./assets/img/profilepic/frederik.png"
+  }
+  
   constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>) {}
 
   logOut() {
@@ -19,7 +26,8 @@ export class DialogUserOptionsComponent {
   }
 
   openDialog() {
-    this.dialog.open(DialogUserDetailsComponent); 
+    let dialogRef = this.dialog.open(DialogUserDetailsComponent); 
+    dialogRef.componentInstance.user = this.user
     this.dialogRef.close();
   }
 }

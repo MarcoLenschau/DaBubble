@@ -2,17 +2,31 @@
 @import "../../shared/styles/mix-in.scss";
 
 .main-div {
+    position: fixed;
+    top: 84px;
+    right: 5px;
     padding: 32px;
     border-top-left-radius: 24px;
     border-bottom-left-radius: 24px;
-    position: fixed;
-    background-color: white;
+    border-bottom-right-radius: 24px;
+    background-color: $white;
     height: 417px;
     width: 250px;
-    top: 84px;
-    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .profile {
     @include dFlex($jc: space-between);
+}
+
+.user-image-container {
+    display: flex;
+    justify-content: center;
+    >img {
+        height: 140px;
+        width: 140px;
+        border-radius: 82px;
+    }
 }
