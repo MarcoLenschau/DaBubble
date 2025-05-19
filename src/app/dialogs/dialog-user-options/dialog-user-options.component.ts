@@ -9,25 +9,33 @@ import { User } from '../../models/user.model';
   selector: 'app-dialog-user-options',
   imports: [],
   templateUrl: './dialog-user-options.component.html',
-  styleUrl: './dialog-user-options.component.scss'
+  styleUrl: './dialog-user-options.component.scss',
 })
 export class DialogUserOptionsComponent {
   user: User = {
-    name: "Gast",
-    email: "gast@mail.com",
-    img: "./assets/img/profilepic/frederik.png"
-  }
-  
-  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>) {}
+    name: 'Gast',
+    email: 'gast@mail.com',
+    img: './assets/img/profilepic/frederik.png',
+  };
+
+  constructor(
+    public router: RouterService,
+    private dialog: MatDialog,
+    private dialogRef: MatDialogRef<DialogUserOptionsComponent>
+  ) {}
 
   logOut() {
-    this.router.switchRoute("");
+    this.router.switchRoute('');
     this.dialogRef.close();
   }
 
   openDialog() {
-    let dialogRef = this.dialog.open(DialogUserDetailsComponent); 
-    dialogRef.componentInstance.user = this.user
+    this.dialog.open(DialogUserDetailsComponent, {
+      data: this.user,
+    });
+    // let dialogRef = this.dialog.open(DialogUserDetailsComponent);
+
+    // dialogRef.componentInstance.user = this.user
     this.dialogRef.close();
   }
 }

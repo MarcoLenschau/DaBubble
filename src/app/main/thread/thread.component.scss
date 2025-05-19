@@ -330,7 +330,8 @@
 
     .bottom-emoji-tooltip {
       position: absolute;
-      bottom: 30px;
+      bottom: 34px;
+      left: 30px;
       width: 158px;
       height: 112px;
       padding: 15px 10px;
@@ -359,13 +360,13 @@
       .tooltip-names {
         @include text-style(18px, 700, $white);
         text-align: center;
-        line-height: 140%;
+        line-height: 130%;
       }
 
       .tooltip-text {
         @include text-style(16px, 400, $white);
         text-align: center;
-        line-height: 180%;
+        line-height: 160%;
       }
       // }
     }

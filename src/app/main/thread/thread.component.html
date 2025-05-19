@@ -38,7 +38,7 @@
               class="message-body-header"
               [ngClass]="{ 'own-message-body-header': msg.isSelf }"
             >
-              <h4 (click)="openUserDialog()">{{ msg.name }}</h4>
+              <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
               <p>{{ formatTime(msg.timestamp) }}</p>
             </div>
             <p

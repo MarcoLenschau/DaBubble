@@ -80,8 +80,18 @@ export class ThreadComponent {
   //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
   // });
 
-  openUserDialog(): void {
-    this.dialog.open(DialogUserDetailsComponent);
+  openUserDialog(userId?: string): void {
+    if (!userId) return;
+    const user = this.getUserById(userId);
+    if (user) {
+      this.dialog.open(DialogUserDetailsComponent, {
+        data: user,
+      });
+    }
+  }
+
+  getUserById(userId: string): User | undefined {
+    return this.users.find((user) => user.id === userId);
   }
 
   closeThread() {

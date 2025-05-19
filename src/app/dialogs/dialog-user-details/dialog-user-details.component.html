@@ -1,19 +1,19 @@
 <div class="main-div">
-    <div class="profile">
-        <span>Profil</span>
-        <button>X</button>
-    </div>
-    <div class="user-image-container">
-        <img src="{{user.img}}" alt="">
-    </div>
-    <div class="d_flex">
-        <span>{{user.name}}</span>
-        <a href=""></a>
-    </div>
+  <div class="profile">
+    <span>Profil</span>
+    <button (click)="closeProfilView()">X</button>
+  </div>
+  <div class="user-image-container">
+    <img src="{{ user.img }}" alt="" />
+  </div>
+  <div class="d_flex">
+    <span>{{ user.name }}</span>
+    <a href=""></a>
+  </div>
 
-    <div class="d_flex">
-        <img src="" alt="">
-        <span>E-Mail Adresse</span>
-    </div>
-    <a href="">{{user.email}}</a>
+  <div class="d_flex">
+    <img src="" alt="" />
+    <span>E-Mail Adresse</span>
+  </div>
+  <a href="">{{ user.email }}</a>
 </div>
