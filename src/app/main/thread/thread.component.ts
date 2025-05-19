@@ -92,8 +92,8 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'emoji-thumb', count: 3 },
-        { emojiName: 'check-mark', count: 1 },
+        { emojiName: 'emoji-thumb', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'check-mark', userIds: ['user3'] },
       ],
     },
     {
@@ -106,7 +106,7 @@ export class ThreadComponent {
       userId: 'user2',
       public: true,
       privateWithSelf: false,
-      reactions: [{ emojiName: 'hands-up', count: 2 }],
+      reactions: [{ emojiName: 'hands-up', userIds: ['user1', 'user6'] }],
     },
     {
       id: 'msg3',
@@ -119,8 +119,8 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'emoji-nerd', count: 4 },
-        { emojiName: 'emoji-rocket', count: 1 },
+        { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'emoji-rocket', userIds: ['user3'] },
       ],
     },
     {
@@ -134,8 +134,11 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'hands-up', count: 5 },
-        { emojiName: 'emoji-thumb', count: 1 },
+        {
+          emojiName: 'emoji-thumb',
+          userIds: ['user1', 'user3', 'user4', 'user6'],
+        },
+        { emojiName: 'hands-up', userIds: ['user3'] },
       ],
     },
     {
@@ -149,8 +152,8 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'emoji-rocket', count: 2 },
-        { emojiName: 'emoji-thumb', count: 1 },
+        { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
+        { emojiName: 'emoji-rocket', userIds: ['user3'] },
       ],
     },
     {
@@ -163,7 +166,9 @@ export class ThreadComponent {
       userId: 'user6',
       public: true,
       privateWithSelf: false,
-      reactions: [{ emojiName: 'check-mark', count: 3 }],
+      reactions: [
+        { emojiName: 'check-mark', userIds: ['user3', 'user4', 'user6'] },
+      ],
     },
     {
       id: 'msg7',
