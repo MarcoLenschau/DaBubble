@@ -121,7 +121,12 @@
             'reactions-left-aligned': !msg.isSelf,
                       }"
           >
-            <div *ngFor="let reaction of msg.reactions" class="emoji-wrapper">
+            <div
+              *ngFor="let reaction of msg.reactions; let j = index"
+              class="bottom-emoji-wrapper"
+              (mouseenter)="setHoverState(i); setTooltipHoveredState(j)"
+              (mouseleave)="setHoverState(null); setTooltipHoveredState(null)"
+            >
               <img
                 class="bottom-emojis"
                 [src]="getEmojiByName(reaction.emojiName)?.src"
@@ -129,6 +134,25 @@
               />
 
               <span class="count">{{ reaction.userIds.length }}</span>
+
+              <div
+                *ngIf="hoveredIndex === i && tooltipHoveredIndex == j"
+                class="bottom-emoji-tooltip"
+              >
+                <!-- <div class="scroll-container"> -->
+                <img
+                  class="tooltip-emoji"
+                  [src]="getEmojiByName(reaction.emojiName)?.src"
+                  alt="Emoji {{ reaction.emojiName }}"
+                />
+                <div>
+                  <p class="tooltip-names">
+                    {{ formatUserNames(reaction.userIds) }}
+                  </p>
+                  <p class="tooltip-text">{{ tooltipText }} reagiert</p>
+                </div>
+                <!-- </div> -->
+              </div>
             </div>
             <div
               class="reduce-gap bottom-toggle-icon"

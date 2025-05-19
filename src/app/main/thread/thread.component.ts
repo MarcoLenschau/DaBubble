@@ -4,6 +4,7 @@ import { ThreadMessage } from '../../models/thread-message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EMOJIS, Emoji } from '../../interfaces/emojis';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-thread',
@@ -13,8 +14,57 @@ import { EMOJIS, Emoji } from '../../interfaces/emojis';
 })
 export class ThreadComponent {
   hoveredIndex: number | null = null;
+  tooltipHoveredIndex: number | null = null;
+  tooltipText = 'hat';
+
   showThread = true;
   emojiMenuOpen: boolean[] = [];
+
+  users: User[] = [
+    {
+      id: 'user1',
+      name: 'Noah Braun',
+      email: 'noah@example.com',
+      img: 'noah.jpg',
+    },
+    {
+      id: 'user2',
+      name: 'Sofia Müller',
+      email: 'sofia@example.com',
+      img: 'sofia.jpg',
+    },
+    {
+      id: 'user3',
+      name: 'Anna Müller',
+      email: 'anna@example.com',
+      img: 'anna.jpg',
+    },
+    {
+      id: 'user4',
+      name: 'Frederik Beck',
+      email: 'frederik@example.com',
+      img: 'frederik.jpg',
+    },
+    {
+      id: 'user5',
+      name: 'Lena Schmidt',
+      email: 'lena@example.com',
+      img: 'lena.jpg',
+    },
+    {
+      id: 'user6',
+      name: 'Martin Kurz',
+      email: 'martin@example.com',
+      img: 'martin.jpg',
+    },
+  ];
+
+  currentUser: User = {
+    id: 'user4',
+    name: 'Frederik Beck',
+    email: 'frederik@example.com',
+    img: 'frederik.jpg',
+  };
 
   @Input() starterMessage?: ThreadMessage;
   @Input() userId?: string;
@@ -52,6 +102,10 @@ export class ThreadComponent {
     }
   }
 
+  setTooltipHoveredState(index: number | null) {
+    this.tooltipHoveredIndex = index;
+  }
+
   closeEmojiRow(event: MouseEvent): void {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
@@ -78,6 +132,39 @@ export class ThreadComponent {
 
   toggleEmojiMenu(index: number): void {
     this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
+  }
+
+  getUserNames(userIds: string[]): string[] {
+    if (!this.users) return [];
+
+    const names = this.users
+      .filter(
+        (u): u is User => typeof u.id === 'string' && userIds.includes(u.id)
+      )
+      .map((u) => this.getDisplayName(u));
+
+    return this.moveCurrentUserToEnd(names);
+  }
+
+  moveCurrentUserToEnd(names: string[]): string[] {
+    const normalNames = names.filter((name) => name !== 'Du');
+    const nameIsCurrentUser = names.includes('Du') ? ['Du'] : [];
+    return [...normalNames, ...nameIsCurrentUser];
+  }
+
+  getDisplayName(user: User): string {
+    return user.id === this.currentUser.id ? 'Du' : user.name;
+  }
+
+  formatUserNames(userIds: string[]): string {
+    const names = this.getUserNames(userIds);
+    if (names.length === 0) return '';
+    if (names.length === 1) {
+      this.tooltipText = 'hat';
+      return names[0];
+    }
+    this.tooltipText = 'haben';
+    return names.slice(0, -1).join(', ') + ' und ' + names[names.length - 1];
   }
 
   messages: ThreadMessage[] = [
