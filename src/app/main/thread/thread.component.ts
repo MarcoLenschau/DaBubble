@@ -52,6 +52,10 @@ export class ThreadComponent {
     }
   }
 
+  closeEmojiRow(event: MouseEvent): void {
+    this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
+  }
+
   formatTime(timestamp: number): string {
     const date = new Date(timestamp);
     const h = date.getHours().toString().padStart(2, '0');

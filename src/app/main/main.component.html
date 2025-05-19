@@ -3,7 +3,7 @@
   <app-message></app-message>
   <!-- <app-message (threadStart)="onThreadStart($event)"></app-message> -->
   <app-thread
-    *ngIf="showThread"
+    [ngClass]="{ visible: showThread, hidden: !showThread }"
     (showThreadChange)="showThread = $event"
   ></app-thread>
   <!-- <app-thread [starterMessage]="starterMessage" [userId]="userId"></app-thread> -->

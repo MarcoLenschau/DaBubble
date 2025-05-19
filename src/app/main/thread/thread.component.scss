@@ -47,6 +47,23 @@
   }
 }
 
+:host {
+  display: block;
+  @include transition();
+}
+
+:host(.visible) {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+:host(.hidden) {
+  opacity: 0;
+  transform: translateX(300px);
+  pointer-events: none;
+}
+
 .thread-messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -205,7 +222,8 @@
   width: fit-content;
   border-radius: 25px 25px 0 25px;
   opacity: 0;
-  transform: translateX(80px);
+  visibility: hidden;
+  transform: translateX(20px);
   @include transition();
 
   &.emoji-row-left-aligned {
@@ -218,6 +236,7 @@
 
   &.make-visible {
     opacity: 1;
+    visibility: visible;
     transform: translateX(0);
   }
 }

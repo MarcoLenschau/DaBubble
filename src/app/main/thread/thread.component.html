@@ -27,6 +27,7 @@
           }"
           (mouseenter)="setHoverState(i)"
           (mouseleave)="setHoverState(null)"
+          (click)="closeEmojiRow($event)"
         >
           <img class="message-img" src="" alt="Profilbild {{ msg.name }}" />
           <div
@@ -47,7 +48,7 @@
               {{ msg.text }}
             </p>
           </div>
-          <ng-container *ngIf="hoveredIndex === i"
+          <ng-container
             ><div
               class="emoji-row"
               [ngClass]="{
@@ -55,6 +56,7 @@
                 'emoji-row-right-aligned': !msg.isSelf,
                 'make-visible': hoveredIndex === i
               }"
+              (click)="$event.stopPropagation()"
             >
               <ng-container *ngIf="emojiMenuOpen[i]">
                 <img
@@ -64,7 +66,10 @@
                   class="emoji-icon top-emojis"
                 />
               </ng-container>
-              <div class="toggle-icon" (click)="toggleEmojiMenu(i)">
+              <div
+                class="toggle-icon"
+                (click)="toggleEmojiMenu(i); $event.stopPropagation()"
+              >
                 <img
                   src="assets/img/message-icons/add-reaction.svg"
                   class="default"
@@ -127,7 +132,7 @@
             </div>
             <div
               class="reduce-gap bottom-toggle-icon"
-              (click)="toggleEmojiMenu(i)"
+              (click)="toggleEmojiMenu(i); $event.stopPropagation()"
             >
               <img
                 src="assets/img/message-icons/add-reaction.svg"
