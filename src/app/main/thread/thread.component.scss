@@ -78,22 +78,13 @@
 
   -ms-overflow-style: none;
 
-  // &::-webkit-scrollbar {
-  //   width: 6px;
-  // }
-
-  // &::-webkit-scrollbar-thumb {
-  //   background-color: rgba(0, 0, 0, 0.2);
-  //   border-radius: 3px;
-  // }
-
-  // scrollbar-width: thin;
-  // scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-
   .message-img {
     width: 70px;
     height: 70px;
+    flex-shrink: 0;
+    object-fit: cover;
     border-radius: 50%;
+
     background-color: $purple-2;
   }
 
@@ -129,35 +120,43 @@
 
   .message-wrapper {
     position: relative;
+
+    width: 100%;
+    padding: 12px 40px 16px;
+  }
+
+  .hover-message-wrapper {
+    background-color: $grey;
+    @include transition();
+
+    &.not-own-message {
+      .thread-message-text {
+        background-color: $white;
+        @include transition();
+      }
+    }
+  }
+
+  .message-flex-box {
+  }
+
+  .hover-thread-message {
+    width: 100%;
+  }
+
+  .hover-own-message {
+    width: 100%;
   }
 
   .thread-message {
-    padding: 12px 40px 12px;
     width: 100%;
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
-
-    &.has-reactions {
-      padding-bottom: 50px;
-    }
-
-    // &.thread-starter {
-    //   padding-bottom: 12px;
-    // }
-
-    // &:not(.thread-starter) {
-    //   margin-bottom: 16px;
-    // }
   }
 }
 
 .own-message {
-  padding: 12px 40px 12px;
   width: 100%;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
-
-  &.has-reactions {
-    padding-bottom: 50px;
-  }
 }
 
 .thread-replies-divider {
@@ -193,26 +192,7 @@
   }
 }
 
-.own-message-text {
-  border-radius: 20px 0 20px 20px;
-  background-color: $purple-2;
-  @include text-style(14px, 400, $white);
-}
-
-.hover-message {
-  background-color: $grey;
-  @include transition();
-
-  &:not(.own-message) {
-    .thread-message-text {
-      background-color: $white;
-      @include transition();
-    }
-  }
-}
-
 .emoji-row {
-  //!!!!!!!
   position: absolute;
   top: -20px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
@@ -252,7 +232,6 @@
 }
 
 .top-emojis.emoji-icon:hover {
-  //!!!!!!!!!!!
   background-color: $grey;
 }
 
@@ -270,26 +249,20 @@
 .toggle-icon {
   @include hover-image-swap(40px, 40px);
 }
-// .message-height {
-//   height: 80px;
-//   width: 10px;
-//   background-color: red;
-// }
-.reactions {
-  position: absolute;
-  bottom: 6px;
-  @include dFlex($jc: flex-start, $ai: center, $g: 12px, $f: row);
 
-  // &.increase-gap {
-  //   bottom: -32px;
-  // }
+.reactions {
+  position: relative;
+  max-width: 315px;
+  padding-top: 6px;
+  @include dFlex($jc: flex-start, $ai: center, $g: 12px, $f: row);
+  flex-wrap: wrap;
 
   &.reactions-right-aligned {
-    right: 115px;
+    justify-content: flex-end;
   }
 
   &.reactions-left-aligned {
-    left: 125px;
+    left: 80px;
   }
 
   .bottom-emoji-wrapper {
@@ -301,31 +274,11 @@
     position: relative;
 
     @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
-    // width: 24px;
-    // height: 24px;
     cursor: pointer;
 
-    img {
-      // position: absolute;
-      // width: 100%;
-      // height: 100%;
-      // top: 0;
-      // left: 0;
-      // transition: opacity 0.3s ease;
-    }
-
     .count {
-      // position: absolute;
-
       @include text-style(16px, 400, $black);
-
       border-radius: 50%;
-
-      // width: 16px;
-      // height: 16px;
-      // text-align: center;
-      // line-height: 16px;
-      // pointer-events: none;
     }
 
     .bottom-emoji-tooltip {
@@ -340,17 +293,10 @@
       word-wrap: break-word;
       box-sizing: border-box;
       z-index: 2;
-      // border: 5px solid $purple-1;
       overflow-y: auto;
       scrollbar-width: none;
       -ms-overflow-style: none;
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
-
-      // .scroll-container {
-      //   height: 112px;
-      // padding-bottom: 4px;
-      // border: 4px solid $purple-1;
-      // scroll-padding-bottom: 6px;
 
       .tooltip-emoji {
         width: 30px;
@@ -358,18 +304,26 @@
       }
 
       .tooltip-names {
-        @include text-style(18px, 700, $white);
+        @include text-style(15px, 600, $white);
         text-align: center;
         line-height: 130%;
       }
 
       .tooltip-text {
-        @include text-style(16px, 400, $white);
+        @include text-style(15px, 400, $white);
         text-align: center;
         line-height: 160%;
       }
-      // }
     }
+
+    &.last-in-row .bottom-emoji-tooltip {
+      transform: translateX(-35%);
+    }
+
+    // &.tooltip-flip .bottom-emoji-tooltip {
+    //   left: auto;
+    //   right: 0;
+    // }
   }
 
   .reduce-gap {

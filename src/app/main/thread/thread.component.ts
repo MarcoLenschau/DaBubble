@@ -1,5 +1,14 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  Input,
+  EventEmitter,
+  Output,
+  AfterViewInit,
+  AfterViewChecked,
+  ElementRef,
+  HostListener,
+} from '@angular/core';
 import { ThreadMessage } from '../../models/thread-message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,13 +21,119 @@ import { User } from '../../models/user.model';
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
 })
-export class ThreadComponent {
+export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
   tooltipText = 'hat';
+  private marked = false;
 
   showThread = true;
   emojiMenuOpen: boolean[] = [];
+
+  @Input() starterMessage?: ThreadMessage;
+  @Input() userId?: string;
+
+  @Output() showThreadChange = new EventEmitter<boolean>();
+
+  emojis: Emoji[] = EMOJIS;
+
+  constructor(private dialog: MatDialog) {}
+
+  // ************************************************************************************************* nicht löschen
+  // this.messageService.getMessages().subscribe((msgs) => {
+  //   this.messages = msgs;
+  //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
+  // });
+
+  openUserDialog(userId?: string): void {
+    if (!userId) return;
+    const user = this.getUserById(userId);
+    if (user) {
+      this.dialog.open(DialogUserDetailsComponent, {
+        data: user,
+      });
+    }
+  }
+
+  getUserById(userId: string): User | undefined {
+    return this.users.find((user) => user.id === userId);
+  }
+
+  closeThread() {
+    this.showThreadChange.emit(false);
+  }
+
+  setHoverState(index: number | null) {
+    this.hoveredIndex = index;
+
+    if (index === null) {
+      this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
+    }
+  }
+
+  setTooltipHoveredState(index: number | null) {
+    this.tooltipHoveredIndex = index;
+  }
+
+  closeEmojiRow(event: MouseEvent): void {
+    this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
+  }
+
+  formatTime(timestamp: number): string {
+    const date = new Date(timestamp);
+    const h = date.getHours().toString().padStart(2, '0');
+    const m = date.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m} Uhr`;
+  }
+  // ************************************************************************************************* nicht löschen
+  // get visibleMessages(): ThreadMessage[] {
+  //muss erst umgesetzt werden
+  // return this.messages.filter(
+  //   (msg) => msg.privateWithSelf === true || msg.public === true
+  // );
+  // }
+  // this.threadMessage = new ThreadMessage(activeThreadData);
+
+  getEmojiByName(name: string): Emoji | undefined {
+    return this.emojis.find((e) => e.name === name);
+  }
+
+  toggleEmojiMenu(index: number): void {
+    this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
+  }
+
+  getUserNames(userIds: string[]): string[] {
+    if (!this.users) return [];
+
+    const names = this.users
+      .filter(
+        (u): u is User => typeof u.id === 'string' && userIds.includes(u.id)
+      )
+      .map((u) => this.getDisplayName(u));
+
+    return this.moveCurrentUserToEnd(names);
+  }
+
+  moveCurrentUserToEnd(names: string[]): string[] {
+    const normalNames = names.filter((name) => name !== 'Du');
+    const nameIsCurrentUser = names.includes('Du') ? ['Du'] : [];
+    return [...normalNames, ...nameIsCurrentUser];
+  }
+
+  getDisplayName(user: User): string {
+    return user.id === this.currentUser.id ? 'Du' : user.name;
+  }
+
+  formatUserNames(userIds: string[]): string {
+    const names = this.getUserNames(userIds);
+    if (names.length === 0) return '';
+    if (names.length === 1) {
+      this.tooltipText = 'hat';
+      return names[0];
+    }
+    this.tooltipText = 'haben';
+    return names.slice(0, -1).join(', ') + ' und ' + names[names.length - 1];
+  }
 
   users: User[] = [
     {
@@ -66,117 +181,6 @@ export class ThreadComponent {
     img: 'frederik.jpg',
   };
 
-  @Input() starterMessage?: ThreadMessage;
-  @Input() userId?: string;
-
-  @Output() showThreadChange = new EventEmitter<boolean>();
-
-  emojis: Emoji[] = EMOJIS;
-
-  constructor(private dialog: MatDialog) {}
-
-  // this.messageService.getMessages().subscribe((msgs) => {
-  //   this.messages = msgs;
-  //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
-  // });
-
-  openUserDialog(userId?: string): void {
-    if (!userId) return;
-    const user = this.getUserById(userId);
-    if (user) {
-      this.dialog.open(DialogUserDetailsComponent, {
-        data: user,
-      });
-    }
-  }
-
-  getUserById(userId: string): User | undefined {
-    return this.users.find((user) => user.id === userId);
-  }
-
-  closeThread() {
-    this.showThreadChange.emit(false);
-  }
-
-  // openUserDialog(msg: ThreadMessage): void {
-  //   this.dialog.open(DialogUserDetailsComponent, {
-  //     data: { name: msg.name, userId: msg.userId },
-  //   });
-  // }
-
-  setHoverState(index: number | null) {
-    this.hoveredIndex = index;
-
-    if (index === null) {
-      this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
-    }
-  }
-
-  setTooltipHoveredState(index: number | null) {
-    this.tooltipHoveredIndex = index;
-  }
-
-  closeEmojiRow(event: MouseEvent): void {
-    this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
-  }
-
-  formatTime(timestamp: number): string {
-    const date = new Date(timestamp);
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
-    return `${h}:${m} Uhr`;
-  }
-
-  // get visibleMessages(): ThreadMessage[] {
-  //muss erst umgesetzt werden
-  // return this.messages.filter(
-  //   (msg) => msg.privateWithSelf === true || msg.public === true
-  // );
-  // }
-
-  // this.threadMessage = new ThreadMessage(activeThreadData);
-
-  getEmojiByName(name: string): Emoji | undefined {
-    return this.emojis.find((e) => e.name === name);
-  }
-
-  toggleEmojiMenu(index: number): void {
-    this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
-  }
-
-  getUserNames(userIds: string[]): string[] {
-    if (!this.users) return [];
-
-    const names = this.users
-      .filter(
-        (u): u is User => typeof u.id === 'string' && userIds.includes(u.id)
-      )
-      .map((u) => this.getDisplayName(u));
-
-    return this.moveCurrentUserToEnd(names);
-  }
-
-  moveCurrentUserToEnd(names: string[]): string[] {
-    const normalNames = names.filter((name) => name !== 'Du');
-    const nameIsCurrentUser = names.includes('Du') ? ['Du'] : [];
-    return [...normalNames, ...nameIsCurrentUser];
-  }
-
-  getDisplayName(user: User): string {
-    return user.id === this.currentUser.id ? 'Du' : user.name;
-  }
-
-  formatUserNames(userIds: string[]): string {
-    const names = this.getUserNames(userIds);
-    if (names.length === 0) return '';
-    if (names.length === 1) {
-      this.tooltipText = 'hat';
-      return names[0];
-    }
-    this.tooltipText = 'haben';
-    return names.slice(0, -1).join(', ') + ' und ' + names[names.length - 1];
-  }
-
   messages: ThreadMessage[] = [
     {
       id: 'msg1',
@@ -216,8 +220,16 @@ export class ThreadComponent {
       public: true,
       privateWithSelf: false,
       reactions: [
-        { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
         { emojiName: 'emoji-rocket', userIds: ['user3'] },
+        { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'check-mark', userIds: ['user3'] },
+        { emojiName: 'hands-up', userIds: ['user3'] },
+        { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
+        { emojiName: 'emoji-rocket', userIds: ['user3'] },
+        { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'check-mark', userIds: ['user3'] },
+        { emojiName: 'hands-up', userIds: ['user3'] },
       ],
     },
     {
@@ -277,7 +289,63 @@ export class ThreadComponent {
       userId: 'user4',
       public: true,
       privateWithSelf: false,
-      reactions: [],
+      reactions: [
+        { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
+        { emojiName: 'emoji-rocket', userIds: ['user3'] },
+        { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+        { emojiName: 'check-mark', userIds: ['user3'] },
+        { emojiName: 'hands-up', userIds: ['user3'] },
+      ],
     },
   ];
+
+  ngAfterViewInit() {
+    this.markLastInRow();
+    this.marked = true;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.markLastInRow();
+  }
+
+  ngAfterViewChecked() {
+    if (!this.marked) {
+      this.markLastInRow();
+      this.marked = true;
+    }
+  }
+
+  markLastInRow() {
+    const wrappers: HTMLElement[] = Array.from(
+      document.querySelectorAll(
+        '.reactions.reactions-left-aligned .bottom-emoji-wrapper'
+      )
+    );
+    if (!wrappers.length) return;
+
+    wrappers.forEach((w) => w.classList.remove('last-in-row'));
+
+    const rowsMap = new Map<number, HTMLElement[]>();
+    wrappers.forEach((el) => {
+      const top = Math.round(el.getBoundingClientRect().top);
+      if (!rowsMap.has(top)) rowsMap.set(top, []);
+      rowsMap.get(top)!.push(el);
+    });
+
+    rowsMap.forEach((rowElements) => {
+      if (rowElements.length < 4) return;
+      let lastEl = rowElements[0];
+      let maxRight = lastEl.getBoundingClientRect().right;
+
+      for (const el of rowElements) {
+        const right = el.getBoundingClientRect().right;
+        if (right > maxRight) {
+          maxRight = right;
+          lastEl = el;
+        }
+      }
+      lastEl.classList.add('last-in-row');
+    });
+  }
 }
