@@ -1,5 +1,6 @@
 @import "../../shared/styles/color.scss";
 @import "../../shared/styles/mix-in.scss";
+@import "../../shared/styles/flexbox.scss";
 
 .main-div {
     position: fixed;
@@ -15,6 +16,9 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    >a {
+        padding: 0px 35px;
+    }
 }
 
 .profile {
@@ -22,11 +26,24 @@
 }
 
 .user-image-container {
-    display: flex;
-    justify-content: center;
+    @include dFlex($ai: none);
     >img {
         height: 140px;
         width: 140px;
         border-radius: 82px;
     }
+}
+
+.status {
+    @include dFlex($jc: none, $g: 12px);
+    >div {
+        height: 16px;
+        width: 16px;
+        border-radius: 10px;
+        background-color: $online-green;
+    }
+}
+
+.email {
+    @include dFlex($jc: none, $g: 12px);
 }
