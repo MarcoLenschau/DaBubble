@@ -1,3 +1,6 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
 nav {
     background-color: #FFFFFF;
     width: 366px;
@@ -93,39 +96,55 @@ nav {
     flex-direction: column;
     gap: 13px;
     margin-top: 16px;
-
-    >.profile-user {
-        display: flex;
-        gap: 18px;
-        padding-left: 42px;
-
-        >.profile-icon {
-            position: relative;
-
-            >.profile-pic {
-                width: 50px;
-                height: 50px;
-                border-radius: 30px;
-            }
-
-            >.profile-online {
-                position: absolute;
-                bottom: 8px;
-                left: 36px;
-            }
-        }
-
-    }
 }
 
 .profile-user {
     display: flex;
+    padding: 4px 14px;
     gap: 18px;
-    padding-left: 42px;
+    border-radius: 35px;
+    align-items: center;    
+    transition: background-color 0.2s, color 0.2s;
+    
 
-    >img {
+
+
+    &:hover {
+        background-color: $grey;
+        cursor: pointer;
+    }
+
+    &.active {
+        background-color: $grey;
+        color: $purple-3;
+        font-weight: 600;
+    }
+
+}
+
+.profile-icon {
+    position: relative;
+     margin-left: 8px;
+
+    >.profile-pic {
         width: 50px;
         height: 50px;
         border-radius: 30px;
     }
+
+    >.profile-online {
+        position: absolute;
+        bottom: 8px;
+        left: 36px;
+    }
+}
+
+.channel-title-arrow:hover,
+.message-title-arrow:hover {
+    cursor: pointer;
+}
+
+.channel-title-arrow:hover h2,
+.message-title-arrow:hover h2 {
+    color: $purple-3;
 }
