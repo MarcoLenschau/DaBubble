@@ -1,0 +1,22 @@
+@import "../shared/styles/color.scss";
+@import "../shared/styles/mix-in.scss";
+
+button {
+    height: 35px;
+    width: 100px;
+    border: 0;
+    border-radius: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}  
+
+.primary {
+    background-color: $blue;
+    color: $white;
+}
+
+.secondary {
+    background-color: $white;
+    color: $blue;
+    border: 1px $blue solid;
+}

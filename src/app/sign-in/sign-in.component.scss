@@ -30,21 +30,4 @@
 
 .button-container {
     @include dFlex($ai: none, $g: 24px);
-    >button {
-        height: 35px;
-        width: 100px;
-        border: 0;
-        border-radius: 24px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    :first-child {
-        background-color: $blue;
-        color: $white;
-    }
-    :last-child {
-        background-color: $white;
-        color: $blue;
-        border: 1px $blue solid;
-    }
 }

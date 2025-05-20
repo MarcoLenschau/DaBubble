@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { InputComponent } from '../input/input.component';
 import { RouterService } from '../services/router.service';
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [InputComponent],
+  imports: [InputComponent, ButtonComponent],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss'
 })
