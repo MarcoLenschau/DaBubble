@@ -122,8 +122,8 @@
             <div
               *ngFor="let reaction of msg.reactions; let j = index"
               class="bottom-emoji-wrapper"
-              (mouseenter)="setTooltipHoveredState(j)"
-              (mouseleave)="setTooltipHoveredState(null)"
+              (mouseenter)="setTooltipHoveredState(j, reaction.userIds)"
+              (mouseleave)="setTooltipHoveredState(null, null)"
             >
               <img
                 class="bottom-emojis"
@@ -144,7 +144,7 @@
                 />
                 <div>
                   <p class="tooltip-names">
-                    {{ formatUserNames(reaction.userIds) }}
+                    {{ formattedUserNames }}
                   </p>
                   <p class="tooltip-text">{{ tooltipText }} reagiert</p>
                 </div>

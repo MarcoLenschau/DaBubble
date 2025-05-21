@@ -1,4 +1,4 @@
-export class ThreadMessage {
+export class Message {
   id: string = '';
   name: string = '';
   timestamp: number = Date.now();
@@ -10,7 +10,7 @@ export class ThreadMessage {
   public: boolean = true;
   privateWithSelf: boolean = false;
 
-  constructor(data?: Partial<ThreadMessage>) {
+  constructor(data?: Partial<Message>) {
     if (data) {
       this.id = data.id ?? this.id;
       this.name = data.name ?? this.name;
