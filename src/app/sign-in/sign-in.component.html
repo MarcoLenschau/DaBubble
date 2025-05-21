@@ -15,8 +15,8 @@
             <span>Anmelden mit Google</span>
         </div>
         <div class="button-container">
-            <app-button [text]="'Anmelden'" [color]="'primary'"></app-button>
-            <app-button [text]="'Gäste Login'" [color]="'secondary'" [switchTo]="'/message'"></app-button>
+            <app-button [text]="'Anmelden'" [color]="'primary'" (clicked)="userLogIn();"></app-button>
+            <app-button [text]="'Gäste Login'" [color]="'secondary'" (clicked)="router.switchRoute('/message');"></app-button>
         </div>
     </div>
 </div>

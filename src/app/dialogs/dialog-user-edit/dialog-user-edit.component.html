@@ -1,7 +1,7 @@
 <div class="main-div">
     <div class="d_flex_s_b">
         <h3>Dein Profil bearbeiten</h3>
-        <button>X</button>
+        <button (click)="dialogClose();">X</button>
     </div>
     <img src="{{user.img}}" alt="">
     <div>
@@ -10,7 +10,7 @@
     </div>
     <app-input [placeholder]="'Dein Name hier'" [img]="'none'" [value]="user.name"></app-input>
     <div class="action-buttons">
-        <app-button [text]="'Abrechen'" [color]="'secondary'" (click)="dialogClose();"></app-button>
-        <app-button [text]="'Speichern'" [color]="'primary'"></app-button>
+        <app-button [text]="'Abrechen'" [color]="'secondary'" (clicked)="dialogClose();"></app-button>
+        <app-button [text]="'Speichern'" [color]="'primary'" (clicked)="userSave();"></app-button>
     </div>
 </div>

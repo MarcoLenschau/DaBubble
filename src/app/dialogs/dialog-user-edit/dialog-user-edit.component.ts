@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { InputComponent } from '../../input/input.component';
 import { ButtonComponent } from '../../button/button.component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -12,7 +13,11 @@ import { ButtonComponent } from '../../button/button.component';
 export class DialogUserEditComponent {
   @Input() user: any = {};
 
-  constructor() {}
+  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>) {}
 
-  dialogClose() {}
+  dialogClose() {
+    this.dialogRef.close();
+  }
+
+  userSave() {}
 }

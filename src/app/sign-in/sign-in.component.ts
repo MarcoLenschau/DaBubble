@@ -12,4 +12,6 @@ import { ButtonComponent } from '../button/button.component';
 export class SignInComponent {
 
   constructor(public router: RouterService) {}
+
+  userLogIn() {}
 }
