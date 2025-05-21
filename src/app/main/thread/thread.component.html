@@ -74,12 +74,20 @@
                 (click)="$event.stopPropagation()"
               >
                 <ng-container *ngIf="emojiMenuOpen[i]">
-                  <img
+                  <!-- <img
                     *ngFor="let emoji of emojis"
                     [src]="emoji.src"
                     [alt]="emoji.name"
                     class="emoji-icon top-emojis"
-                  />
+                  /> -->
+                  <span
+                    *ngFor="let emoji of emojis"
+                    class="emoji-icon top-emojis"
+                    (click)="addEmojiToMessage(emoji.unicode)"
+                    title="{{ emoji.name }}"
+                  >
+                    {{ emoji.unicode }}
+                  </span>
                 </ng-container>
                 <div
                   class="toggle-icon"
@@ -134,11 +142,15 @@
               (mouseenter)="setTooltipHoveredState(j, reaction.userIds)"
               (mouseleave)="setTooltipHoveredState(null, null)"
             >
-              <img
+              <span class="bottom-emoji">{{
+                getEmojiByName(reaction.emojiName)?.unicode
+              }}</span>
+
+              <!-- <img
                 class="bottom-emojis"
                 [src]="getEmojiByName(reaction.emojiName)?.src"
                 alt="Emoji {{ reaction.emojiName }}"
-              />
+              /> -->
 
               <span class="count">{{ reaction.userIds.length }}</span>
 
@@ -146,11 +158,15 @@
                 *ngIf="hoveredIndex === i && tooltipHoveredIndex == j"
                 class="bottom-emoji-tooltip"
               >
-                <img
+                <span class="tooltip-emoji">{{
+                  getEmojiByName(reaction.emojiName)?.unicode
+                }}</span>
+
+                <!-- <img
                   class="tooltip-emoji"
-                  [src]="getEmojiByName(reaction.emojiName)?.src"
-                  alt="Emoji {{ reaction.emojiName }}"
-                />
+                   [src]="getEmojiByName(reaction.emojiName)?.src"
+                  alt="Emoji {{ reaction.emojiName }}" 
+                /> -->
                 <div>
                   <p class="tooltip-names">
                     {{ formattedUserNames }}
@@ -183,7 +199,12 @@
     </div>
 
     <div class="thread-textarea">
-      <textarea name="" id="" placeholder="Antworten..."></textarea>
+      <textarea
+        name=""
+        id=""
+        placeholder="Antworten..."
+        [(ngModel)]="textareaContent"
+      ></textarea>
     </div>
   </div>
 </div>

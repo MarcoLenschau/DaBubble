@@ -16,6 +16,20 @@ export function getEmojiByName(
   return emojis.find((e) => e.name === name);
 }
 
+export function getEmojiByUnicode(
+  emojis: Emoji[],
+  unicode: string
+): Emoji | undefined {
+  return emojis.find((e) => e.unicode === unicode);
+}
+
+export function addEmojiToMessage(
+  textareaContent: string,
+  unicodeEmoji: string
+): string {
+  return textareaContent + unicodeEmoji;
+}
+
 export function getUserById(users: User[], userId: string): User | undefined {
   return users.find((user) => user.id === userId);
 }
@@ -127,7 +141,7 @@ export const messages: Message[] = [
     userId: 'user1',
     threadId: '',
     reactions: [
-      { emojiName: 'emoji-thumb', userIds: ['user1', 'user4', 'user6'] },
+      { emojiName: 'thumbs-up', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
     ],
   },
@@ -148,14 +162,14 @@ export const messages: Message[] = [
     userId: 'user3',
     threadId: '',
     reactions: [
-      { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
-      { emojiName: 'emoji-rocket', userIds: ['user3'] },
-      { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+      { emojiName: 'rocket', userIds: ['user3'] },
+      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
       { emojiName: 'hands-up', userIds: ['user3'] },
-      { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
-      { emojiName: 'emoji-rocket', userIds: ['user3'] },
-      { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+      { emojiName: 'rocket', userIds: ['user3'] },
+      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
       { emojiName: 'hands-up', userIds: ['user3'] },
     ],
@@ -169,7 +183,7 @@ export const messages: Message[] = [
     threadId: '',
     reactions: [
       {
-        emojiName: 'emoji-thumb',
+        emojiName: 'thumbs-up',
         userIds: ['user1', 'user3', 'user4', 'user6'],
       },
       { emojiName: 'hands-up', userIds: ['user3'] },
@@ -183,8 +197,8 @@ export const messages: Message[] = [
     userId: 'user5',
     threadId: '',
     reactions: [
-      { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
-      { emojiName: 'emoji-rocket', userIds: ['user3'] },
+      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+      { emojiName: 'rocket', userIds: ['user3'] },
     ],
   },
   {
@@ -206,9 +220,9 @@ export const messages: Message[] = [
     userId: 'user4',
     threadId: '',
     reactions: [
-      { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
-      { emojiName: 'emoji-rocket', userIds: ['user3'] },
-      { emojiName: 'emoji-nerd', userIds: ['user1', 'user4', 'user6'] },
+      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+      { emojiName: 'rocket', userIds: ['user3'] },
+      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
       { emojiName: 'hands-up', userIds: ['user3'] },
     ],

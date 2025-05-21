@@ -221,13 +221,30 @@
   }
 }
 
+// .emoji-icon {
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 50%;
+//   background-color: $white;
+//   padding: 8px;
+//   cursor: pointer;
+//   @include transition();
+// }
+
 .emoji-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background-color: $white;
   padding: 8px;
   cursor: pointer;
+  font-size: 24px;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji", sans-serif;
+  user-select: none; /* Verhindert Markieren des Emojis beim Klicken */
   @include transition();
 }
 
@@ -239,11 +256,6 @@
   @include hover-image-swap(37px, 37px);
   border-radius: 50%;
   background-color: $white;
-}
-
-.bottom-emojis {
-  width: 24px;
-  height: 24px;
 }
 
 .toggle-icon {
@@ -266,7 +278,7 @@
   }
 
   .bottom-emoji-wrapper {
-    padding: 5px 10px;
+    padding: 3px 10px 5px;
     border: 1px solid $light-purple;
     background-color: $white;
     width: fit-content;
@@ -275,6 +287,20 @@
 
     @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
     cursor: pointer;
+
+    .bottom-emoji {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: $white;
+      font-size: 24px;
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji", sans-serif;
+      user-select: none;
+    }
 
     .count {
       @include text-style(16px, 400, $black);
@@ -298,9 +324,20 @@
       -ms-overflow-style: none;
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
 
+      // .tooltip-emoji {
+      //   width: 30px;
+      //   height: 30px;
+      // }
+
       .tooltip-emoji {
-        width: 30px;
-        height: 30px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji", sans-serif;
+        display: inline-block;
+        line-height: 1;
       }
 
       .tooltip-names {

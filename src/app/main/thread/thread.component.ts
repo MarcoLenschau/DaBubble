@@ -8,6 +8,7 @@ import {
   AfterViewChecked,
   HostListener,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Message } from '../../models/message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,6 +20,8 @@ import {
   messages,
   formatTime,
   getEmojiByName,
+  getEmojiByUnicode,
+  addEmojiToMessage,
   getUserById,
   getUserNames,
   formatUserNames,
@@ -28,7 +31,7 @@ import {
 
 @Component({
   selector: 'app-thread',
-  imports: [NgClass, CommonModule],
+  imports: [NgClass, CommonModule, FormsModule],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
 })
@@ -47,6 +50,8 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   tooltipHoveredIndex: number | null = null;
   formattedUserNames: string = '';
   tooltipText: string = '';
+  // TODO ************************************************************************************************* nicht löschen
+  textareaContent: string = ''; // Emojis in Unicode umwandeln?
   private marked = false;
 
   constructor(private dialog: MatDialog) {}
@@ -58,6 +63,14 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   formatUserNames = (userIds: string[]) =>
     formatUserNames(this.users, userIds, this.currentUser);
   getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
+  getEmojiByUnicode = (unicode: string) =>
+    getEmojiByUnicode(this.emojis, unicode);
+  addEmojiToMessage = (unicodeEmoji: string) => {
+    this.textareaContent = addEmojiToMessage(
+      this.textareaContent,
+      unicodeEmoji
+    );
+  };
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
 
@@ -100,6 +113,31 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   closeEmojiRow(event: MouseEvent): void {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
+
+  clearTextarea() {
+    this.textareaContent = '';
+  }
+
+  // postMessage() {
+  //   let message: Message = {
+  //     id: string = '';
+  // name: string = '';
+  // timestamp: number = Date.now();
+  // text: this.textareaContent;
+  // userId: string = '';
+  // threadId?: string;
+  // reactions: any[] = [];
+  //   }
+  //   let note: Note = {
+  //     type: 'note',
+  //     title: this.title,
+  //     content: this.description,
+  //     marked: false,
+  //   };
+  //   this.noteService.addNote(note, 'notes');
+
+  //   this.closeDialog();
+  // }
 
   // TODO ************************************************************************************************* nicht löschen
   // this.messageService.getMessages().subscribe((msgs) => {
