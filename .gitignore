@@ -47,3 +47,7 @@ push.sh
 push.dev.bat
 update-dev-with-main.bat
 *bat
+# Firebase
+.firebase
+*-debug.log
+.runtimeconfig.json
