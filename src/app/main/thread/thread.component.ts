@@ -22,6 +22,8 @@ import {
   getUserById,
   getUserNames,
   formatUserNames,
+  isOwnMessage,
+  trackByMessageId,
 } from './../shared-functions';
 
 @Component({
@@ -56,6 +58,8 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   formatUserNames = (userIds: string[]) =>
     formatUserNames(this.users, userIds, this.currentUser);
   getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
+  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
+  trackByMessageId = trackByMessageId;
 
   openUserDialog(userId?: string): void {
     if (!userId) return;

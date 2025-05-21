@@ -6,25 +6,25 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-main',
-  imports: [ DevspaceComponent, MessageComponent, ThreadComponent, CommonModule ],
+  imports: [DevspaceComponent, MessageComponent, ThreadComponent, CommonModule],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
 export class MainComponent {
   showThread = true;
 
-  // starterMessage?: ThreadMessage;
+  // starterMessage?: Message;
   // userId?: string;
-  // onThreadStart(event: { starterMessage: ThreadMessage; userId: string }) {
+  // onThreadStart(event: { starterMessage: Message; userId: string }) {
   //   this.starterMessage = event.starterMessage;
   //   this.userId = event.userId;
   // }
 }
 
 // message.component.ts
-// @Output() threadStart = new EventEmitter<{starterMessage: ThreadMessage, userId: string}>();
+// @Output() threadStart = new EventEmitter<{starterMessage: Message, userId: string}>();
 
-// onMessageClick(msg: ThreadMessage) {
+// onMessageClick(msg: Message) {
 //   const currentUserId = 'xyz'; // z.B. aus Auth-Service
 //   this.threadStart.emit({ starterMessage: msg, userId: currentUserId });
 // }

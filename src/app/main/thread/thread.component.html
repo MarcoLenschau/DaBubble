@@ -15,12 +15,14 @@
     </div>
 
     <div class="thread-messages">
-      <ng-container *ngFor="let msg of messages; let i = index">
+      <ng-container
+        *ngFor="let msg of messages; let i = index; trackBy: trackByMessageId"
+      >
         <div
           class="message-wrapper"
           [ngClass]="{
-              'hover-thread-message not-own-message': !msg.isSelf,
-              'hover-own-message': msg.isSelf,
+              'hover-thread-message not-own-message': !isOwnMessage(msg),
+              'hover-own-message': isOwnMessage(msg),
               'hover-message-wrapper': hoveredIndex === i,
                           }"
           (mouseenter)="setHoverState(i)"
@@ -30,26 +32,33 @@
           <div
             class="message-flex-box"
             [ngClass]="{
-              'thread-message': !msg.isSelf,
-              'own-message': msg.isSelf,
+              'thread-message': !isOwnMessage(msg),
+              'own-message': isOwnMessage(msg),
               
                           }"
           >
-            <img class="message-img" src="" alt="Profilbild {{ msg.name }}" />
+            <img
+              class="message-img"
+              [src]="
+                getUserById(msg.userId)?.img ??
+                './assets/img/profilepic/frederik.png'
+              "
+              alt="Profilbild {{ msg.name }}"
+            />
             <div
               class="message-body"
-              [ngClass]="{ 'own-message-body': msg.isSelf }"
+              [ngClass]="{ 'own-message-body': isOwnMessage(msg) }"
             >
               <div
                 class="message-body-header"
-                [ngClass]="{ 'own-message-body-header': msg.isSelf }"
+                [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }"
               >
                 <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
                 <p>{{ formatTime(msg.timestamp) }}</p>
               </div>
               <p
                 class="thread-message-text"
-                [ngClass]="{ 'own-message-text': msg.isSelf }"
+                [ngClass]="{ 'own-message-text': isOwnMessage(msg) }"
               >
                 {{ msg.text }}
               </p>
@@ -58,8 +67,8 @@
               ><div
                 class="emoji-row"
                 [ngClass]="{
-                  'emoji-row-left-aligned': msg.isSelf,
-                  'emoji-row-right-aligned': !msg.isSelf,
+                  'emoji-row-left-aligned': isOwnMessage(msg),
+                  'emoji-row-right-aligned': !isOwnMessage(msg),
                   'make-visible': hoveredIndex === i
                 }"
                 (click)="$event.stopPropagation()"
@@ -97,7 +106,7 @@
                       class="hover"
                     /></div
                 ></ng-container>
-                <ng-container *ngIf="msg.isSelf">
+                <ng-container *ngIf="isOwnMessage(msg)">
                   <div class="toggle-icon">
                     <img
                       src="assets/img/message-icons/option.svg"
@@ -115,8 +124,8 @@
             class="reactions"
             *ngIf="msg.reactions?.length"
             [ngClass]="{
-            'reactions-right-aligned': msg.isSelf,
-            'reactions-left-aligned': !msg.isSelf,
+            'reactions-right-aligned': isOwnMessage(msg),
+            'reactions-left-aligned': !isOwnMessage(msg),
                       }"
           >
             <div

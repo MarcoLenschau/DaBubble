@@ -61,66 +61,71 @@ export function formatUserNames(
   return { text, verb: 'haben' };
 }
 
-//************************************************************ */
+export function isOwnMessage(msg: Message, currentUserId: string): boolean {
+  return msg.userId === currentUserId;
+}
+
+export function trackByMessageId(index: number, msg: Message): string {
+  return msg.id;
+}
+
+// Später löschen ************************************************************ */
 // Dummy-Daten:
 
 export const currentUser: User = {
   id: 'user4',
   name: 'Frederik Beck',
   email: 'frederik@example.com',
-  img: 'frederik.jpg',
+  img: './assets/img/profilepic/frederik.png',
 };
 
 export const users: User[] = [
   {
     id: 'user1',
-    name: 'Noah Braun',
-    email: 'noah@example.com',
-    img: 'noah.jpg',
+    name: 'Elise Roth',
+    email: 'elise@example.com',
+    img: './assets/img/profilepic/elise.png',
   },
   {
     id: 'user2',
     name: 'Sofia Müller',
     email: 'sofia@example.com',
-    img: 'sofia.jpg',
+    img: './assets/img/profilepic/sofia.png',
   },
   {
     id: 'user3',
-    name: 'Anna Müller',
-    email: 'anna@example.com',
-    img: 'anna.jpg',
+    name: 'Noah Braun',
+    email: 'noah@example.com',
+    img: './assets/img/profilepic/noah.png',
   },
   {
     id: 'user4',
     name: 'Frederik Beck',
     email: 'frederik@example.com',
-    img: 'frederik.jpg',
+    img: './assets/img/profilepic/frederik.png',
   },
   {
     id: 'user5',
-    name: 'Lena Schmidt',
-    email: 'lena@example.com',
-    img: 'lena.jpg',
+    name: 'Elias Neumann',
+    email: 'elias@example.com',
+    img: './assets/img/profilepic/elias.png',
   },
   {
     id: 'user6',
-    name: 'Martin Kurz',
-    email: 'martin@example.com',
-    img: 'martin.jpg',
+    name: 'Steffen Hoffmann',
+    email: 'steffen@example.com',
+    img: './assets/img/profilepic/steffen.png',
   },
 ];
 
 export const messages: Message[] = [
   {
     id: 'msg1',
-    name: 'Noah Braun',
+    name: 'Elise Roth',
     timestamp: 1684411440000,
     text: 'Hallo zusammen, wie läuft das aktuelle Projekt bei euch?',
-    isSelf: false,
-    isThreadStarter: true,
     userId: 'user1',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       { emojiName: 'emoji-thumb', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
@@ -131,23 +136,17 @@ export const messages: Message[] = [
     name: 'Sofia Müller',
     timestamp: 1684413060000,
     text: 'Bei uns läuft alles gut.',
-    isSelf: false,
-    isThreadStarter: false,
     userId: 'user2',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [{ emojiName: 'hands-up', userIds: ['user1', 'user6'] }],
   },
   {
     id: 'msg3',
-    name: 'Anna Müller',
+    name: 'Noah Braun',
     timestamp: 1684413420000,
     text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    isSelf: false,
-    isThreadStarter: false,
     userId: 'user3',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
       { emojiName: 'emoji-rocket', userIds: ['user3'] },
@@ -166,11 +165,8 @@ export const messages: Message[] = [
     name: 'Frederik Beck',
     timestamp: 1684413840000,
     text: 'Ja genau.',
-    isSelf: true,
-    isThreadStarter: false,
     userId: 'user4',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       {
         emojiName: 'emoji-thumb',
@@ -181,14 +177,11 @@ export const messages: Message[] = [
   },
   {
     id: 'msg5',
-    name: 'Lena Schmidt',
+    name: 'Elias Neumann',
     timestamp: 1684414000000,
     text: 'Könntest du bitte die Dokumentation noch einmal überprüfen? Ich habe einige Fehler gefunden, besonders bei den API-Endpunkten.',
-    isSelf: false,
-    isThreadStarter: false,
     userId: 'user5',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
       { emojiName: 'emoji-rocket', userIds: ['user3'] },
@@ -196,14 +189,11 @@ export const messages: Message[] = [
   },
   {
     id: 'msg6',
-    name: 'Martin Kurz',
+    name: 'Steffen Hoffmann',
     timestamp: 1684414200000,
     text: 'Ich stimme Lena zu. Lorem ipsum.',
-    isSelf: false,
-    isThreadStarter: false,
     userId: 'user6',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       { emojiName: 'check-mark', userIds: ['user3', 'user4', 'user6'] },
     ],
@@ -213,11 +203,8 @@ export const messages: Message[] = [
     name: 'Frederik Beck',
     timestamp: 1684414264000,
     text: 'Lorem ipsum dolor, sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-    isSelf: true,
-    isThreadStarter: false,
     userId: 'user4',
-    public: true,
-    privateWithSelf: false,
+    threadId: '',
     reactions: [
       { emojiName: 'emoji-thumb', userIds: ['user4', 'user6'] },
       { emojiName: 'emoji-rocket', userIds: ['user3'] },

@@ -13,6 +13,7 @@ import { User } from '../../models/user.model';
 })
 export class DialogUserOptionsComponent {
   user: User = {
+    id: 'user0',
     name: 'Gast',
     email: 'gast@mail.com',
     img: './assets/img/profilepic/frederik.png',
