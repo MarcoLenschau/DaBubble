@@ -21,6 +21,7 @@ import {
   formatTime,
   getEmojiByName,
   getEmojiByUnicode,
+  addEmojiToTextarea,
   addEmojiToMessage,
   getUserById,
   getUserNames,
@@ -28,6 +29,7 @@ import {
   isOwnMessage,
   trackByMessageId,
 } from './../shared-functions';
+import { timestamp } from 'rxjs';
 
 @Component({
   selector: 'app-thread',
@@ -65,14 +67,26 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
   getEmojiByUnicode = (unicode: string) =>
     getEmojiByUnicode(this.emojis, unicode);
-  addEmojiToMessage = (unicodeEmoji: string) => {
-    this.textareaContent = addEmojiToMessage(
+  addEmojiToTextarea = (unicodeEmoji: string) => {
+    this.textareaContent = addEmojiToTextarea(
       this.textareaContent,
       unicodeEmoji
     );
   };
+  handleEmojiClick(emojiName: string, msg: Message) {
+    addEmojiToMessage(emojiName, msg, this.currentUser.id);
+  }
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
+
+  replyToMessage: Message | null = null;
+  setReplyToMessage(msg: Message) {
+    this.replyToMessage = msg;
+    console.log('Replying to Message' + msg.id + ' from ' + msg.name);
+  }
+  cancelReply() {
+    this.replyToMessage = null;
+  }
 
   openUserDialog(userId?: string): void {
     if (!userId) return;
@@ -116,28 +130,43 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
 
   clearTextarea() {
     this.textareaContent = '';
+    this.replyToMessage = null;
   }
 
-  // postMessage() {
-  //   let message: Message = {
-  //     id: string = '';
-  // name: string = '';
-  // timestamp: number = Date.now();
-  // text: this.textareaContent;
-  // userId: string = '';
-  // threadId?: string;
-  // reactions: any[] = [];
-  //   }
-  //   let note: Note = {
-  //     type: 'note',
-  //     title: this.title,
-  //     content: this.description,
-  //     marked: false,
-  //   };
-  //   this.noteService.addNote(note, 'notes');
+  // TODO ************************************************************************************************* nicht löschen
+  postMessage() {
+    const tempId =
+      this.currentUser.name +
+      '_' +
+      Date.now() +
+      '_' +
+      Math.floor(Math.random() * 1000);
 
-  //   this.closeDialog();
-  // }
+    let newMessage: Message = {
+      id: tempId,
+      name: currentUser.name,
+      timestamp: Date.now(),
+      text: this.textareaContent,
+      userId: this.currentUser.id,
+      threadId: this.replyToMessage?.id || '',
+      reactions: [],
+    };
+    this.messages.push(newMessage);
+    // this.messages.addMessage(newMessage, 'message-collection');
+
+    this.clearTextarea();
+  }
+
+  get isTextareaFilled(): boolean {
+    const textareaContent = this.textareaContent.trim();
+    if (!textareaContent || textareaContent.length === 0) return false;
+
+    return textareaContent.length >= 1 && textareaContent.length <= 500;
+  }
+
+  get isFormValid(): boolean {
+    return this.isTextareaFilled;
+  }
 
   // TODO ************************************************************************************************* nicht löschen
   // this.messageService.getMessages().subscribe((msgs) => {
@@ -146,7 +175,10 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   // });
 
   // TODO ************************************************************************************************* nicht löschen
-  // Reihenfolge der genutzten Emojis (2 letztgenutzte zuerst)
+  // Top-Emojis: Reihenfolge der genutzten Emojis (2 letztgenutzte zuerst); scrollbar?!
+  //   "Standard-Emojis sollten ✅  & 👍  sein,
+  // Maximale Anzahl der Emojis:-> Desktop: 20 Emojis max. sichtbar und hinzufügbar-> Mobil: 7 Emojis max. sichtbar + (falls mehr vorhanden sind) , als "8. Button", ein "13 mehr" Button anzeigen."
+  // Bottom-Emojis: angezeigte Zahl begrenzen
 
   // TODO ************************************************************************************************* nicht löschen
   // get visibleMessages(): Message[] {

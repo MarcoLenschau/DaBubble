@@ -1,3 +1,5 @@
+import { Reaction } from '../interfaces/reaction.interface';
+
 export class Message {
   id: string = '';
   name: string = '';
@@ -5,7 +7,10 @@ export class Message {
   text: string = '';
   userId: string = '';
   threadId?: string;
-  reactions: any[] = [];
+  // channelId?: '...';
+  reactions: Reaction[] = [];
+  // isEdited?: boolean;
+  // replyTo?: string; // optional: ID einer anderen Nachricht
 
   constructor(data?: Partial<Message>) {
     if (data) {

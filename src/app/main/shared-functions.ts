@@ -1,4 +1,4 @@
-import { Emoji } from '../interfaces/emojis-interface';
+import { Emoji, EMOJIS } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 
@@ -23,11 +23,36 @@ export function getEmojiByUnicode(
   return emojis.find((e) => e.unicode === unicode);
 }
 
-export function addEmojiToMessage(
+export function addEmojiToTextarea(
   textareaContent: string,
   unicodeEmoji: string
 ): string {
   return textareaContent + unicodeEmoji;
+}
+
+export function addEmojiToMessage(
+  emojiName: string,
+  message: Message,
+  userId: string
+) {
+  let reaction = message.reactions.find((r) => r.emojiName === emojiName);
+
+  if (reaction) {
+    if (reaction.userIds.includes(userId)) {
+      reaction.userIds = reaction.userIds.filter((id) => id !== userId);
+
+      if (reaction.userIds.length === 0) {
+        message.reactions = message.reactions.filter((r) => r !== reaction);
+      }
+    } else {
+      reaction.userIds.push(userId);
+    }
+  } else {
+    message.reactions.push({
+      emojiName: emojiName,
+      userIds: [userId],
+    });
+  }
 }
 
 export function getUserById(users: User[], userId: string): User | undefined {

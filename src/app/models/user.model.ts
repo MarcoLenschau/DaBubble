@@ -3,4 +3,6 @@ export class User {
   name: string = '';
   email: string = '';
   img: string = '';
+  // status?: 'online' | 'offline';
+  // lastSeen?: number;
 }

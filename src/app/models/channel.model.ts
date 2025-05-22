@@ -2,10 +2,13 @@ import { Message } from './message.model';
 
 export class Channel {
   id: string = '';
-  name: string = '';
+  name: string = ''; // title
   description?: string;
   members: string[] = []; // userIds
   messages: Message[] = [];
+  // isPrivate?: boolean;
+  // createdAt?: number;
+  // createdBy?: string; // userId
 
   constructor(data?: Partial<Channel>) {
     if (data) {

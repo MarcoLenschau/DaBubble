@@ -83,7 +83,7 @@
                   <span
                     *ngFor="let emoji of emojis"
                     class="emoji-icon top-emojis"
-                    (click)="addEmojiToMessage(emoji.unicode)"
+                    (click)="handleEmojiClick(emoji.name, msg)"
                     title="{{ emoji.name }}"
                   >
                     {{ emoji.unicode }}
@@ -104,7 +104,7 @@
                 </div>
 
                 <ng-container *ngIf="emojiMenuOpen[i]"
-                  ><div class="toggle-icon">
+                  ><div class="toggle-icon" (click)="setReplyToMessage(msg)">
                     <img
                       src="assets/img/message-icons/answer.svg"
                       class="default"
@@ -205,6 +205,7 @@
         placeholder="Antworten..."
         [(ngModel)]="textareaContent"
       ></textarea>
+      <button (click)="postMessage()" [disabled]="!isFormValid">Senden</button>
     </div>
   </div>
 </div>
