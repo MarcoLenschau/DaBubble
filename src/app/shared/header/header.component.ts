@@ -15,7 +15,7 @@ import { User } from '../../models/user.model';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user$: Observable<any[]>
+  user$: Observable<any[]>;
   user: User = {
     id: "0",
     name: 'Gast',

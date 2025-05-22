@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FirebaseService } from '../../services/firebase.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-devspace',
@@ -15,6 +17,24 @@ export class DevspaceComponent {
   isMessageHovered: boolean = false;
 
   activeUser: string | null = null;
+  user$: Observable<any[]>;
+  users = [
+    { name: 'Frederik Beck (Du)', img: './assets/img/profilepic/frederik.png' },
+    { name: 'Sofia Müller', img: './assets/img/profilepic/sofia.png' },
+    { name: 'Noah Braun', img: './assets/img/profilepic/noah.png' },
+    { name: 'Elise Roth', img: './assets/img/profilepic/elise.png' },
+    { name: 'Elias Neumann', img: './assets/img/profilepic/elias.png' },
+    { name: 'Steffen Hoffmann', img: './assets/img/profilepic/steffen.png' },
+  ]
+
+  constructor(private firebase: FirebaseService) {
+    this.user$ = this.firebase.getColRef("users"); 
+      this.user$.forEach((users) => {
+        if (users.length > 0) {
+          this.users = users;
+        }
+    })
+  }
 
   toggleChannels() {
     this.isChannelOpen = !this.isChannelOpen;
@@ -53,14 +73,4 @@ export class DevspaceComponent {
   setActiveUser(name: string) {
     this.activeUser = name;
   }
-
-  users = [
-    { name: 'Frederik Beck (Du)', img: './assets/img/profilepic/frederik.png' },
-    { name: 'Sofia Müller', img: './assets/img/profilepic/sofia.png' },
-    { name: 'Noah Braun', img: './assets/img/profilepic/noah.png' },
-    { name: 'Elise Roth', img: './assets/img/profilepic/elise.png' },
-    { name: 'Elias Neumann', img: './assets/img/profilepic/elias.png' },
-    { name: 'Steffen Hoffmann', img: './assets/img/profilepic/steffen.png' },
-  ]
-
 }

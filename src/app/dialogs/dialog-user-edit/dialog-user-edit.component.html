@@ -3,7 +3,9 @@
         <h3>Dein Profil bearbeiten</h3>
         <button (click)="dialogClose();">X</button>
     </div>
-    <img src="{{user.img}}" alt="">
+    <div class="image-container">
+        <img src="{{user.img}}" alt="user-image">
+    </div>
     <div>
         <img src="./assets/img/account.svg" alt="account-icon">
         <span>Vollständiger Name</span>

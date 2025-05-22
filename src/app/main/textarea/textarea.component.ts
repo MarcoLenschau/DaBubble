@@ -10,14 +10,13 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./textarea.component.scss'],
 })
 export class TextareaComponent {
-
-onInput(event: Event): void {
-  const content = (event.target as HTMLElement).innerHTML;
-  this.textInput = content;
-}
-
   @Input() textInput: string = '';
   @Input() mainMessageBoxPadding: string = '2rem';
   @Input() toolbarWidth: string = '100%';
   @Input() placeholder: string = 'Nachricht an...';
+
+  onInput(event: Event): void {
+    const content = (event.target as HTMLElement).innerHTML;
+    this.textInput = content;
+  }
 }
