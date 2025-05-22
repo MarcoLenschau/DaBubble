@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { InputComponent } from '../input/input.component';
+import { InputComponent } from '../shared/input/input.component';
 import { RouterService } from '../services/router.service';
 
 @Component({

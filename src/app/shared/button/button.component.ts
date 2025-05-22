@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RouterService } from '../services/router.service';
+import { RouterService } from '../../services/router.service';
 
 @Component({
   selector: 'app-button',

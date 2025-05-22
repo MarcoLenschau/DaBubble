@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { InputComponent } from '../input/input.component';
+import { InputComponent } from '../shared/input/input.component';
 import { RouterService } from '../services/router.service';
-import { ButtonComponent } from '../button/button.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-sign-in',

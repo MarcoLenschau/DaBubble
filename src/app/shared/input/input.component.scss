@@ -1,4 +1,4 @@
-@import "../shared/styles/mix-in.scss";
+@import "../styles/mix-in.scss";
 
 div {
     @include dFlex($jc: none);
