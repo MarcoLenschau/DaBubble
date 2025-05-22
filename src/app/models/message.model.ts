@@ -11,6 +11,7 @@ export class Message {
   reactions: Reaction[] = [];
   // isEdited?: boolean;
   // replyTo?: string; // optional: ID einer anderen Nachricht
+  // reoplies - zum Anzeigen "1 Antwort" oder "2 Antworten"
 
   constructor(data?: Partial<Message>) {
     if (data) {
