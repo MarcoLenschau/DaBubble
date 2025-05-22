@@ -8,8 +8,8 @@
         <app-input [placeholder]="'Devspace durchsuchen'" [img]="'search.svg'" [reverse]="true" [height]="48"></app-input>
     </div>
     <div class="user-login-menu" *ngIf="router.isMainPage()">
-        <span>Frederic</span>
-        <img src="./assets/img/header/user-icons/profile.svg" alt="arrow-down">
+        <span>{{user.name}}</span>
+        <img class="user-image" [src]="user.img" alt="user-image">
         <img (click)="openDialog();" src="./assets/img/header/arrow-down.svg" alt="arrow-down">
     </div>
 </header>

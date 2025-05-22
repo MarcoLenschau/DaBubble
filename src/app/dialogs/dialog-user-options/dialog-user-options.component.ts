@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterService } from '../../services/router.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../models/user.model';
+import { FirebaseService } from '../../services/firebase.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-user-options',
@@ -12,18 +14,9 @@ import { User } from '../../models/user.model';
   styleUrl: './dialog-user-options.component.scss',
 })
 export class DialogUserOptionsComponent {
-  user: User = {
-    id: 'user0',
-    name: 'Gast',
-    email: 'gast@mail.com',
-    img: './assets/img/profilepic/frederik.png',
-  };
+  @Input() user: any = {};
 
-  constructor(
-    public router: RouterService,
-    private dialog: MatDialog,
-    private dialogRef: MatDialogRef<DialogUserOptionsComponent>
-  ) {}
+  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>) {}
 
   logOut() {
     this.router.switchRoute('');
