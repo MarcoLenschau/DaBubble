@@ -1,25 +1,16 @@
 import { CommonModule, NgClass } from '@angular/common';
-import {
-  Component,
-  Input,
-  EventEmitter,
-  Output,
-  AfterViewInit,
-  AfterViewChecked,
-  HostListener,
-} from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Message } from '../../models/message.model';
 import { TextareaComponent } from '../textarea/textarea.component';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
+
 import { EMOJIS, Emoji } from '../../interfaces/emojis-interface';
-import { Channel } from '../../models/channel.model';
+import { Message } from '../../models/message.model';
 import {
   users,
   currentUser,
   messages,
-  channels,
   formatTime,
   getEmojiByName,
   getEmojiByUnicode,
@@ -32,7 +23,6 @@ import {
   trackByMessageId,
   buildNewMessage,
 } from './../shared-functions';
-import { timestamp } from 'rxjs';
 
 @Component({
   selector: 'app-message',
@@ -103,52 +93,36 @@ export class MessageComponent {
     starterMessage: Message;
     userId: string;
   }>();
-  openThread(msg: Message) {
-    this.threadStart.emit({ starterMessage: msg, userId: currentUser.id });
-  }
+
   users = users;
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
-  showThread = true;
   emojiMenuOpen: boolean[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
   formattedUserNames: string = '';
   tooltipText: string = '';
-  // TODO textareaContent an TextareaComponent anpassen
   textareaContent: string = '';
-  private marked = false;
   threadSymbol: '#' | '@' = '#';
   threadTitle: string = '';
   replyToMessage: Message | null = null;
   threadId: string = '';
-  // TODO: channelId aus aktuellem Channel ableiten
   channelId: string = '';
 
-  formatTime = formatTime;
-  getUserNames = (userIds: string[]) =>
-    getUserNames(this.users, userIds, this.currentUser);
-  getUserById = (userId: string) => getUserById(this.users, userId);
-  formatUserNames = (userIds: string[]) =>
-    formatUserNames(this.users, userIds, this.currentUser);
-  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
-  getEmojiByUnicode = (unicode: string) =>
-    getEmojiByUnicode(this.emojis, unicode);
-  addEmojiToTextarea = (unicodeEmoji: string) => {
-    this.textareaContent = addEmojiToTextarea(
-      this.textareaContent,
-      unicodeEmoji
-    );
-  };
-  handleEmojiClick(emojiName: string, msg: Message) {
-    addEmojiToMessage(emojiName, msg, this.currentUser.id);
-  }
-  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
-  trackByMessageId = trackByMessageId;
+  get isTextareaFilled(): boolean {
+    const textareaContent = this.textareaContent.trim();
+    if (!textareaContent || textareaContent.length === 0) return false;
 
-  cancelReply() {
-    this.replyToMessage = null;
+    return textareaContent.length >= 1 && textareaContent.length <= 500;
+  }
+
+  get isFormValid(): boolean {
+    return this.isTextareaFilled;
+  }
+
+  openThread(msg: Message) {
+    this.threadStart.emit({ starterMessage: msg, userId: currentUser.id });
   }
 
   openUserDialog(userId?: string): void {
@@ -187,11 +161,6 @@ export class MessageComponent {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  clearTextarea() {
-    this.textareaContent = '';
-    this.replyToMessage = null;
-  }
-
   postMessage() {
     if (!this.currentUser) return;
 
@@ -206,14 +175,35 @@ export class MessageComponent {
     this.clearTextarea();
   }
 
-  get isTextareaFilled(): boolean {
-    const textareaContent = this.textareaContent.trim();
-    if (!textareaContent || textareaContent.length === 0) return false;
-
-    return textareaContent.length >= 1 && textareaContent.length <= 500;
+  cancelReply() {
+    this.replyToMessage = null;
   }
 
-  get isFormValid(): boolean {
-    return this.isTextareaFilled;
+  clearTextarea() {
+    this.textareaContent = '';
+    this.replyToMessage = null;
   }
+
+  handleEmojiClick(emojiName: string, msg: Message) {
+    addEmojiToMessage(emojiName, msg, this.currentUser.id);
+  }
+
+  addEmojiToTextarea = (unicodeEmoji: string) => {
+    this.textareaContent = addEmojiToTextarea(
+      this.textareaContent,
+      unicodeEmoji
+    );
+  };
+
+  formatTime = formatTime;
+  getUserNames = (userIds: string[]) =>
+    getUserNames(this.users, userIds, this.currentUser);
+  getUserById = (userId: string) => getUserById(this.users, userId);
+  formatUserNames = (userIds: string[]) =>
+    formatUserNames(this.users, userIds, this.currentUser);
+  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
+  getEmojiByUnicode = (unicode: string) =>
+    getEmojiByUnicode(this.emojis, unicode);
+  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
+  trackByMessageId = trackByMessageId;
 }

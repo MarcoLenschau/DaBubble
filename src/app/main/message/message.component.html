@@ -6,7 +6,7 @@
         <div class="message-header-content-text">
           <h2>Neue Nachricht</h2>
         </div>
-        <div></div>
+        <div>[channel members]</div>
         <!--Im channel-view werden hier channel members angezeigt-->
       </div>
       <!-- Empfänger-Eingabe + Suchergebnisse -->
@@ -188,12 +188,6 @@
                 getEmojiByName(reaction.emojiName)?.unicode
               }}</span>
 
-              <!-- <img
-                class="bottom-emojis"
-                [src]="getEmojiByName(reaction.emojiName)?.src"
-                alt="Emoji {{ reaction.emojiName }}"
-              /> -->
-
               <span class="count">{{ reaction.userIds.length }}</span>
 
               <div
@@ -204,11 +198,6 @@
                   getEmojiByName(reaction.emojiName)?.unicode
                 }}</span>
 
-                <!-- <img
-                  class="tooltip-emoji"
-                   [src]="getEmojiByName(reaction.emojiName)?.src"
-                  alt="Emoji {{ reaction.emojiName }}" 
-                /> -->
                 <div>
                   <p class="tooltip-names">
                     {{ formattedUserNames }}

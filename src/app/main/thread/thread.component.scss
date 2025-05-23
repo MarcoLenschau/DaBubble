@@ -69,6 +69,7 @@
 }
 
 .thread-messages {
+  width: 100%;
   flex-grow: 1;
   overflow-y: auto;
   padding-top: 22px;
@@ -333,7 +334,7 @@
       background-color: $purple-1;
       word-wrap: break-word;
       box-sizing: border-box;
-      z-index: 2;
+      z-index: 4;
       overflow-y: auto;
       scrollbar-width: none;
       -ms-overflow-style: none;

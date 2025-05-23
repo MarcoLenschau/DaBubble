@@ -7,13 +7,14 @@ import {
   AfterViewInit,
   AfterViewChecked,
   HostListener,
+  OnChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+
 import { Message } from '../../models/message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
-import { MatDialog } from '@angular/material/dialog';
 import { EMOJIS, Emoji } from '../../interfaces/emojis-interface';
-import { Channel } from '../../models/channel.model';
 import {
   users,
   currentUser,
@@ -31,7 +32,6 @@ import {
   trackByMessageId,
   buildNewMessage,
 } from './../shared-functions';
-import { timestamp } from 'rxjs';
 
 @Component({
   selector: 'app-thread',
@@ -39,7 +39,9 @@ import { timestamp } from 'rxjs';
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
 })
-export class ThreadComponent implements AfterViewInit, AfterViewChecked {
+export class ThreadComponent
+  implements AfterViewInit, AfterViewChecked, OnChanges
+{
   @Input() starterMessage?: Message;
   @Input() userId?: string; //
   @Output() showThreadChange = new EventEmitter<boolean>(); //
@@ -48,42 +50,32 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
-  showThread = false;
   emojiMenuOpen: boolean[] = [];
+  filteredMessages: Message[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
   formattedUserNames: string = '';
   tooltipText: string = '';
-  // TODO ************************************************************************************************* nicht löschen
-  textareaContent: string = ''; // Emojis in Unicode umwandeln?
-  private marked = false;
+  textareaContent: string = '';
   threadSymbol: '#' | '@' = '#';
   threadTitle: string = '';
   replyToMessage: Message | null = null;
   threadId: string = '';
 
+  private marked = false;
+
   constructor(private dialog: MatDialog) {}
 
-  formatTime = formatTime;
-  getUserNames = (userIds: string[]) =>
-    getUserNames(this.users, userIds, this.currentUser);
-  getUserById = (userId: string) => getUserById(this.users, userId);
-  formatUserNames = (userIds: string[]) =>
-    formatUserNames(this.users, userIds, this.currentUser);
-  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
-  getEmojiByUnicode = (unicode: string) =>
-    getEmojiByUnicode(this.emojis, unicode);
-  addEmojiToTextarea = (unicodeEmoji: string) => {
-    this.textareaContent = addEmojiToTextarea(
-      this.textareaContent,
-      unicodeEmoji
-    );
-  };
-  handleEmojiClick(emojiName: string, msg: Message) {
-    addEmojiToMessage(emojiName, msg, this.currentUser.id);
+  get isTextareaFilled(): boolean {
+    const textareaContent = this.textareaContent.trim();
+    if (!textareaContent || textareaContent.length === 0) return false;
+
+    return textareaContent.length >= 1 && textareaContent.length <= 500;
   }
-  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
-  trackByMessageId = trackByMessageId;
+
+  get isFormValid(): boolean {
+    return this.isTextareaFilled;
+  }
 
   ngOnChanges() {
     if (this.starterMessage) {
@@ -91,21 +83,21 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
     }
   }
 
-  setReplyToMessage(msg: Message) {
-    this.replyToMessage = msg;
-    this.threadId = msg.id;
-    msg.threadId = msg.id;
-    this.messages = this.messages.filter((m) => m.threadId === msg.id);
-
-    this.threadSymbol = msg.channelId ? '#' : '@';
-    this.threadTitle = msg.channelId
-      ? channels.find((c) => c.id === msg.channelId)?.name ??
-        'Unbekannter Kanal'
-      : msg.name;
+  ngAfterViewInit() {
+    this.markLastInRow();
+    this.marked = true;
   }
 
-  cancelReply() {
-    this.replyToMessage = null;
+  @HostListener('window:resize')
+  onResize() {
+    this.markLastInRow();
+  }
+
+  ngAfterViewChecked() {
+    if (!this.marked) {
+      this.markLastInRow();
+      this.marked = true;
+    }
   }
 
   openUserDialog(userId?: string): void {
@@ -120,6 +112,45 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
 
   closeThread() {
     this.showThreadChange.emit(false);
+  }
+
+  postThreadMessage() {
+    if (!this.starterMessage || !this.currentUser) return;
+
+    const newMessage = buildNewMessage(
+      this.textareaContent,
+      this.currentUser,
+      this.starterMessage.id,
+      this.starterMessage.channelId || ''
+    );
+
+    this.messages.push(newMessage);
+    this.filteredMessages = this.messages.filter(
+      (m) => m.threadId === this.starterMessage!.id
+    );
+    this.clearTextarea();
+  }
+
+  setReplyToMessage(msg: Message) {
+    this.replyToMessage = msg;
+    this.threadId = msg.id;
+    msg.threadId = msg.id;
+    this.filteredMessages = this.messages.filter((m) => m.threadId === msg.id);
+
+    this.threadSymbol = msg.channelId ? '#' : '@';
+    this.threadTitle = msg.channelId
+      ? channels.find((c) => c.id === msg.channelId)?.name ??
+        'Unbekannter Kanal'
+      : msg.name;
+  }
+
+  cancelReply() {
+    this.replyToMessage = null;
+  }
+
+  clearTextarea() {
+    this.textareaContent = '';
+    this.replyToMessage = null;
   }
 
   setHoverState(index: number | null) {
@@ -148,109 +179,8 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  clearTextarea() {
-    this.textareaContent = '';
-    this.replyToMessage = null;
-  }
-
-  // TODO ************************************************************************************************* nicht löschen
-  postMessage() {
-    //für MessageComponent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    const tempId =
-      this.currentUser.name +
-      '_' +
-      Date.now() +
-      '_' +
-      Math.floor(Math.random() * 1000);
-
-    let newMessage: Message = {
-      id: tempId,
-      name: this.currentUser.name,
-      timestamp: Date.now(),
-      text: this.textareaContent,
-      userId: this.currentUser.id,
-      threadId: '',
-      channelId: '',
-      reactions: [],
-    };
-    this.messages.push(newMessage);
-    // this.messages.addMessage(newMessage, 'message-collection');
-
-    this.clearTextarea();
-  }
-
-  postThreadMessage() {
-    if (!this.starterMessage || !this.currentUser) return;
-
-    const newMessage = buildNewMessage(
-      this.textareaContent,
-      this.currentUser,
-      this.starterMessage.id,
-      this.starterMessage.channelId || ''
-    );
-
-    // const newMessage: Message = {
-    //   id: tempId,
-    //   name: this.currentUser.name,
-    //   timestamp: Date.now(),
-    //   text: this.textareaContent,
-    //   userId: this.currentUser.id,
-    //   threadId: threadId,
-    //   channelId: this.starterMessage.channelId || '',
-    //   reactions: [],
-    // };
-
-    this.messages.push(newMessage);
-    this.clearTextarea();
-  }
-
-  get isTextareaFilled(): boolean {
-    const textareaContent = this.textareaContent.trim();
-    if (!textareaContent || textareaContent.length === 0) return false;
-
-    return textareaContent.length >= 1 && textareaContent.length <= 500;
-  }
-
-  get isFormValid(): boolean {
-    return this.isTextareaFilled;
-  }
-
-  // TODO ************************************************************************************************* nicht löschen
-  // this.messageService.getMessages().subscribe((msgs) => {
-  //   this.messages = msgs;
-  //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
-  // });
-
-  // TODO ************************************************************************************************* nicht löschen
-  // Top-Emojis: Reihenfolge der genutzten Emojis (2 letztgenutzte zuerst); scrollbar?!
-  //   "Standard-Emojis sollten ✅  & 👍  sein,
-  // Maximale Anzahl der Emojis:-> Desktop: 20 Emojis max. sichtbar und hinzufügbar-> Mobil: 7 Emojis max. sichtbar + (falls mehr vorhanden sind) , als "8. Button", ein "13 mehr" Button anzeigen."
-  // Bottom-Emojis: angezeigte Zahl begrenzen
-
-  // TODO ************************************************************************************************* nicht löschen
-  // get visibleMessages(): Message[] {
-  //muss erst umgesetzt werden
-  // return this.messages.filter(
-  //   (msg) => msg.privateWithSelf === true || msg.public === true
-  // );
-  // }
-  // this.Message = new Message(activeThreadData);
-
-  ngAfterViewInit() {
-    this.markLastInRow();
-    this.marked = true;
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.markLastInRow();
-  }
-
-  ngAfterViewChecked() {
-    if (!this.marked) {
-      this.markLastInRow();
-      this.marked = true;
-    }
+  handleEmojiClick(emojiName: string, msg: Message) {
+    addEmojiToMessage(emojiName, msg, this.currentUser.id);
   }
 
   markLastInRow() {
@@ -285,4 +215,43 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
       lastEl.classList.add('last-in-row');
     });
   }
+
+  formatTime = formatTime;
+  getUserNames = (userIds: string[]) =>
+    getUserNames(this.users, userIds, this.currentUser);
+  getUserById = (userId: string) => getUserById(this.users, userId);
+  formatUserNames = (userIds: string[]) =>
+    formatUserNames(this.users, userIds, this.currentUser);
+  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
+  getEmojiByUnicode = (unicode: string) =>
+    getEmojiByUnicode(this.emojis, unicode);
+  addEmojiToTextarea = (unicodeEmoji: string) => {
+    this.textareaContent = addEmojiToTextarea(
+      this.textareaContent,
+      unicodeEmoji
+    );
+  };
+  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
+  trackByMessageId = trackByMessageId;
+
+  // TODO ************************************************************************************************* nicht löschen
+  // this.messageService.getMessages().subscribe((msgs) => {
+  //   this.messages = msgs;
+  //   this.emojiMenuOpen = this.messages.map(() => false);   // um emojiMenuOpen auf die richtige Länge zu bringen !!
+  // });
+
+  // TODO ************************************************************************************************* nicht löschen
+  // Top-Emojis: Reihenfolge der genutzten Emojis (2 letztgenutzte zuerst); scrollbar?!
+  //   "Standard-Emojis sollten ✅  & 👍  sein,
+  // Maximale Anzahl der Emojis:-> Desktop: 20 Emojis max. sichtbar und hinzufügbar-> Mobil: 7 Emojis max. sichtbar + (falls mehr vorhanden sind) , als "8. Button", ein "13 mehr" Button anzeigen."
+  // Bottom-Emojis: angezeigte Zahl begrenzen
+
+  // TODO ************************************************************************************************* nicht löschen
+  // get visibleMessages(): Message[] {
+  //muss erst umgesetzt werden
+  // return this.messages.filter(
+  //   (msg) => msg.privateWithSelf === true || msg.public === true
+  // );
+  // }
+  // this.Message = new Message(activeThreadData);
 }

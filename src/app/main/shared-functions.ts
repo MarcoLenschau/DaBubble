@@ -1,4 +1,4 @@
-import { Emoji, EMOJIS } from '../interfaces/emojis-interface';
+import { Emoji } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Channel } from '../models/channel.model';

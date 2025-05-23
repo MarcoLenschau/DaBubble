@@ -16,7 +16,11 @@
 
     <div class="thread-messages scrollable">
       <ng-container
-        *ngFor="let msg of messages; let i = index; trackBy: trackByMessageId"
+        *ngFor="
+          let msg of filteredMessages;
+          let i = index;
+          trackBy: trackByMessageId
+        "
       >
         <div
           class="message-wrapper"
@@ -76,12 +80,6 @@
                 (click)="$event.stopPropagation()"
               >
                 <ng-container *ngIf="emojiMenuOpen[i]">
-                  <!-- <img
-                    *ngFor="let emoji of emojis"
-                    [src]="emoji.src"
-                    [alt]="emoji.name"
-                    class="emoji-icon top-emojis"
-                  /> -->
                   <span
                     *ngFor="let emoji of emojis"
                     class="emoji-icon top-emojis"
@@ -149,12 +147,6 @@
                 getEmojiByName(reaction.emojiName)?.unicode
               }}</span>
 
-              <!-- <img
-                class="bottom-emojis"
-                [src]="getEmojiByName(reaction.emojiName)?.src"
-                alt="Emoji {{ reaction.emojiName }}"
-              /> -->
-
               <span class="count">{{ reaction.userIds.length }}</span>
 
               <div
@@ -165,11 +157,6 @@
                   getEmojiByName(reaction.emojiName)?.unicode
                 }}</span>
 
-                <!-- <img
-                  class="tooltip-emoji"
-                   [src]="getEmojiByName(reaction.emojiName)?.src"
-                  alt="Emoji {{ reaction.emojiName }}" 
-                /> -->
                 <div>
                   <p class="tooltip-names">
                     {{ formattedUserNames }}
@@ -195,12 +182,12 @@
         </div>
 
         <div
-          *ngIf="i === 0 && messages.length > 1"
+          *ngIf="i === 0 && filteredMessages.length > 1"
           class="thread-replies-divider"
         >
           <p>
-            {{ messages.length - 1 }}
-            {{ messages.length - 1 === 1 ? "Antwort" : "Antworten" }}
+            {{ filteredMessages.length - 1 }}
+            {{ filteredMessages.length - 1 === 1 ? "Antwort" : "Antworten" }}
           </p>
           <div class="line"></div>
         </div>
@@ -214,7 +201,9 @@
         placeholder="Antworten..."
         [(ngModel)]="textareaContent"
       ></textarea>
-      <button (click)="postMessage()" [disabled]="!isFormValid">Senden</button>
+      <button (click)="postThreadMessage()" [disabled]="!isFormValid">
+        Senden
+      </button>
     </div>
   </div>
 </div>

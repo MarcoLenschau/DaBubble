@@ -6,7 +6,6 @@
 }
 .message-container {
   background-color: #ffffff;
-  // width: 485px;
   height: 940px;
   border-radius: 30px;
 }
@@ -103,14 +102,6 @@
   overflow-y: auto;
   padding-top: 22px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
-  // &::-webkit-scrollbar {
-  //   width: 0px;
-  //   background: transparent;
-  // }
-
-  // scrollbar-width: none;
-
-  // -ms-overflow-style: none;
 
   .message-img {
     width: 70px;
@@ -171,9 +162,6 @@
     }
   }
 
-  .message-flex-box {
-  }
-
   .hover-thread-message {
     width: 100%;
   }
@@ -231,7 +219,6 @@
     width: 70%;
     flex-wrap: wrap;
     max-height: 150px;
-    // overflow-y: auto;
   }
 
   &.emoji-row-left-aligned {
@@ -262,7 +249,7 @@
   font-size: 24px;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji", sans-serif;
-  user-select: none; /* Verhindert Markieren des Emojis beim Klicken */
+  user-select: none;
   @include transition();
 }
 
@@ -336,16 +323,11 @@
       background-color: $purple-1;
       word-wrap: break-word;
       box-sizing: border-box;
-      z-index: 2;
+      z-index: 4;
       overflow-y: auto;
       scrollbar-width: none;
       -ms-overflow-style: none;
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
-
-      // .tooltip-emoji {
-      //   width: 30px;
-      //   height: 30px;
-      // }
 
       .tooltip-emoji {
         display: inline-flex;
@@ -374,11 +356,6 @@
     &.last-in-row .bottom-emoji-tooltip {
       transform: translateX(-35%);
     }
-
-    // &.tooltip-flip .bottom-emoji-tooltip {
-    //   left: auto;
-    //   right: 0;
-    // }
   }
 
   .reduce-gap {
