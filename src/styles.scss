@@ -38,5 +38,51 @@ a {
   color: $blue;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: $purple-3 transparent;
+}
+
+// TODO Scrollbars verwenden wenn notwendig
+
+// ::-webkit-scrollbar {
+//   width: 6px;
+// }
+
+// ::-webkit-scrollbar-track {
+//   background: transparent;
+// }
+
+// ::-webkit-scrollbar-thumb {
+//   background-color: $purple-1;
+//   border-radius: 6px;
+//   border: 2px solid transparent;
+//   background-clip: padding-box;
+// }
+
+// ::-webkit-scrollbar-thumb:hover {
+//   background: $purple-2;
+// }
+
+// ::-webkit-scrollbar-button {
+//   display: none;
+//   height: 0;
+//   width: 0;
+// }
+
+// ::-webkit-scrollbar-button:vertical:start:increment,
+// ::-webkit-scrollbar-button:vertical:end:decrement {
+//   display: none;
+// }

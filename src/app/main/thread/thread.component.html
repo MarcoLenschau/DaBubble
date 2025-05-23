@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="thread-messages">
+    <div class="thread-messages scrollable">
       <ng-container
         *ngFor="let msg of messages; let i = index; trackBy: trackByMessageId"
       >
@@ -69,7 +69,9 @@
                 [ngClass]="{
                   'emoji-row-left-aligned': isOwnMessage(msg),
                   'emoji-row-right-aligned': !isOwnMessage(msg),
-                  'make-visible': hoveredIndex === i
+                  'make-visible': hoveredIndex === i,
+                  'emoji-row-open scrollable': emojiMenuOpen[i],
+                  'emoji-row-closed': !emojiMenuOpen[i],
                 }"
                 (click)="$event.stopPropagation()"
               >

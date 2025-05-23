@@ -117,7 +117,7 @@ export function buildNewMessage(
   text: string,
   currentUser: User,
   threadId: string,
-  channelId: string = ''
+  channelId: string
 ): Message {
   return {
     id: createTempMessageId(currentUser.name),

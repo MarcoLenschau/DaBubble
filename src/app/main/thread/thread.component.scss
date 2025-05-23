@@ -15,7 +15,7 @@
 
 .thread-content {
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 0px, $f: column);
-  padding: 24px 0;
+  padding-bottom: 24px;
   height: 100%;
 }
 
@@ -73,14 +73,14 @@
   overflow-y: auto;
   padding-top: 22px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
-  &::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-  }
+  // &::-webkit-scrollbar {
+  //   width: 0px;
+  //   background: transparent;
+  // }
 
-  scrollbar-width: none;
+  // scrollbar-width: none;
 
-  -ms-overflow-style: none;
+  // -ms-overflow-style: none;
 
   .message-img {
     width: 70px;
@@ -203,12 +203,23 @@
   padding: 3px 15px 3px 20px;
   border: 1px solid $light-purple;
   background-color: $white;
-  width: fit-content;
+  z-index: 3;
   border-radius: 25px 25px 0 25px;
   opacity: 0;
   visibility: hidden;
   transform: translateX(20px);
   @include transition();
+
+  &.emoji-row-closed {
+    width: fit-content;
+  }
+
+  &.emoji-row-open {
+    width: 70%;
+    flex-wrap: wrap;
+    max-height: 150px;
+    // overflow-y: auto;
+  }
 
   &.emoji-row-left-aligned {
     left: 30px;

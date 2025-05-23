@@ -14,7 +14,6 @@ import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/di
 import { MatDialog } from '@angular/material/dialog';
 import { EMOJIS, Emoji } from '../../interfaces/emojis-interface';
 import { Channel } from '../../models/channel.model';
-
 import {
   users,
   currentUser,
@@ -42,8 +41,8 @@ import { timestamp } from 'rxjs';
 })
 export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   @Input() starterMessage?: Message;
-  @Input() userId?: string;
-  @Output() showThreadChange = new EventEmitter<boolean>();
+  @Input() userId?: string; //
+  @Output() showThreadChange = new EventEmitter<boolean>(); //
 
   users = users;
   currentUser = currentUser;
