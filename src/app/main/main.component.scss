@@ -2,5 +2,12 @@
 @import "./../shared/styles/color.scss";
 
 .main-component {
+  box-sizing: border-box;
   @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+  padding: 20px 28px; //margin -8px miteingerechnet
+}
+
+app-message {
+  flex: 1;
+  min-width: 0;
 }

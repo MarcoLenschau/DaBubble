@@ -6,10 +6,6 @@
         <div class="thread-header-content-text">
           <h2>Neue Nachricht</h2>
         </div>
-        <div class="close-button">
-          <img src="assets/img/close/close.svg" class="default" />
-          <img src="assets/img/close/close-hover.svg" class="hover" />
-        </div>
       </div>
     </div>
 
@@ -22,17 +18,30 @@
         (input)="onSearch($event)"
       />
       <div
-        *ngIf="searchResultsUser.length || searchResultsEmail.length || searchResultsChannels.length"
+        *ngIf="
+          searchResultsUser.length ||
+          searchResultsEmail.length ||
+          searchResultsChannels.length
+        "
         class="search-results"
       >
         <ul>
-          <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user, searchInput)">
+          <li
+            *ngFor="let user of searchResultsEmail"
+            (click)="selectUser(user, searchInput)"
+          >
             <strong>{{ user.email }}</strong>
           </li>
-          <li *ngFor="let user of searchResultsUser" (click)="selectUser(user, searchInput)">
+          <li
+            *ngFor="let user of searchResultsUser"
+            (click)="selectUser(user, searchInput)"
+          >
             <strong>&#64;{{ user.name }}</strong>
           </li>
-          <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
+          <li
+            *ngFor="let channel of searchResultsChannels"
+            (click)="selectChannel(channel, searchInput)"
+          >
             <strong>#{{ channel.channelName }}</strong>
           </li>
         </ul>

@@ -2,149 +2,140 @@
 @import "./../../shared/styles/color.scss";
 
 nav {
-    background-color: #FFFFFF;
-    width: 366px;
-    height: 940px;
-    margin: 16px;
-    border-radius: 30px;
+  background-color: #ffffff;
+  width: 366px;
+  height: 940px;
+  // margin: 16px;
+  border-radius: 30px;
 }
 
 .devspace-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 24px 10px;
-    font-family: 'Nunito';
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 10px;
+  font-family: "Nunito";
 }
-
 
 .devspace-headline {
+  display: flex;
+  align-items: center;
+  gap: 84px;
+
+  > .headline-title {
     display: flex;
     align-items: center;
-    gap: 84px;
-
-    >.headline-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+    gap: 10px;
+  }
 }
 
-
-
 .devspace-channel-wrapper {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .devspace-channel {
-    display: flex;
-    align-items: center;
-    gap: 100px;
+  display: flex;
+  align-items: center;
+  gap: 100px;
 
-
-    >.channel-title-arrow {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-
-        >.channel-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            >h2 {
-                font-size: 20px;
-            }
-        }
-    }
-}
-
-.devspace-channel-content,
-.devspace-channel-add {
-    display: flex;
-    align-items: center;
-    margin-top: 8px;
-    gap: 4px;
-    padding-left: 42px;
-}
-
-
-.devspace-messages {
-    display: flex;
-    flex-direction: column;
-}
-
-.message-title-arrow {
+  > .channel-title-arrow {
     display: flex;
     align-items: center;
     gap: 15px;
 
-    .message-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+    > .channel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
-        >h2 {
-            font-size: 20px;
-        }
+      > h2 {
+        font-size: 20px;
+      }
     }
+  }
+}
+
+.devspace-channel-content,
+.devspace-channel-add {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  gap: 4px;
+  padding-left: 42px;
+}
+
+.devspace-messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-title-arrow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .message-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > h2 {
+      font-size: 20px;
+    }
+  }
 }
 
 .profile-users {
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-    margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-top: 16px;
 }
 
 .profile-user {
-    display: flex;
-    padding: 4px 14px;
-    gap: 18px;
-    border-radius: 35px;
-    align-items: center;    
-    transition: background-color 0.2s, color 0.2s;
-    
+  display: flex;
+  padding: 4px 14px;
+  gap: 18px;
+  border-radius: 35px;
+  align-items: center;
+  transition: background-color 0.2s, color 0.2s;
 
+  &:hover {
+    background-color: $grey;
+    cursor: pointer;
+  }
 
-
-    &:hover {
-        background-color: $grey;
-        cursor: pointer;
-    }
-
-    &.active {
-        background-color: $grey;
-        color: $purple-3;
-        font-weight: 600;
-    }
-
+  &.active {
+    background-color: $grey;
+    color: $purple-3;
+    font-weight: 600;
+  }
 }
 
 .profile-icon {
-    position: relative;
-     margin-left: 8px;
+  position: relative;
+  margin-left: 8px;
 
-    >.profile-pic {
-        width: 50px;
-        height: 50px;
-        border-radius: 30px;
-    }
+  > .profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+  }
 
-    >.profile-online {
-        position: absolute;
-        bottom: 8px;
-        left: 36px;
-    }
+  > .profile-online {
+    position: absolute;
+    bottom: 8px;
+    left: 36px;
+  }
 }
 
 .channel-title-arrow:hover,
 .message-title-arrow:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .channel-title-arrow:hover h2,
 .message-title-arrow:hover h2 {
-    color: $purple-3;
+  color: $purple-3;
 }

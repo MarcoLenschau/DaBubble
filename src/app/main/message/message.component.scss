@@ -3,7 +3,7 @@
 
 .thread-container {
   background-color: #ffffff;
-  width: 485px;
+  // width: 485px;
   height: 940px;
   border-radius: 30px;
 }
@@ -51,7 +51,7 @@
     border: 1px solid $light-purple;
     padding: 0 15px;
     font-size: 16px;
-    font-family: 'Nunito', sans-serif;
+    font-family: "Nunito", sans-serif;
 
     &::placeholder {
       color: $text-gray;
@@ -81,7 +81,7 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      font-family: 'Nunito', sans-serif;
+      font-family: "Nunito", sans-serif;
 
       &:hover {
         background-color: $light-purple;
