@@ -3,6 +3,7 @@ import { DevspaceComponent } from './devspace/devspace.component';
 import { ThreadComponent } from './thread/thread.component';
 import { MessageComponent } from './message/message.component';
 import { CommonModule } from '@angular/common';
+import { Message } from '../models/message.model';
 
 @Component({
   selector: 'app-main',
@@ -11,29 +12,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: './main.component.scss',
 })
 export class MainComponent {
-  showThread = true;
+  showThread = false;
+  starterMessage?: Message;
+  userId?: string;
 
-  // starterMessage?: Message;
-  // userId?: string;
-  // onThreadStart(event: { starterMessage: Message; userId: string }) {
-  //   this.starterMessage = event.starterMessage;
-  //   this.userId = event.userId;
-  // }
+  onThreadStart(event: { starterMessage: Message; userId: string }) {
+    this.starterMessage = event.starterMessage;
+    this.userId = event.userId;
+    this.showThread = true;
+  }
 }
-
-// message.component.ts
-// @Output() threadStart = new EventEmitter<{starterMessage: Message, userId: string}>();
-
-// onMessageClick(msg: Message) {
-//   const currentUserId = 'xyz'; // z.B. aus Auth-Service
-//   this.threadStart.emit({ starterMessage: msg, userId: currentUserId });
-// }
-
-// export class MessageComponent {
-//   @Output() threadStart = new EventEmitter<any>();
-
-//   openThread() {
-//     this.threadStart.emit(); // optional mit Daten emitten
-//   }
-// }
-// <div (click)="openThread()">Nachricht öffnen</div>

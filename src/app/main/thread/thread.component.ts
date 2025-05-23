@@ -48,7 +48,7 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
-  showThread = true;
+  showThread = false;
   emojiMenuOpen: boolean[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
@@ -85,10 +85,14 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
 
+  ngOnChanges() {
+    if (this.starterMessage) {
+      this.setReplyToMessage(this.starterMessage);
+    }
+  }
+
   setReplyToMessage(msg: Message) {
-    //Kommt nur in MessageComponent, nicht in ThreadComponent!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     this.replyToMessage = msg;
-    this.starterMessage = msg;
     this.threadId = msg.id;
     msg.threadId = msg.id;
     this.messages = this.messages.filter((m) => m.threadId === msg.id);
@@ -98,10 +102,6 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
       ? channels.find((c) => c.id === msg.channelId)?.name ??
         'Unbekannter Kanal'
       : msg.name;
-
-    console.log(`Replying to message ${msg.id} from ${msg.name}`);
-    this.replyToMessage = msg;
-    console.log('Replying to Message' + msg.id + ' from ' + msg.name);
   }
 
   cancelReply() {

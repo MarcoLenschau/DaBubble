@@ -1,8 +1,9 @@
 <div class="main-component">
   <app-devspace></app-devspace>
-  <app-message></app-message>
-  <!-- <app-message (threadStart)="onThreadStart($event)"></app-message> -->
+  <app-message (threadStart)="onThreadStart($event)"></app-message>
   <app-thread
+    [starterMessage]="starterMessage"
+    [userId]="userId"
     [ngClass]="{ visible: showThread, hidden: !showThread }"
     (showThreadChange)="showThread = $event"
   ></app-thread>

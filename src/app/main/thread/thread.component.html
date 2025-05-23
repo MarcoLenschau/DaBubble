@@ -194,8 +194,14 @@
           </div>
         </div>
 
-        <div *ngIf="i === 0" class="thread-replies-divider">
-          <p>{{ messages.length - 1 }} Antworten</p>
+        <div
+          *ngIf="i === 0 && messages.length > 1"
+          class="thread-replies-divider"
+        >
+          <p>
+            {{ messages.length - 1 }}
+            {{ messages.length - 1 === 1 ? "Antwort" : "Antworten" }}
+          </p>
           <div class="line"></div>
         </div>
       </ng-container>

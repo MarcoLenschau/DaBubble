@@ -193,23 +193,6 @@
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
 }
 
-.thread-replies-divider {
-  padding: 0px 40px 0px;
-  width: 100%;
-  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
-
-  p {
-    white-space: nowrap;
-    @include text-style(18px, 400, $light-purple);
-  }
-
-  .line {
-    flex-grow: 1;
-    height: 0;
-    border-top: 1px solid $light-purple;
-  }
-}
-
 .thread-message-text {
   border-radius: 0 20px 20px 20px;
   background-color: $grey;
@@ -266,16 +249,6 @@
   }
 }
 
-// .emoji-icon {
-//   width: 40px;
-//   height: 40px;
-//   border-radius: 50%;
-//   background-color: $white;
-//   padding: 8px;
-//   cursor: pointer;
-//   @include transition();
-// }
-
 .emoji-icon {
   display: inline-flex;
   justify-content: center;
@@ -284,7 +257,7 @@
   height: 40px;
   border-radius: 50%;
   background-color: $white;
-  padding: 8px;
+  padding: 8px 8px 9px;
   cursor: pointer;
   font-size: 24px;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",

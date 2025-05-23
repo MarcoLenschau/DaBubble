@@ -99,9 +99,13 @@ export class MessageComponent {
     this.searchResultsChannels = [];
   }
 
-  // TODO: Output für starterMessage implementieren
-  @Input() starterMessage?: Message;
-
+  @Output() threadStart = new EventEmitter<{
+    starterMessage: Message;
+    userId: string;
+  }>();
+  openThread(msg: Message) {
+    this.threadStart.emit({ starterMessage: msg, userId: currentUser.id });
+  }
   users = users;
   currentUser = currentUser;
   messages = messages;
@@ -142,24 +146,6 @@ export class MessageComponent {
   }
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
-
-  setReplyToMessage(msg: Message) {
-    this.replyToMessage = msg;
-    this.starterMessage = msg;
-    this.threadId = msg.id;
-    msg.threadId = msg.id;
-    this.messages = this.messages.filter((m) => m.threadId === msg.id);
-
-    this.threadSymbol = msg.channelId ? '#' : '@';
-    this.threadTitle = msg.channelId
-      ? channels.find((c) => c.id === msg.channelId)?.name ??
-        'Unbekannter Kanal'
-      : msg.name;
-
-    console.log(`Replying to message ${msg.id} from ${msg.name}`);
-    this.replyToMessage = msg;
-    console.log('Replying to Message' + msg.id + ' from ' + msg.name);
-  }
 
   cancelReply() {
     this.replyToMessage = null;
