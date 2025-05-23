@@ -1,6 +1,7 @@
 import { Emoji, EMOJIS } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
+import { Channel } from '../models/channel.model';
 
 export function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -108,6 +109,28 @@ export function trackByMessageId(index: number, msg: Message): string {
   return msg.id;
 }
 
+export function createTempMessageId(username: string): string {
+  return `${username}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+}
+
+export function buildNewMessage(
+  text: string,
+  currentUser: User,
+  threadId: string,
+  channelId: string = ''
+): Message {
+  return {
+    id: createTempMessageId(currentUser.name),
+    name: currentUser.name,
+    timestamp: Date.now(),
+    text: text,
+    userId: currentUser.id,
+    threadId: threadId,
+    channelId: channelId,
+    reactions: [],
+  };
+}
+
 // Später löschen ************************************************************ */
 // Dummy-Daten:
 
@@ -165,6 +188,7 @@ export const messages: Message[] = [
     text: 'Hallo zusammen, wie läuft das aktuelle Projekt bei euch?',
     userId: 'user1',
     threadId: '',
+    channelId: '',
     reactions: [
       { emojiName: 'thumbs-up', userIds: ['user1', 'user4', 'user6'] },
       { emojiName: 'check-mark', userIds: ['user3'] },
@@ -177,6 +201,7 @@ export const messages: Message[] = [
     text: 'Bei uns läuft alles gut.',
     userId: 'user2',
     threadId: '',
+    channelId: '',
     reactions: [{ emojiName: 'hands-up', userIds: ['user1', 'user6'] }],
   },
   {
@@ -186,6 +211,7 @@ export const messages: Message[] = [
     text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     userId: 'user3',
     threadId: '',
+    channelId: '',
     reactions: [
       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
       { emojiName: 'rocket', userIds: ['user3'] },
@@ -206,6 +232,7 @@ export const messages: Message[] = [
     text: 'Ja genau.',
     userId: 'user4',
     threadId: '',
+    channelId: '',
     reactions: [
       {
         emojiName: 'thumbs-up',
@@ -221,6 +248,7 @@ export const messages: Message[] = [
     text: 'Könntest du bitte die Dokumentation noch einmal überprüfen? Ich habe einige Fehler gefunden, besonders bei den API-Endpunkten.',
     userId: 'user5',
     threadId: '',
+    channelId: '',
     reactions: [
       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
       { emojiName: 'rocket', userIds: ['user3'] },
@@ -233,6 +261,7 @@ export const messages: Message[] = [
     text: 'Ich stimme Lena zu. Lorem ipsum.',
     userId: 'user6',
     threadId: '',
+    channelId: '',
     reactions: [
       { emojiName: 'check-mark', userIds: ['user3', 'user4', 'user6'] },
     ],
@@ -244,6 +273,7 @@ export const messages: Message[] = [
     text: 'Lorem ipsum dolor, sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit.',
     userId: 'user4',
     threadId: '',
+    channelId: '',
     reactions: [
       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
       { emojiName: 'rocket', userIds: ['user3'] },
@@ -252,4 +282,28 @@ export const messages: Message[] = [
       { emojiName: 'hands-up', userIds: ['user3'] },
     ],
   },
+];
+
+export const channels: Channel[] = [
+  new Channel({
+    id: 'chan1',
+    name: 'Entwicklerteam',
+    description: 'Diskussionen rund um die Entwicklung',
+    members: ['user1', 'user2', 'user3', 'user4'],
+    messages: messages.filter((m) => m.channelId === 'chan1'),
+  }),
+  new Channel({
+    id: 'chan2',
+    name: 'Design-Team',
+    description: 'UX/UI, Farben, Schriften',
+    members: ['user2', 'user5', 'user6'],
+    messages: messages.filter((m) => m.channelId === 'chan2'),
+  }),
+  new Channel({
+    id: 'chan3',
+    name: 'Allgemein',
+    description: 'Teamweite Kommunikation',
+    members: ['user1', 'user2', 'user3', 'user4', 'user5', 'user6'],
+    messages: messages.filter((m) => m.channelId === 'chan3'),
+  }),
 ];

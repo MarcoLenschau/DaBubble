@@ -7,7 +7,7 @@ export class Message {
   text: string = '';
   userId: string = '';
   threadId?: string;
-  // channelId?: '...';
+  channelId?: string;
   reactions: Reaction[] = [];
   // isEdited?: boolean;
   // replyTo?: string; // optional: ID einer anderen Nachricht
@@ -21,6 +21,7 @@ export class Message {
       this.text = data.text ?? this.text;
       this.userId = data.userId ?? this.userId;
       this.threadId = data.threadId ?? this.threadId;
+      this.channelId = data.channelId ?? this.channelId;
       this.reactions = data.reactions ?? this.reactions;
     }
   }

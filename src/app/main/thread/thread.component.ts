@@ -13,11 +13,13 @@ import { Message } from '../../models/message.model';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { EMOJIS, Emoji } from '../../interfaces/emojis-interface';
+import { Channel } from '../../models/channel.model';
 
 import {
   users,
   currentUser,
   messages,
+  channels,
   formatTime,
   getEmojiByName,
   getEmojiByUnicode,
@@ -28,6 +30,7 @@ import {
   formatUserNames,
   isOwnMessage,
   trackByMessageId,
+  buildNewMessage,
 } from './../shared-functions';
 import { timestamp } from 'rxjs';
 
@@ -55,6 +58,10 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   // TODO ************************************************************************************************* nicht löschen
   textareaContent: string = ''; // Emojis in Unicode umwandeln?
   private marked = false;
+  threadSymbol: '#' | '@' = '#';
+  threadTitle: string = '';
+  replyToMessage: Message | null = null;
+  threadId: string = '';
 
   constructor(private dialog: MatDialog) {}
 
@@ -79,11 +86,25 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
 
-  replyToMessage: Message | null = null;
   setReplyToMessage(msg: Message) {
+    //Kommt nur in MessageComponent, nicht in ThreadComponent!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    this.replyToMessage = msg;
+    this.starterMessage = msg;
+    this.threadId = msg.id;
+    msg.threadId = msg.id;
+    this.messages = this.messages.filter((m) => m.threadId === msg.id);
+
+    this.threadSymbol = msg.channelId ? '#' : '@';
+    this.threadTitle = msg.channelId
+      ? channels.find((c) => c.id === msg.channelId)?.name ??
+        'Unbekannter Kanal'
+      : msg.name;
+
+    console.log(`Replying to message ${msg.id} from ${msg.name}`);
     this.replyToMessage = msg;
     console.log('Replying to Message' + msg.id + ' from ' + msg.name);
   }
+
   cancelReply() {
     this.replyToMessage = null;
   }
@@ -135,6 +156,7 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
 
   // TODO ************************************************************************************************* nicht löschen
   postMessage() {
+    //für MessageComponent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     const tempId =
       this.currentUser.name +
       '_' +
@@ -144,16 +166,42 @@ export class ThreadComponent implements AfterViewInit, AfterViewChecked {
 
     let newMessage: Message = {
       id: tempId,
-      name: currentUser.name,
+      name: this.currentUser.name,
       timestamp: Date.now(),
       text: this.textareaContent,
       userId: this.currentUser.id,
-      threadId: this.replyToMessage?.id || '',
+      threadId: '',
+      channelId: '',
       reactions: [],
     };
     this.messages.push(newMessage);
     // this.messages.addMessage(newMessage, 'message-collection');
 
+    this.clearTextarea();
+  }
+
+  postThreadMessage() {
+    if (!this.starterMessage || !this.currentUser) return;
+
+    const newMessage = buildNewMessage(
+      this.textareaContent,
+      this.currentUser,
+      this.starterMessage.id,
+      this.starterMessage.channelId || ''
+    );
+
+    // const newMessage: Message = {
+    //   id: tempId,
+    //   name: this.currentUser.name,
+    //   timestamp: Date.now(),
+    //   text: this.textareaContent,
+    //   userId: this.currentUser.id,
+    //   threadId: threadId,
+    //   channelId: this.starterMessage.channelId || '',
+    //   reactions: [],
+    // };
+
+    this.messages.push(newMessage);
     this.clearTextarea();
   }
 

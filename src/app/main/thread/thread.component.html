@@ -4,8 +4,8 @@
       <div class="thread-header-content">
         <div class="thread-header-content-text">
           <h2>Thread</h2>
-          <p>#</p>
-          <p>Entwicklerteam</p>
+          <p>{{ threadSymbol }}</p>
+          <p>{{ threadTitle }}</p>
         </div>
         <div class="close-button" (click)="closeThread()">
           <img src="assets/img/close/close.svg" class="default" />
@@ -105,6 +105,7 @@
 
                 <ng-container *ngIf="emojiMenuOpen[i]"
                   ><div class="toggle-icon" (click)="setReplyToMessage(msg)">
+                    <!-- <button (click)="cancelReply()">Abbrechen</button> -->
                     <img
                       src="assets/img/message-icons/answer.svg"
                       class="default"
