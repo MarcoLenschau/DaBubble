@@ -19,5 +19,4 @@ export class FirebaseService {
   getSingleDocRef(docRef: string, docId: any) {
     return doc(this.firebase, docRef, docId);
   }
-
 }

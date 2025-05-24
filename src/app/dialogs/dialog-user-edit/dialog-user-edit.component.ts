@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { FirebaseService } from '../../services/firebase.service';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -13,7 +14,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class DialogUserEditComponent {
   @Input() user: any = {};
 
-  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>) {}
+  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService) {}
 
   dialogClose() {
     this.dialogRef.close();
