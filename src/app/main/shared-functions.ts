@@ -2,6 +2,7 @@ import { Emoji } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Channel } from '../models/channel.model';
+import { Reaction } from '../interfaces/reaction.interface';
 
 export function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -36,24 +37,117 @@ export function addEmojiToMessage(
   message: Message,
   userId: string
 ) {
-  let reaction = message.reactions.find((r) => r.emojiName === emojiName);
+  const existingReaction = processReaction(message, emojiName);
 
-  if (reaction) {
-    if (reaction.userIds.includes(userId)) {
-      reaction.userIds = reaction.userIds.filter((id) => id !== userId);
-
-      if (reaction.userIds.length === 0) {
-        message.reactions = message.reactions.filter((r) => r !== reaction);
-      }
+  if (existingReaction) {
+    if (existingReaction.userIds.includes(userId)) {
+      removeUserFromReaction(existingReaction, message, userId);
     } else {
-      reaction.userIds.push(userId);
+      addUserToReaction(existingReaction, userId);
     }
   } else {
-    message.reactions.push({
-      emojiName: emojiName,
-      userIds: [userId],
-    });
+    addNewReaction(message, emojiName, userId);
   }
+}
+
+function processReaction(
+  message: Message,
+  emojiName: string
+): Reaction | undefined {
+  return message.reactions.find((r) => r.emojiName === emojiName);
+}
+
+function removeUserFromReaction(
+  reaction: Reaction,
+  message: Message,
+  userId: string
+): void {
+  reaction.userIds = reaction.userIds.filter((id) => id !== userId);
+
+  if (reaction.userIds.length === 0) {
+    removeReactionAltogether(message, reaction);
+  }
+}
+
+function addUserToReaction(reaction: Reaction, userId: string): void {
+  reaction.userIds.push(userId);
+}
+
+function removeReactionAltogether(message: Message, reaction: Reaction): void {
+  message.reactions = message.reactions.filter((r) => r !== reaction);
+}
+
+function addNewReaction(
+  message: Message,
+  emojiName: string,
+  userId: string
+): void {
+  message.reactions.push({
+    emojiName,
+    userIds: [userId],
+  });
+}
+
+export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
+  if (!hasEmojiData(user)) {
+    return getDefaultEmojis(emojis);
+  }
+
+  const recent = getRecentEmojis(user, emojis);
+  const frequent = getFrequentEmojisExcludingRecent(user, emojis, recent);
+  const remaining = getRemainingEmojis(emojis, recent, frequent);
+
+  return [...recent, ...frequent, ...remaining];
+}
+
+function hasEmojiData(user: User): boolean {
+  return (
+    (user.recentEmojis?.length ?? 0) > 0 ||
+    Object.keys(user.emojiUsage ?? {}).length > 0
+  );
+}
+
+function getFrequentEmojisExcludingRecent(
+  user: User,
+  emojis: Emoji[],
+  recent: Emoji[]
+): Emoji[] {
+  const recentNames = recent.map((e) => e.name);
+  return getFrequentEmojis(user, emojis, recentNames);
+}
+
+function getRemainingEmojis(
+  emojis: Emoji[],
+  recent: Emoji[],
+  frequent: Emoji[]
+): Emoji[] {
+  const excludeNames = [...recent, ...frequent].map((e) => e.name);
+  return emojis.filter((e) => !excludeNames.includes(e.name));
+}
+
+function getDefaultEmojis(emojis: Emoji[]): Emoji[] {
+  return [...emojis];
+}
+
+function getRecentEmojis(user: User, emojis: Emoji[]): Emoji[] {
+  const recent = user.recentEmojis ?? [];
+  return recent
+    .slice(0, 2)
+    .map((name) => emojis.find((e) => e.name === name))
+    .filter((e): e is Emoji => !!e);
+}
+
+function getFrequentEmojis(
+  user: User,
+  emojis: Emoji[],
+  excludeNames: string[]
+): Emoji[] {
+  const usage = user.emojiUsage ?? {};
+  return Object.entries(usage)
+    .filter(([name]) => !excludeNames.includes(name))
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => emojis.find((e) => e.name === name))
+    .filter((e): e is Emoji => !!e);
 }
 
 export function getUserById(users: User[], userId: string): User | undefined {
@@ -93,7 +187,8 @@ export function formatUserNames(
     return { text: '', verb: '' };
   }
   if (names.length === 1) {
-    return { text: names[0], verb: 'hat' };
+    const verb = names[0] === 'Du' ? 'hast' : 'hat';
+    return { text: names[0], verb };
   }
 
   const text =

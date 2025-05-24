@@ -8,6 +8,7 @@ import {
   AfterViewChecked,
   HostListener,
   OnChanges,
+  OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,6 +32,7 @@ import {
   isOwnMessage,
   trackByMessageId,
   buildNewMessage,
+  getSortedEmojisForUser,
 } from './../shared-functions';
 
 @Component({
@@ -40,7 +42,7 @@ import {
   styleUrl: './thread.component.scss',
 })
 export class ThreadComponent
-  implements AfterViewInit, AfterViewChecked, OnChanges
+  implements AfterViewInit, AfterViewChecked, OnChanges, OnInit
 {
   @Input() starterMessage?: Message;
   @Input() userId?: string; //
@@ -50,6 +52,7 @@ export class ThreadComponent
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
+  sortedEmojis: Emoji[] = [];
   emojiMenuOpen: boolean[] = [];
   filteredMessages: Message[] = [];
   hoveredIndex: number | null = null;
@@ -75,6 +78,11 @@ export class ThreadComponent
 
   get isFormValid(): boolean {
     return this.isTextareaFilled;
+  }
+
+  // TODO: Dateninitialisierung (z. B. ngOnInit): Den Benutzer laden (z. B. aus einem Service).
+  ngOnInit() {
+    this.updateSortedEmojis();
   }
 
   ngOnChanges() {
@@ -181,6 +189,7 @@ export class ThreadComponent
 
   handleEmojiClick(emojiName: string, msg: Message) {
     addEmojiToMessage(emojiName, msg, this.currentUser.id);
+    this.updateSortedEmojis();
   }
 
   markLastInRow() {
@@ -230,7 +239,13 @@ export class ThreadComponent
       this.textareaContent,
       unicodeEmoji
     );
+    this.updateSortedEmojis();
   };
+  updateSortedEmojis(): void {
+    this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
+    console.log('Updating, Order: ', this.sortedEmojis);
+  }
+
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
 

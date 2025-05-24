@@ -81,7 +81,7 @@
               >
                 <ng-container *ngIf="emojiMenuOpen[i]">
                   <span
-                    *ngFor="let emoji of emojis"
+                    *ngFor="let emoji of sortedEmojis"
                     class="emoji-icon top-emojis"
                     (click)="handleEmojiClick(emoji.name, msg)"
                     title="{{ emoji.name }}"
