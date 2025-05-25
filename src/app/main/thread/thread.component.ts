@@ -34,7 +34,7 @@ import {
   buildNewMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-} from './../shared-functions';
+} from '../../utils/messages-utils';
 
 @Component({
   selector: 'app-thread',
