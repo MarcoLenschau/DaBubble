@@ -9,12 +9,31 @@
 
   <!-- Linke Icons im Eingabefeld -->
   <div class="textarea-left-icons">
-    <img src="assets/img/message-icons/smiley2.svg">
-    <img src="assets/img/message-icons/smiley.svg">
+    <img
+      src="assets/img/message-icons/smiley2.svg"
+      (click)="toggleMainEmojiMenu($event)"
+    />
+    <img src="assets/img/message-icons/smiley.svg" />
+  </div>
+
+  <!-- Emoji Picker -->
+  <div
+    class="emoji-picker"
+    *ngIf="mainEmojiMenuOpen"
+    (click)="$event.stopPropagation()"
+  >
+    <span
+      *ngFor="let emoji of sortedEmojis"
+      class="emoji-icon"
+      (click)="addEmojiToMainMessage(emoji.unicode)"
+      title="{{ emoji.name }}"
+    >
+      {{ emoji.unicode }}
+    </span>
   </div>
 
   <!-- Rechter Senden-Button -->
   <div class="textarea-send-button">
-    <img src="assets/img/message-icons/Send icon.svg">
+    <img src="assets/img/message-icons/Send icon.svg" />
   </div>
 </div>

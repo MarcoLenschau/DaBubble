@@ -1,3 +1,6 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
 .main-message-box {
   position: relative;
   border: 1px solid #cfd3ec;
@@ -48,5 +51,51 @@
     height: 40px;
     cursor: pointer;
     filter: brightness(0) saturate(100%) invert(25%) sepia(95%) saturate(3350%) hue-rotate(218deg) brightness(100%) contrast(101%);
+  }
+}
+.emoji-picker {
+  position: absolute;
+  bottom: 70px; // leicht oberhalb des Eingabefeldes
+  left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  background-color: $white;
+  border: 1px solid $light-purple;
+  border-radius: 25px 25px 25px 0;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  max-width: 300px;
+  max-height: 150px;
+  overflow-y: auto;
+
+  // scrollbar optional entfernen
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.emoji-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: $white;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji", sans-serif;
+  user-select: none;
+  @include transition();
+
+  &:hover {
+    background-color: $grey;
   }
 }
