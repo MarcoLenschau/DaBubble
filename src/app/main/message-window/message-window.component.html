@@ -1,0 +1,6 @@
+<app-message-panel
+  [mode]="'message'"
+  [starterMessage]="starterMessage"
+  [userId]="userId"
+  (threadStart)="threadStart.emit($event)"
+></app-message-panel>
