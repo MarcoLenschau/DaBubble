@@ -30,6 +30,7 @@ export class TextareaComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Nachricht an...';
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
+  @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
 
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
@@ -37,11 +38,11 @@ export class TextareaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateSortedEmojis();
-    document.addEventListener('click', this.closeEmojiMenuOnOutsideClick);
+    document.addEventListener('click', this.handleClickOutside);
   }
 
   ngOnDestroy(): void {
-    document.removeEventListener('click', this.closeEmojiMenuOnOutsideClick);
+    document.removeEventListener('click', this.handleClickOutside);
   }
 
   onInput(event: Event): void {
@@ -60,14 +61,11 @@ export class TextareaComponent implements OnInit, OnDestroy {
     document.execCommand('insertText', false, unicodeEmoji);
     this.textInput = editable.innerHTML;
 
-    // optional: Tracking & Sortierung aktualisieren
     updateEmojiDataForUser({ id: 'current-user' } as any, unicodeEmoji);
     this.updateSortedEmojis();
-  }
 
-  closeEmojiMenuOnOutsideClick = (): void => {
     this.mainEmojiMenuOpen = false;
-  };
+  }
 
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(
@@ -75,4 +73,17 @@ export class TextareaComponent implements OnInit, OnDestroy {
       this.emojis
     );
   }
+
+  private handleClickOutside = (event: MouseEvent): void => {
+    const target = event.target as HTMLElement;
+
+    const clickedInsidePicker =
+      this.emojiPicker?.nativeElement?.contains(target);
+    const clickedOnSmiley =
+      this.editableDiv?.nativeElement?.contains(target);
+
+    if (!clickedInsidePicker && !clickedOnSmiley) {
+      this.mainEmojiMenuOpen = false;
+    }
+  };
 }
