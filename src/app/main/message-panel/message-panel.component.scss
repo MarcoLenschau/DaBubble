@@ -1,0 +1,30 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
+* {
+  margin: 0;
+}
+
+.message-container {
+  background-color: #ffffff;
+  height: 940px;
+  border-radius: 30px;
+}
+
+.thread-container {
+  background-color: #ffffff;
+  width: 485px;
+  height: 940px;
+  border-radius: 30px;
+}
+
+.message-content {
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 0px, $f: column);
+  padding-bottom: 24px;
+  height: 100%;
+}
+
+.message-textarea {
+  width: 100%;
+  padding: 24px 40px;
+}

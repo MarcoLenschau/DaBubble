@@ -1,0 +1,53 @@
+.main-message-box {
+  position: relative;
+  border: 1px solid #cfd3ec;
+  border-radius: 16px;
+  background-color: white;
+  padding: 12px;
+}
+
+.textarea {
+  min-height: 80px;
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 45px 40px 45px; // Platz für Icons
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  outline: none;
+  resize: none;
+  border: none;
+  overflow-y: auto;
+}
+
+.textarea-left-icons {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  display: flex;
+  gap: 12px;
+
+  img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.textarea-send-button {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+
+  img {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    filter: brightness(0) saturate(100%) invert(25%) sepia(95%) saturate(3350%)
+      hue-rotate(218deg) brightness(100%) contrast(101%);
+  }
+}
