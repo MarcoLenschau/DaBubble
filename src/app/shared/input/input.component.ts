@@ -17,4 +17,9 @@ export class InputComponent {
   @Output() valueChange = new EventEmitter<string>();
 
   constructor() {}
+
+  addData(event: Event) {  
+    const eventTarget = event.target as HTMLInputElement;
+    this.valueChange.emit(eventTarget.value);
+  }    
 }

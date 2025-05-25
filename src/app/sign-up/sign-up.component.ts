@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class SignUpComponent {
   user = {
+    displayName: '',
     email: '',
     password: ''
   }
@@ -23,12 +24,16 @@ export class SignUpComponent {
   }
 
   registerUser() {
-    console.log('E-Mail:', this.user.email);
-    console.log('Passwort:', this.user.password);
+    this.auth.register(this.user.displayName, this.user.email, this.user.password);
   }
 
-  onValueChanged(newValue: string) {
-    console.log('Wert vom Kind:', newValue);
-  // Hier kannst du die value z.B. in eine Variable speichern
+  setValue(eventValue: string, type: string){
+    if (type === 'email') {
+      this.user.email = eventValue;  
+    } else if (type === 'password') {
+      this.user.password = eventValue;  
+    } else if (type === 'name') {
+      this.user.displayName = eventValue;  
+    }
   }
 }
