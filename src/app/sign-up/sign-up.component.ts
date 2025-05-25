@@ -26,4 +26,9 @@ export class SignUpComponent {
     console.log('E-Mail:', this.user.email);
     console.log('Passwort:', this.user.password);
   }
+
+  onValueChanged(newValue: string) {
+    console.log('Wert vom Kind:', newValue);
+  // Hier kannst du die value z.B. in eine Variable speichern
+  }
 }
