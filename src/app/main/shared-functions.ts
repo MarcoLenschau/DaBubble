@@ -90,6 +90,7 @@ function addNewReaction(
 
 export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
   if (!hasEmojiData(user)) {
+    console.log('Defailt Emojis');
     return getDefaultEmojis(emojis);
   }
 
@@ -101,6 +102,7 @@ export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
 }
 
 function hasEmojiData(user: User): boolean {
+  console.log('console.log(user.recentEmojis);', user.recentEmojis);
   return (
     (user.recentEmojis?.length ?? 0) > 0 ||
     Object.keys(user.emojiUsage ?? {}).length > 0
@@ -148,6 +150,36 @@ function getFrequentEmojis(
     .sort((a, b) => b[1] - a[1])
     .map(([name]) => emojis.find((e) => e.name === name))
     .filter((e): e is Emoji => !!e);
+}
+
+export function updateEmojiDataForUser(user: User, emojiName: string): void {
+  ensureEmojiFieldsExist(user);
+  updateRecentEmojis(user, emojiName);
+  updateEmojiUsageCount(user, emojiName);
+}
+
+function ensureEmojiFieldsExist(user: User): void {
+  if (!user.recentEmojis) {
+    user.recentEmojis = [];
+  }
+  if (!user.emojiUsage) {
+    user.emojiUsage = {};
+  }
+}
+
+function updateRecentEmojis(user: User, emojiName: string): void {
+  const recent = user.recentEmojis ?? [];
+  user.recentEmojis = [
+    emojiName,
+    ...recent.filter((e) => e !== emojiName),
+  ].slice(0, 2);
+}
+
+function updateEmojiUsageCount(user: User, emojiName: string): void {
+  if (!user.emojiUsage) {
+    user.emojiUsage = {};
+  }
+  user.emojiUsage[emojiName] = (user.emojiUsage[emojiName] ?? 0) + 1;
 }
 
 export function getUserById(users: User[], userId: string): User | undefined {

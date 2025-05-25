@@ -1,5 +1,5 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TextareaComponent } from '../textarea/textarea.component';
 import { DialogUserDetailsComponent } from '../../dialogs/dialog-user-details/dialog-user-details.component';
@@ -22,6 +22,8 @@ import {
   isOwnMessage,
   trackByMessageId,
   buildNewMessage,
+  getSortedEmojisForUser,
+  updateEmojiDataForUser,
 } from './../shared-functions';
 
 @Component({
@@ -31,7 +33,7 @@ import {
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent {
+export class MessageComponent implements OnInit {
   constructor(private dialog: MatDialog) {}
   // Dummy-Daten
   // currentUser = { id: 'u1', name: 'Anna' };
@@ -98,6 +100,7 @@ export class MessageComponent {
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
+  sortedEmojis: Emoji[] = [];
   emojiMenuOpen: boolean[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
@@ -119,6 +122,10 @@ export class MessageComponent {
 
   get isFormValid(): boolean {
     return this.isTextareaFilled;
+  }
+
+  ngOnInit() {
+    this.updateSortedEmojis();
   }
 
   openThread(msg: Message) {
@@ -161,6 +168,38 @@ export class MessageComponent {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
+  handleEmojiClick(emojiName: string, msg: Message): void {
+    const wasAlreadyReacted = this.userHasReactedToEmoji(
+      msg,
+      emojiName,
+      this.currentUser.id
+    );
+
+    addEmojiToMessage(emojiName, msg, this.currentUser.id);
+
+    const isReactedNow = this.userHasReactedToEmoji(
+      msg,
+      emojiName,
+      this.currentUser.id
+    );
+
+    if (!wasAlreadyReacted && isReactedNow) {
+      updateEmojiDataForUser(this.currentUser, emojiName);
+    }
+
+    this.updateSortedEmojis();
+  }
+
+  userHasReactedToEmoji(
+    msg: Message,
+    emojiName: string,
+    userId: string
+  ): boolean {
+    return msg.reactions.some(
+      (r) => r.emojiName === emojiName && r.userIds.includes(userId)
+    );
+  }
+
   postMessage() {
     if (!this.currentUser) return;
 
@@ -184,16 +223,19 @@ export class MessageComponent {
     this.replyToMessage = null;
   }
 
-  handleEmojiClick(emojiName: string, msg: Message) {
-    addEmojiToMessage(emojiName, msg, this.currentUser.id);
-  }
-
   addEmojiToTextarea = (unicodeEmoji: string) => {
+    // TODO: im HTML implementieren
     this.textareaContent = addEmojiToTextarea(
       this.textareaContent,
       unicodeEmoji
     );
+    this.updateSortedEmojis();
   };
+
+  updateSortedEmojis(): void {
+    this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
+    console.log('Updating, Order: ', this.sortedEmojis);
+  }
 
   formatTime = formatTime;
   getUserNames = (userIds: string[]) =>

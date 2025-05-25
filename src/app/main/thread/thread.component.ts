@@ -33,6 +33,7 @@ import {
   trackByMessageId,
   buildNewMessage,
   getSortedEmojisForUser,
+  updateEmojiDataForUser,
 } from './../shared-functions';
 
 @Component({
@@ -186,10 +187,36 @@ export class ThreadComponent
   closeEmojiRow(event: MouseEvent): void {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
+  handleEmojiClick(emojiName: string, msg: Message): void {
+    const wasAlreadyReacted = this.userHasReactedToEmoji(
+      msg,
+      emojiName,
+      this.currentUser.id
+    );
 
-  handleEmojiClick(emojiName: string, msg: Message) {
     addEmojiToMessage(emojiName, msg, this.currentUser.id);
+
+    const isReactedNow = this.userHasReactedToEmoji(
+      msg,
+      emojiName,
+      this.currentUser.id
+    );
+
+    if (!wasAlreadyReacted && isReactedNow) {
+      updateEmojiDataForUser(this.currentUser, emojiName);
+    }
+
     this.updateSortedEmojis();
+  }
+
+  userHasReactedToEmoji(
+    msg: Message,
+    emojiName: string,
+    userId: string
+  ): boolean {
+    return msg.reactions.some(
+      (r) => r.emojiName === emojiName && r.userIds.includes(userId)
+    );
   }
 
   markLastInRow() {
@@ -235,6 +262,7 @@ export class ThreadComponent
   getEmojiByUnicode = (unicode: string) =>
     getEmojiByUnicode(this.emojis, unicode);
   addEmojiToTextarea = (unicodeEmoji: string) => {
+    // TODO: im HTML implementieren
     this.textareaContent = addEmojiToTextarea(
       this.textareaContent,
       unicodeEmoji
