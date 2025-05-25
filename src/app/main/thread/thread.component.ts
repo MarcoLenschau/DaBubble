@@ -187,6 +187,7 @@ export class ThreadComponent
   closeEmojiRow(event: MouseEvent): void {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
+
   handleEmojiClick(emojiName: string, msg: Message): void {
     const wasAlreadyReacted = this.userHasReactedToEmoji(
       msg,
@@ -269,6 +270,7 @@ export class ThreadComponent
     );
     this.updateSortedEmojis();
   };
+
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
     console.log('Updating, Order: ', this.sortedEmojis);
