@@ -1,0 +1,70 @@
+<ng-container *ngIf="isMessage">
+  <div
+    class="message-header"
+    [ngClass]="{
+      'thread-header-height': isThread,
+      'message-header-height': isMessage
+    }"
+  >
+    <div class="message-header-content">
+      <div class="message-header-content-text">
+        <h2>Neue Nachricht</h2>
+      </div>
+      <div>[channel members]</div>
+      <!--Im channel-view werden hier channel members angezeigt-->
+    </div>
+    <!-- Empfänger-Eingabe + Suchergebnisse -->
+    <div class="recipient-search">
+      <input
+        #searchInput
+        type="search"
+        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        (input)="onSearch($event)"
+      />
+      <div
+        *ngIf="
+          searchResultsUser.length ||
+          searchResultsEmail.length ||
+          searchResultsChannels.length
+        "
+        class="search-results"
+      >
+        <ul>
+          <li
+            *ngFor="let user of searchResultsEmail"
+            (click)="selectUser(user, searchInput)"
+          >
+            <strong>{{ user.email }}</strong>
+          </li>
+          <li
+            *ngFor="let user of searchResultsUser"
+            (click)="selectUser(user, searchInput)"
+          >
+            <strong>&#64;{{ user.name }}</strong>
+          </li>
+          <li
+            *ngFor="let channel of searchResultsChannels"
+            (click)="selectChannel(channel, searchInput)"
+          >
+            <strong>#{{ channel.channelName }}</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div></ng-container
+>
+
+<ng-container *ngIf="isThread"
+  ><div class="thread-header">
+    <div class="thread-header-content">
+      <div class="thread-header-content-text">
+        <h2>Thread</h2>
+        <p>{{ threadSymbol }}</p>
+        <p>{{ threadTitle }}</p>
+      </div>
+      <div class="close-button" (click)="closeThread()">
+        <img src="assets/img/close/close.svg" class="default" />
+        <img src="assets/img/close/close-hover.svg" class="hover" />
+      </div>
+    </div></div
+></ng-container>

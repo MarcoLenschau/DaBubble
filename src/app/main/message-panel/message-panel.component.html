@@ -1,0 +1,21 @@
+<div
+  [ngClass]="{ 'thread-container': isThread, 'message-container': isMessage }"
+>
+  <div class="message-content">
+    <app-messages-header [mode]="mode"></app-messages-header>
+
+    <app-messages
+      [mode]="mode"
+      [starterMessage]="starterMessage"
+      [userId]="userId"
+      (threadStart)="onStartThread($event.starterMessage, $event.userId)"
+    ></app-messages>
+    <div class="message-textarea">
+      <app-messages-textarea
+        [mode]="mode"
+        [textInput]="textInput"
+        placeholder="Nachricht schreiben..."
+      ></app-messages-textarea>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+@import "./../../shared/styles/mix-in.scss";
+@import "./../../shared/styles/color.scss";
+
+:host {
+  display: block;
+  @include transition();
+}
+
+:host(.visible) {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  width: 485px;
+}
+
+:host(.hidden) {
+  opacity: 0;
+  transform: translateX(300px);
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+}

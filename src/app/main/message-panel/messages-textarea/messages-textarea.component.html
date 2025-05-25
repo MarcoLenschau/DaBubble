@@ -1,0 +1,20 @@
+<div class="main-message-box" [ngStyle]="{ padding: mainMessageBoxPadding }">
+  <div
+    class="textarea"
+    contenteditable="true"
+    #editableDiv
+    [attr.placeholder]="placeholder"
+    (input)="onInput($event)"
+  ></div>
+
+  <!-- Linke Icons im Eingabefeld -->
+  <div class="textarea-left-icons">
+    <img src="assets/img/message-icons/smiley2.svg" />
+    <img src="assets/img/message-icons/smiley.svg" />
+  </div>
+
+  <!-- Rechter Senden-Button -->
+  <div class="textarea-send-button">
+    <img src="assets/img/message-icons/Send icon.svg" />
+  </div>
+</div>
