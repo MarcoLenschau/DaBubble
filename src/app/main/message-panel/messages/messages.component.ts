@@ -3,11 +3,11 @@ import {
   Input,
   Output,
   EventEmitter,
-  AfterViewInit,
-  AfterViewChecked,
-  HostListener,
   OnChanges,
   OnInit,
+  ViewChildren,
+  ElementRef,
+  QueryList,
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,9 +41,7 @@ import {
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.scss',
 })
-export class MessagesComponent
-  implements AfterViewInit, AfterViewChecked, OnChanges, OnInit
-{
+export class MessagesComponent implements OnChanges, OnInit {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
@@ -52,6 +50,7 @@ export class MessagesComponent
     starterMessage: Message;
     userId: string;
   }>();
+  @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users = users;
   currentUser = currentUser;
@@ -71,8 +70,6 @@ export class MessagesComponent
   threadId: string = '';
   channelId: string = '';
 
-  private marked = false;
-
   constructor(private dialog: MatDialog) {}
 
   get isThread(): boolean {
@@ -90,23 +87,6 @@ export class MessagesComponent
   ngOnChanges() {
     if (this.starterMessage) {
       this.setReplyToMessage(this.starterMessage);
-    }
-  }
-
-  ngAfterViewInit() {
-    this.markLastInRow();
-    this.marked = true;
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.markLastInRow();
-  }
-
-  ngAfterViewChecked() {
-    if (!this.marked) {
-      this.markLastInRow();
-      this.marked = true;
     }
   }
 
@@ -239,37 +219,36 @@ export class MessagesComponent
     );
   }
 
-  markLastInRow() {
-    const wrappers: HTMLElement[] = Array.from(
-      document.querySelectorAll(
-        '.reactions.reactions-left-aligned .bottom-emoji-wrapper'
-      )
-    );
-    if (!wrappers.length) return;
+  onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) {
+    const wrapper = event.currentTarget as HTMLElement;
+    setTimeout(() => {
+      const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
+      const threadMessages = wrapper.closest('.thread-messages');
 
-    wrappers.forEach((w) => w.classList.remove('last-in-row'));
-
-    const rowsMap = new Map<number, HTMLElement[]>();
-    wrappers.forEach((el) => {
-      const top = Math.round(el.getBoundingClientRect().top);
-      if (!rowsMap.has(top)) rowsMap.set(top, []);
-      rowsMap.get(top)!.push(el);
-    });
-
-    rowsMap.forEach((rowElements) => {
-      if (rowElements.length < 4) return;
-      let lastEl = rowElements[0];
-      let maxRight = lastEl.getBoundingClientRect().right;
-
-      for (const el of rowElements) {
-        const right = el.getBoundingClientRect().right;
-        if (right > maxRight) {
-          maxRight = right;
-          lastEl = el;
-        }
+      if (tooltip && threadMessages) {
+        this.adjustTooltipPosition(
+          tooltip as HTMLElement,
+          threadMessages as HTMLElement
+        );
       }
-      lastEl.classList.add('last-in-row');
-    });
+    }, 60);
+  }
+
+  adjustTooltipPosition(
+    tooltipElement: HTMLElement,
+    threadMessages: HTMLElement
+  ) {
+    if (!tooltipElement) return;
+
+    const rect = tooltipElement.getBoundingClientRect();
+    const threadRect = threadMessages.getBoundingClientRect();
+    console.log(rect.right, threadRect.right);
+
+    if (rect.right > threadRect.right) {
+      tooltipElement.classList.add('overflowing-right');
+    } else {
+      tooltipElement.classList.remove('overflowing-right');
+    }
   }
 
   formatTime = formatTime;
@@ -292,7 +271,6 @@ export class MessagesComponent
 
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
-    console.log('Updating, Order: ', this.sortedEmojis);
   }
 
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);

@@ -263,6 +263,11 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
+      @include transition();
+
+      &.overflowing-right {
+        transform: translateX(-35%);
+      }
 
       .tooltip-emoji {
         display: inline-flex; // TODO block oder flex?
@@ -286,10 +291,6 @@
         text-align: center;
         line-height: 160%;
       }
-    }
-
-    &.last-in-row .bottom-emoji-tooltip {
-      transform: translateX(-35%);
     }
   }
 

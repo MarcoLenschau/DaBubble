@@ -160,18 +160,18 @@
         class="reactions"
         [ngClass]="{
           'thread-reactions': isThread,
-          'message-reactions': isMessage
+          'message-reactions': isMessage, 'reactions-right-aligned': isOwnMessage(msg),
+          'reactions-left-aligned': !isOwnMessage(msg),
         }"
         *ngIf="msg.reactions?.length"
-        [ngClass]="{
-          'reactions-right-aligned': isOwnMessage(msg),
-          'reactions-left-aligned': !isOwnMessage(msg),
-                    }"
       >
         <div
           *ngFor="let reaction of msg.reactions; let j = index"
           class="bottom-emoji-wrapper"
-          (mouseenter)="setTooltipHoveredState(j, reaction.userIds)"
+          (mouseenter)="
+            setTooltipHoveredState(j, reaction.userIds);
+            onMouseEnterEmojiWrapper($event, j)
+          "
           (mouseleave)="setTooltipHoveredState(null, null)"
         >
           <span class="bottom-emoji">{{
@@ -182,6 +182,7 @@
 
           <div
             *ngIf="hoveredIndex === i && tooltipHoveredIndex == j"
+            #emojiTooltip
             class="bottom-emoji-tooltip"
           >
             <span class="tooltip-emoji">{{
