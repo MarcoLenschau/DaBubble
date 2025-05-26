@@ -18,6 +18,6 @@
     [starterMessage]="starterMessage"
     [userId]="userId"
     [ngClass]="{ visible: showThread, hidden: !showThread }"
-    (showThreadChange)="showThread = $event"
+    (showThreadClosing)="onThreadClose()"
   ></app-thread-window>
 </div>

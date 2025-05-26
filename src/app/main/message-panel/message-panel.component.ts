@@ -25,6 +25,8 @@ export class MessagePanelComponent {
     starterMessage: Message;
     userId: string;
   }>();
+  /** Weitergabe des Close-Events an Parent (ThreadWindow) */
+  @Output() closeThreadPanelWindow = new EventEmitter<void>();
 
   textInput = '';
 
@@ -38,5 +40,9 @@ export class MessagePanelComponent {
 
   onStartThread(message: Message, userId: string) {
     this.threadStart.emit({ starterMessage: message, userId });
+  }
+
+  onCloseClick() {
+    this.closeThreadPanelWindow.emit();
   }
 }

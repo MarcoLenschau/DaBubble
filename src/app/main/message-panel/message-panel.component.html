@@ -2,7 +2,11 @@
   [ngClass]="{ 'thread-container': isThread, 'message-container': isMessage }"
 >
   <div class="message-content">
-    <app-messages-header [mode]="mode"></app-messages-header>
+    <app-messages-header
+      [mode]="mode"
+      [starterMessage]="starterMessage"
+      (closeThreadWindow)="onCloseClick()"
+    ></app-messages-header>
 
     <app-messages
       [mode]="mode"

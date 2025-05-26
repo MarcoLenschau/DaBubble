@@ -32,4 +32,8 @@ export class MainComponent {
     this.userId = event.userId;
     this.showThread = true;
   }
+
+  onThreadClose() {
+    this.showThread = false;
+  }
 }

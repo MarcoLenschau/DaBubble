@@ -1,11 +1,11 @@
-<ng-container *ngIf="isMessage">
-  <div
-    class="message-header"
-    [ngClass]="{
-      'thread-header-height': isThread,
-      'message-header-height': isMessage
-    }"
-  >
+<div
+  class="message-header"
+  [ngClass]="{
+    'thread-header-height': isThread,
+    'message-header-height': isMessage
+  }"
+>
+  <ng-container *ngIf="isMessage">
     <div class="message-header-content">
       <div class="message-header-content-text">
         <h2>Neue Nachricht</h2>
@@ -51,13 +51,11 @@
         </ul>
       </div>
     </div>
-  </div></ng-container
->
+  </ng-container>
 
-<ng-container *ngIf="isThread"
-  ><div class="thread-header">
-    <div class="thread-header-content">
-      <div class="thread-header-content-text">
+  <ng-container *ngIf="isThread">
+    <div class="message-header-content">
+      <div class="message-header-content-text">
         <h2>Thread</h2>
         <p>{{ threadSymbol }}</p>
         <p>{{ threadTitle }}</p>
@@ -65,6 +63,6 @@
       <div class="close-button" (click)="closeThread()">
         <img src="assets/img/close/close.svg" class="default" />
         <img src="assets/img/close/close-hover.svg" class="hover" />
-      </div>
-    </div></div
-></ng-container>
+      </div></div
+  ></ng-container>
+</div>

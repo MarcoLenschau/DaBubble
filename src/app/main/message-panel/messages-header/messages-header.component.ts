@@ -1,6 +1,8 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Message } from '../../../models/message.model';
+import { channels } from '../../../utils/messages-utils';
 
 @Component({
   selector: 'app-messages-header',
@@ -10,10 +12,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
-  @Output() showThreadChange = new EventEmitter<boolean>();
-
-  threadSymbol: '#' | '@' = '#';
-  threadTitle: string = '';
+  @Input() starterMessage?: Message;
+  @Output() closeThreadWindow = new EventEmitter<boolean>();
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -21,6 +21,21 @@ export class MessagesHeaderComponent {
 
   get isMessage(): boolean {
     return this.mode === 'message';
+  }
+
+  get threadSymbol(): '#' | '@' {
+    return this.starterMessage?.channelId ? '#' : '@';
+  }
+
+  get threadTitle(): string {
+    if (!this.starterMessage) return '';
+    if (this.starterMessage.channelId) {
+      return (
+        channels.find((c) => c.id === this.starterMessage!.channelId)?.name ??
+        'Unbekannter Kanal'
+      );
+    }
+    return this.starterMessage.name;
   }
 
   // Dummy-Daten
@@ -80,6 +95,6 @@ export class MessagesHeaderComponent {
   }
 
   closeThread() {
-    this.showThreadChange.emit(false);
+    this.closeThreadWindow.emit(false);
   }
 }

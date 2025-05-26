@@ -9,8 +9,14 @@
   width: 100%;
   flex-grow: 1;
   overflow-y: auto;
-  padding-top: 22px;
+  // padding-top: 22px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
+}
+
+.padding-top {
+  width: 100%;
+  height: 22px;
+  z-index: 0;
 }
 
 .thread-messages {

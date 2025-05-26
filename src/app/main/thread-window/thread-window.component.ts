@@ -12,9 +12,9 @@ export class ThreadWindowComponent {
   @Input() mode: 'message' | 'thread' = 'message';
   @Input() starterMessage?: Message;
   @Input() userId?: string;
-  @Output() showThreadChange = new EventEmitter<boolean>();
+  @Output() showThreadClosing = new EventEmitter<boolean>();
 
-  closeThread() {
-    this.showThreadChange.emit(false);
+  onInnerClose() {
+    this.showThreadClosing.emit(false);
   }
 }

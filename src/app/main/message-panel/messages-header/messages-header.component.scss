@@ -5,6 +5,10 @@
   margin: 0;
 }
 
+:host {
+  width: 100%;
+}
+
 .thread-header-height {
   height: 107px;
 }
