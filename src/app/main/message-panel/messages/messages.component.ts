@@ -109,7 +109,7 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   private loadMessages(): void {
     this.messageDataService.getMessages().subscribe((loadedMessages) => {
-      this.messages = loadedMessages;
+      this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
       console.log('Messages: ', this.messages);
     });
   }
