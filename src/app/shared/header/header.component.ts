@@ -4,8 +4,6 @@ import { RouterService } from '../../services/router.service';
 import { InputComponent } from '../input/input.component';
 import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/dialog-user-options.component';
 import {MatDialog} from '@angular/material/dialog'
-import { Observable } from 'rxjs';
-import { FirebaseService } from '../../services/firebase.service';
 import { User } from '../../models/user.model';
 
 @Component({
@@ -15,22 +13,14 @@ import { User } from '../../models/user.model';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user$: Observable<any[]>;
   user: User = {
-    id: "0",
+    id: 'user',
     name: 'Gast',
-    email: 'gast@mail.com',
-    img: './assets/img/profilepic/frederik.png'
-  }
+    email:  'gast@gmail.com',
+    img: ''
+  };
   
-  constructor(private firebase: FirebaseService, private dialog: MatDialog, public router: RouterService) {
-    this.user$ = this.firebase.getColRef("users"); 
-      this.user$.forEach((users) => {
-        if (users.length > 0) {
-          
-        }
-    })
-  }
+  constructor(private dialog: MatDialog, public router: RouterService) {}
 
   openDialog() {
     let dialogRef = this.dialog.open(DialogUserOptionsComponent);
