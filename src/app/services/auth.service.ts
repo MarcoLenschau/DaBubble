@@ -10,6 +10,7 @@ import { FirebaseService } from './firebase.service';
 export class AuthService {
   user$: Observable<any>;
   users: any[] = [];
+  user: any = {};
 
   constructor(private auth: Auth, private firebase: FirebaseService) {
     this.user$ = this.firebase.getColRef("users"); 
@@ -28,6 +29,8 @@ export class AuthService {
     return signInWithPopup(this.auth, provider)
     .then(result => {
       this.isUserExists(result, userCreated);
+      this.user = result.user;
+      console.log('Login successful:', this.user);
       return result.user
     })
     .catch(error => {
@@ -49,7 +52,7 @@ export class AuthService {
 
   async register(name: string, email: string, password: string): Promise<User | null> {
     try {
-      const result = await this.createUserWithEmail(email, password, name);
+      const result = await this.createUserWithEmail(email, password, name);;
       return result;
     } catch (error) {
       console.error('Registrierung fehlgeschlagen:', error);
@@ -65,6 +68,7 @@ export class AuthService {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
     result.user = this.createValidUser(result.user, name);
     this.firebase.addUser(result.user);
+    this.user = result.user;
     return result.user;
   }
 }

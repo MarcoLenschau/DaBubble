@@ -4,7 +4,7 @@ import { RouterService } from '../../services/router.service';
 import { InputComponent } from '../input/input.component';
 import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/dialog-user-options.component';
 import {MatDialog} from '@angular/material/dialog'
-import { User } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -13,9 +13,9 @@ import { User } from '../../models/user.model';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user: User = {
+  user = {
     id: 'user',
-    name: 'Gast',
+    displayName: 'Gast',
     email:  'gast@gmail.com',
     img: ''
   };
