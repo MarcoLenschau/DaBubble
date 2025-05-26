@@ -95,8 +95,11 @@ export class MessagesComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges() {
+    console.log('On Changes: Starter Message: ', this.starterMessage);
+
     if (this.starterMessage) {
       this.setReplyToMessage(this.starterMessage);
+      console.log('Starter message setReplyToMessage');
     }
   }
 
@@ -114,8 +117,13 @@ export class MessagesComponent implements OnChanges, OnInit {
     });
   }
 
+  saveMessage(msg: Message) {
+    this.messageDataService.updateMessage(msg);
+  }
+
   openThread(msg: Message) {
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
+    console.log(msg, currentUser.id);
   }
 
   openUserDialog(userId?: string): void {
@@ -132,41 +140,44 @@ export class MessagesComponent implements OnChanges, OnInit {
     this.showThreadChange.emit(false);
   }
 
-  postThreadMessage() {
-    if (!this.starterMessage || !this.currentUser) return;
+  // postThreadMessage() {
+  //   if (!this.starterMessage || !this.currentUser) return;
 
-    const newMessage = buildNewMessage(
-      this.textareaContent,
-      this.currentUser,
-      this.starterMessage.id,
-      this.starterMessage.channelId || ''
-    );
+  //   const newMessage = buildNewMessage(
+  //     this.textareaContent,
+  //     this.currentUser,
+  //     this.starterMessage.id,
+  //     this.starterMessage.channelId || ''
+  //   );
 
-    this.messages.push(newMessage);
-    this.filteredMessages = this.messages.filter(
-      (m) => m.threadId === this.starterMessage!.id
-    );
-    this.clearTextarea();
-  }
+  //   this.messages.push(newMessage);
+  //   this.filteredMessages = this.messages.filter(
+  //     (m) => m.threadId === this.starterMessage!.id
+  //   );
+  //   this.clearTextarea();
+  // }
 
-  postMessage() {
-    if (!this.currentUser) return;
+  // postMessage() {
+  //   if (!this.currentUser) return;
 
-    const newMessage = buildNewMessage(
-      this.textareaContent,
-      this.currentUser,
-      '',
-      this.channelId || ''
-    );
+  //   const newMessage = buildNewMessage(
+  //     this.textareaContent,
+  //     this.currentUser,
+  //     '',
+  //     this.channelId || ''
+  //   );
 
-    this.messages.push(newMessage);
-    this.clearTextarea();
-  }
+  //   this.messages.push(newMessage);
+  //   this.clearTextarea();
+  // }
 
   setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
     this.threadId = msg.id;
     msg.threadId = msg.id;
+    this.saveMessage(msg);
+    console.log('this.messages: ', this.messages);
+
     this.filteredMessages = this.messages.filter((m) => m.threadId === msg.id);
 
     this.threadSymbol = msg.channelId ? '#' : '@';
@@ -231,6 +242,7 @@ export class MessagesComponent implements OnChanges, OnInit {
     }
 
     this.updateSortedEmojis();
+    this.saveMessage(msg);
   }
 
   userHasReactedToEmoji(

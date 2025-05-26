@@ -2,5 +2,5 @@
   [mode]="'message'"
   [starterMessage]="starterMessage"
   [userId]="userId"
-  (threadStart)="threadStart.emit($event)"
+  (threadStart)="threadOpen($event.starterMessage, $event.userId)"
 ></app-message-panel>

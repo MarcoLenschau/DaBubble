@@ -16,4 +16,8 @@ export class MessageWindowComponent {
     starterMessage: Message;
     userId: string;
   }>();
+
+  threadOpen(message: Message, userId: string) {
+    this.threadStart.emit({ starterMessage: message, userId });
+  }
 }
