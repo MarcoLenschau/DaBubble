@@ -55,17 +55,13 @@
             </div>
 
             <div class="profile-users" *ngIf="isMessageOpen">
-                <div class="profile-user"
-                *ngFor="let user of users"
-                (click)="setActiveUser(user.name)"
-                [ngClass]="{'hovered' : activeUser !== user.name, 'active' : activeUser === user.name}"
-                
-                >
+                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
+                [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
                         <img class="profile-pic" [src]="user.img" alt="user">
                         <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
-                    <p>{{user.name}}</p>
+                    <p>{{user.displayName}}</p>
                 </div>
 
                 

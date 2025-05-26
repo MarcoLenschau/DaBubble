@@ -24,7 +24,11 @@ export class SignUpComponent {
   }
 
   registerUser() {
-    this.auth.register(this.user.displayName, this.user.email, this.user.password);
+    this.auth.register(this.user.displayName, this.user.email, this.user.password).then(user => {
+      if (user) {
+        this.router.switchRoute("message");
+      } 
+    })  
   }
 
   setValue(eventValue: string, type: string){

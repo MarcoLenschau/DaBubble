@@ -19,12 +19,12 @@ export class DevspaceComponent {
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users = [
-    { name: 'Frederik Beck (Du)', img: './assets/img/profilepic/frederik.png' },
-    { name: 'Sofia Müller', img: './assets/img/profilepic/sofia.png' },
-    { name: 'Noah Braun', img: './assets/img/profilepic/noah.png' },
-    { name: 'Elise Roth', img: './assets/img/profilepic/elise.png' },
-    { name: 'Elias Neumann', img: './assets/img/profilepic/elias.png' },
-    { name: 'Steffen Hoffmann', img: './assets/img/profilepic/steffen.png' },
+    { displayName: 'Frederik Beck (Du)', img: './assets/img/profilepic/frederik.png' },
+    { displayName: 'Sofia Müller', img: './assets/img/profilepic/sofia.png' },
+    { displayName: 'Noah Braun', img: './assets/img/profilepic/noah.png' },
+    { displayName: 'Elise Roth', img: './assets/img/profilepic/elise.png' },
+    { displayName: 'Elias Neumann', img: './assets/img/profilepic/elias.png' },
+    { displayName: 'Steffen Hoffmann', img: './assets/img/profilepic/steffen.png' },
   ]
 
   constructor(private firebase: FirebaseService) {

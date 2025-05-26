@@ -31,8 +31,8 @@ export class AuthService {
       return result.user
     })
     .catch(error => {
-        console.error('Login failed:', error);
-        return null;
+      console.error('Login failed:', error);
+      return null;
     });
   }
 
@@ -49,11 +49,22 @@ export class AuthService {
 
   async register(name: string, email: string, password: string): Promise<User | null> {
     try {
-      const result = await createUserWithEmailAndPassword(this.auth, email, password);
-      return result.user;
+      const result = await this.createUserWithEmail(email, password, name);
+      return result;
     } catch (error) {
       console.error('Registrierung fehlgeschlagen:', error);
       return null;
     }
+  }
+
+  createValidUser(result: any, name: string): any {
+    return { ...result.user,displayName: name };
+  }
+
+  async createUserWithEmail(email: string, password: string, name: string) {
+    const result = await createUserWithEmailAndPassword(this.auth, email, password);
+    result.user = this.createValidUser(result.user, name);
+    this.firebase.addUser(result.user);
+    return result.user;
   }
 }
