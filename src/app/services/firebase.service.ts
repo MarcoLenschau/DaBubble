@@ -1,12 +1,20 @@
-import { Injectable} from '@angular/core';
-import { Firestore, collection, collectionData, doc, onSnapshot, addDoc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Injectable } from '@angular/core';
+import {
+  Firestore,
+  collection,
+  collectionData,
+  doc,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
-  
   constructor(private firebase: Firestore) {}
 
   getDocRef(docRef: string) {
@@ -14,7 +22,7 @@ export class FirebaseService {
   }
 
   getColRef(col: string) {
-    return collectionData(this.getDocRef(col),{ idField: 'id' });
+    return collectionData(this.getDocRef(col), { idField: 'id' });
   }
 
   getSingleDocRef(docRef: string, docId: any) {
@@ -31,12 +39,11 @@ export class FirebaseService {
     return {
       displayName: data.displayName,
       email: data.email,
-      stsTokenManager: 
-      {
+      stsTokenManager: {
         accessToken: data.stsTokenManager.accessToken,
         expirationTime: data.stsTokenManager.expirationTime,
-        refreshToken: data.stsTokenManager.refreshToken
-      }
+        refreshToken: data.stsTokenManager.refreshToken,
+      },
     };
-  };
+  }
 }

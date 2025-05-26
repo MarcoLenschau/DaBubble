@@ -13,11 +13,13 @@ import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
+import { UserDataService } from '../../../services/user-data.service';
+import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
   currentUser,
-  users,
+  // users,
   messages,
   channels,
   formatTime,
@@ -34,6 +36,7 @@ import {
   getSortedEmojisForUser,
   updateEmojiDataForUser,
 } from '../../../utils/messages-utils';
+import { user } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-messages',
@@ -52,7 +55,7 @@ export class MessagesComponent implements OnChanges, OnInit {
   }>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
-  users = users;
+  users: User[] = [];
   currentUser = currentUser;
   messages = messages;
   emojis: Emoji[] = EMOJIS;
@@ -70,7 +73,10 @@ export class MessagesComponent implements OnChanges, OnInit {
   threadId: string = '';
   channelId: string = '';
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private userDataService: UserDataService,
+    private dialog: MatDialog
+  ) {}
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -81,6 +87,7 @@ export class MessagesComponent implements OnChanges, OnInit {
   }
 
   ngOnInit() {
+    this.loadUsers();
     this.updateSortedEmojis();
   }
 
@@ -88,6 +95,13 @@ export class MessagesComponent implements OnChanges, OnInit {
     if (this.starterMessage) {
       this.setReplyToMessage(this.starterMessage);
     }
+  }
+
+  private loadUsers(): void {
+    this.userDataService.getUsers().subscribe((loadedUsers) => {
+      this.users = loadedUsers;
+      console.log('Users: ', this.users);
+    });
   }
 
   openThread(msg: Message) {
@@ -242,7 +256,6 @@ export class MessagesComponent implements OnChanges, OnInit {
 
     const rect = tooltipElement.getBoundingClientRect();
     const threadRect = threadMessages.getBoundingClientRect();
-    console.log(rect.right, threadRect.right);
 
     if (rect.right > threadRect.right) {
       tooltipElement.classList.add('overflowing-right');

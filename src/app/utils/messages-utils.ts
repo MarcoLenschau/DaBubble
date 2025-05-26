@@ -268,44 +268,44 @@ export const currentUser: User = {
   img: './assets/img/profilepic/frederik.png',
 };
 
-export const users: User[] = [
-  {
-    id: 'user1',
-    name: 'Elise Roth',
-    email: 'elise@example.com',
-    img: './assets/img/profilepic/elise.png',
-  },
-  {
-    id: 'user2',
-    name: 'Sofia Müller',
-    email: 'sofia@example.com',
-    img: './assets/img/profilepic/sofia.png',
-  },
-  {
-    id: 'user3',
-    name: 'Noah Braun',
-    email: 'noah@example.com',
-    img: './assets/img/profilepic/noah.png',
-  },
-  {
-    id: 'user4',
-    name: 'Frederik Beck',
-    email: 'frederik@example.com',
-    img: './assets/img/profilepic/frederik.png',
-  },
-  {
-    id: 'user5',
-    name: 'Elias Neumann',
-    email: 'elias@example.com',
-    img: './assets/img/profilepic/elias.png',
-  },
-  {
-    id: 'user6',
-    name: 'Steffen Hoffmann',
-    email: 'steffen@example.com',
-    img: './assets/img/profilepic/steffen.png',
-  },
-];
+// export const users: User[] = [
+//   {
+//     id: 'user1',
+//     name: 'Elise Roth',
+//     email: 'elise@example.com',
+//     img: './assets/img/profilepic/elise.png',
+//   },
+//   {
+//     id: 'user2',
+//     name: 'Sofia Müller',
+//     email: 'sofia@example.com',
+//     img: './assets/img/profilepic/sofia.png',
+//   },
+//   {
+//     id: 'user3',
+//     name: 'Noah Braun',
+//     email: 'noah@example.com',
+//     img: './assets/img/profilepic/noah.png',
+//   },
+//   {
+//     id: 'user4',
+//     name: 'Frederik Beck',
+//     email: 'frederik@example.com',
+//     img: './assets/img/profilepic/frederik.png',
+//   },
+//   {
+//     id: 'user5',
+//     name: 'Elias Neumann',
+//     email: 'elias@example.com',
+//     img: './assets/img/profilepic/elias.png',
+//   },
+//   {
+//     id: 'user6',
+//     name: 'Steffen Hoffmann',
+//     email: 'steffen@example.com',
+//     img: './assets/img/profilepic/steffen.png',
+//   },
+// ];
 
 export const messages: Message[] = [
   {

@@ -28,6 +28,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() mainMessageBoxPadding: string = '2rem';
   @Input() toolbarWidth: string = '100%';
   @Input() placeholder: string = 'Nachricht an...';
+  @Input() mode: 'thread' | 'message' = 'message';
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
@@ -36,6 +37,13 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   sortedEmojis: Emoji[] = [];
   mainEmojiMenuOpen: boolean = false;
 
+  get isThread(): boolean {
+    return this.mode === 'thread';
+  }
+
+  get isMessage(): boolean {
+    return this.mode === 'message';
+  }
   ngOnInit(): void {
     this.updateSortedEmojis();
     document.addEventListener('click', this.handleClickOutside);
