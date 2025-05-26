@@ -2,6 +2,7 @@
   [ngClass]="{ 'thread-container': isThread, 'message-container': isMessage }"
 >
   <div class="message-content">
+    <!-- TODO: In einem Channel muss der Channel-Titel angezeigt werden. Der Channel muss dann an <app-messages-textarea weitergegeben werden  -->
     <app-messages-header
       [mode]="mode"
       [starterMessage]="starterMessage"
@@ -17,6 +18,7 @@
     <div class="message-textarea">
       <app-messages-textarea
         [mode]="mode"
+        [starterMessage]="starterMessage"
         [textInput]="textInput"
         placeholder="Nachricht schreiben..."
       ></app-messages-textarea>

@@ -7,10 +7,12 @@ import {
   updateDoc,
   deleteDoc,
   addDoc,
+  setDoc,
   CollectionReference,
   DocumentData,
   collection,
   getFirestore,
+  Firestore,
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -19,7 +21,10 @@ import {
 export class MessageDataService {
   private readonly collectionPath = 'messages';
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(
+    private firebaseService: FirebaseService,
+    private firestore: Firestore
+  ) {}
 
   getMessages(): Observable<Message[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
@@ -32,8 +37,8 @@ export class MessageDataService {
               text: docData['text'],
               timestamp: docData['timestamp'],
               userId: docData['userId'],
-              channelId: docData['channelId'],
-              threadId: docData['threadId'],
+              channelId: docData['channelId'] ?? '',
+              threadId: docData['threadId'] ?? '',
               reactions: docData['reactions'] ?? [],
             })
         )
@@ -41,15 +46,12 @@ export class MessageDataService {
     );
   }
 
-  async addMessage(message: Message) {
-    const colRef = this.getCollectionRef();
-    const cleanJson = this.getCleanJson(message);
-    const docRef = await addDoc(colRef, cleanJson);
-    return docRef.id;
-  }
+  async addMessage(message: Message): Promise<void> {
+    const messageRef = doc(collection(this.firestore, 'messages'));
 
-  private getCollectionRef(): CollectionReference<DocumentData> {
-    return collection(getFirestore(), this.collectionPath);
+    message.id = messageRef.id;
+
+    await setDoc(messageRef, this.getCleanJson(message));
   }
 
   async updateMessage(message: Message) {
@@ -70,6 +72,7 @@ export class MessageDataService {
 
   private getCleanJson(message: Message): any {
     return {
+      id: message.id,
       name: message.name,
       text: message.text,
       timestamp: message.timestamp,

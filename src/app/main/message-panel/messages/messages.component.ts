@@ -14,13 +14,14 @@ import { FormsModule } from '@angular/forms';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDataService } from '../../../services/user-data.service';
+import { MessageDataService } from '../../../services/message-data.service';
 import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
   currentUser,
   // users,
-  messages,
+  // messages,
   channels,
   formatTime,
   getEmojiByName,
@@ -57,7 +58,7 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   users: User[] = [];
   currentUser = currentUser;
-  messages = messages;
+  messages: Message[] = [];
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   emojiMenuOpen: boolean[] = [];
@@ -75,6 +76,7 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   constructor(
     private userDataService: UserDataService,
+    private messageDataService: MessageDataService,
     private dialog: MatDialog
   ) {}
 
@@ -88,6 +90,7 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   ngOnInit() {
     this.loadUsers();
+    this.loadMessages();
     this.updateSortedEmojis();
   }
 
@@ -101,6 +104,13 @@ export class MessagesComponent implements OnChanges, OnInit {
     this.userDataService.getUsers().subscribe((loadedUsers) => {
       this.users = loadedUsers;
       console.log('Users: ', this.users);
+    });
+  }
+
+  private loadMessages(): void {
+    this.messageDataService.getMessages().subscribe((loadedMessages) => {
+      this.messages = loadedMessages;
+      console.log('Messages: ', this.messages);
     });
   }
 
