@@ -15,12 +15,13 @@
     </div>
     <!-- Empfänger-Eingabe + Suchergebnisse -->
     <div class="recipient-search">
-      <input
-        #searchInput
-        type="search"
-        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
-        (input)="onSearch($event)"
-      />
+   <input
+  #searchInput
+  type="search"
+  placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+  [(ngModel)]="textInput"
+  (input)="onSearch($event)"
+/>
       <div
         *ngIf="
           searchResultsUser.length ||
