@@ -20,7 +20,7 @@
 .message-header {
   width: 100%;
   box-shadow: 0px 2px 10px 0px #00000014;
-  clip-path: inset(0px 0px -10px 0px);
+  
 
   .message-header-content {
     width: 100%;
@@ -76,6 +76,7 @@
   z-index: 10;
   max-height: 200px;
   overflow-y: auto;
+  
 
   ul {
     margin: 0;
