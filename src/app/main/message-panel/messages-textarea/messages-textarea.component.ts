@@ -113,7 +113,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const message = new Message({
       text: text,
       userId: this.currentUser.id,
-      name: this.currentUser.name,
+      name: this.currentUser.displayName,
       timestamp: Date.now(),
       channelId: this.channel?.id || this.starterMessage?.channelId || '',
       threadId: this.starterMessage?.id || '',

@@ -205,7 +205,7 @@ export function moveCurrentUserToEnd(names: string[]): string[] {
 }
 
 export function getDisplayName(user: User, currentUser: User): string {
-  return user.id === currentUser.id ? 'Du' : user.name;
+  return user.id === currentUser.id ? 'Du' : user.displayName;
 }
 
 export function formatUserNames(
@@ -247,8 +247,8 @@ export function buildNewMessage(
   channelId: string
 ): Message {
   return {
-    id: createTempMessageId(currentUser.name),
-    name: currentUser.name,
+    id: createTempMessageId(currentUser.displayName),
+    name: currentUser.displayName,
     timestamp: Date.now(),
     text: text,
     userId: currentUser.id,
@@ -263,7 +263,7 @@ export function buildNewMessage(
 
 export const currentUser: User = {
   id: 'user4',
-  name: 'Frederik Beck',
+  displayName: 'Frederik Beck',
   email: 'frederik@example.com',
   img: './assets/img/profilepic/frederik.png',
 };

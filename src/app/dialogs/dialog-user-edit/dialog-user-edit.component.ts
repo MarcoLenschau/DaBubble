@@ -14,7 +14,9 @@ import { FirebaseService } from '../../services/firebase.service';
 export class DialogUserEditComponent {
   @Input() user: any = {};
 
-  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService) {}
+  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService) {
+    console.log('DialogUserEditComponent initialized with user:', this.user);
+  }
 
   dialogClose() {
     this.dialogRef.close();

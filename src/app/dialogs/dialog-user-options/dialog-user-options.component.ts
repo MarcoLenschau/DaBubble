@@ -24,12 +24,8 @@ export class DialogUserOptionsComponent {
   }
 
   openDialog() {
-    this.dialog.open(DialogUserDetailsComponent, {
-      data: this.user,
-    });
-    // let dialogRef = this.dialog.open(DialogUserDetailsComponent);
-
-    // dialogRef.componentInstance.user = this.user
+    let dialogDetails = this.dialog.open(DialogUserDetailsComponent);
+    dialogDetails.componentInstance.user = this.user;
     this.dialogRef.close();
   }
 }
