@@ -74,6 +74,8 @@ export class MessagesComponent implements OnChanges, OnInit {
   threadId: string = '';
   channelId: string = '';
 
+  private lastThreadId: string | null = null;
+
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
@@ -95,11 +97,9 @@ export class MessagesComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges() {
-    console.log('On Changes: Starter Message: ', this.starterMessage);
-
-    if (this.starterMessage) {
+    if (this.starterMessage && this.starterMessage.id !== this.lastThreadId) {
       this.setReplyToMessage(this.starterMessage);
-      console.log('Starter message setReplyToMessage');
+      this.lastThreadId = this.starterMessage.id;
     }
   }
 
@@ -173,12 +173,18 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
-    this.threadId = msg.id;
-    msg.threadId = msg.id;
-    this.saveMessage(msg);
-    console.log('this.messages: ', this.messages);
 
-    this.filteredMessages = this.messages.filter((m) => m.threadId === msg.id);
+    if (!msg.threadId) {
+      msg.threadId = msg.id;
+      this.saveMessage(msg);
+    }
+
+    this.threadId = msg.threadId;
+
+    this.filteredMessages = [
+      msg,
+      ...this.messages.filter((m) => m.threadId === msg.threadId),
+    ];
 
     this.threadSymbol = msg.channelId ? '#' : '@';
     this.threadTitle = msg.channelId
@@ -241,8 +247,13 @@ export class MessagesComponent implements OnChanges, OnInit {
       updateEmojiDataForUser(this.currentUser, emojiName);
     }
 
-    this.updateSortedEmojis();
+    // this.updateSortedEmojis();
     this.saveMessage(msg);
+  }
+
+  onEmojiRowMouseLeave(index: number): void {
+    this.updateSortedEmojis();
+    this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
   userHasReactedToEmoji(

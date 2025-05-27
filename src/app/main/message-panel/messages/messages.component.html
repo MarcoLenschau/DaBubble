@@ -64,6 +64,7 @@
 
               }"
             (click)="$event.stopPropagation()"
+            (mouseleave)="onEmojiRowMouseLeave(i)"
           >
             <ng-container *ngIf="isThread"
               ><ng-container *ngIf="emojiMenuOpen[i]">

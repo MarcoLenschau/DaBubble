@@ -110,18 +110,51 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
 
-    const message = new Message({
-      text: text,
-      userId: this.currentUser.id,
-      name: this.currentUser.name,
+    const message = this.createMessage(text);
+
+    try {
+      await this.messageDataService.addMessage(message);
+      this.resetInputField();
+    } catch (error) {
+      console.error('Fehler beim Senden der Nachricht:', error);
+      // Benachrichtigung an den Benutzer
+    }
+  }
+
+  private createMessage(text: string): Message {
+    const threadId = this.findThreadId();
+    const channelId = this.findChannelId();
+    return this.buildMessage(text, threadId, channelId);
+  }
+
+  private findThreadId() {
+    if (this.mode === 'thread' && this.starterMessage) {
+      return this.starterMessage.threadId || this.starterMessage.id;
+    }
+    return '';
+  }
+
+  private findChannelId() {
+    return this.channel?.id || this.starterMessage?.channelId || '';
+  }
+
+  private buildMessage(
+    text: string,
+    threadId: string,
+    channelId: string
+  ): Message {
+    return new Message({
+      text,
+      userId: this.currentUser!.id,
+      name: this.currentUser!.name,
       timestamp: Date.now(),
-      channelId: this.channel?.id || this.starterMessage?.channelId || '',
-      threadId: this.starterMessage?.id || '',
-      reactions: this.reaction,
+      channelId,
+      threadId,
+      reactions: this.reaction || {},
     });
+  }
 
-    await this.messageDataService.addMessage(message);
-
+  private resetInputField(): void {
     this.textInput = '';
     this.editableDiv.nativeElement.innerHTML = '';
   }
