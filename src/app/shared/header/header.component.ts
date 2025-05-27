@@ -20,7 +20,13 @@ export class HeaderComponent {
     img: ''
   };
   
-  constructor(private dialog: MatDialog, public router: RouterService) {}
+  constructor(private dialog: MatDialog, public router: RouterService) {
+    setInterval(() => {
+      if (sessionStorage.getItem("currentUser")) {
+        this.user.displayName = sessionStorage.getItem("currentUser") || '';
+      }
+    }, 100);
+  }
 
   openDialog() {
     let dialogRef = this.dialog.open(DialogUserOptionsComponent);

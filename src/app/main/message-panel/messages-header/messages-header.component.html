@@ -13,14 +13,17 @@
       <div>[channel members]</div>
       <!--Im channel-view werden hier channel members angezeigt-->
     </div>
+
     <!-- Empfänger-Eingabe + Suchergebnisse -->
     <div class="recipient-search">
       <input
         #searchInput
         type="search"
         placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        [(ngModel)]="textInput"
         (input)="onSearch($event)"
       />
+
       <div
         *ngIf="
           searchResultsUser.length ||
@@ -30,18 +33,23 @@
         class="search-results"
       >
         <ul>
+         
           <li
             *ngFor="let user of searchResultsEmail"
             (click)="selectUser(user, searchInput)"
           >
             <strong>{{ user.email }}</strong>
           </li>
+
+         
           <li
             *ngFor="let user of searchResultsUser"
             (click)="selectUser(user, searchInput)"
           >
-            <strong>&#64;{{ user.name }}</strong>
+            <strong>&#64;{{ user.displayName }}</strong>
           </li>
+
+    
           <li
             *ngFor="let channel of searchResultsChannels"
             (click)="selectChannel(channel, searchInput)"
@@ -63,6 +71,7 @@
       <div class="close-button" (click)="closeThread()">
         <img src="assets/img/close/close.svg" class="default" />
         <img src="assets/img/close/close-hover.svg" class="hover" />
-      </div></div
-  ></ng-container>
+      </div>
+    </div>
+  </ng-container>
 </div>

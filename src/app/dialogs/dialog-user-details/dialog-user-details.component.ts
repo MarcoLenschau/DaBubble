@@ -10,12 +10,9 @@ import { DialogUserEditComponent } from '../dialog-user-edit/dialog-user-edit.co
   styleUrl: './dialog-user-details.component.scss',
 })
 export class DialogUserDetailsComponent {
-  // @Input() user: any = {};
+  @Input() user: any = {};
 
-  constructor(private dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public user: User,
-    private dialogRef: MatDialogRef<DialogUserDetailsComponent>
-  ) {}
+  constructor(private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserDetailsComponent>) {}
 
   closeProfilView() {
     this.dialogRef.close();

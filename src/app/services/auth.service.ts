@@ -30,6 +30,7 @@ export class AuthService {
     .then(result => {
       this.isUserExists(result, userCreated);
       this.user = result.user;
+      sessionStorage.setItem("currentUser", this.user.displayName);
       console.log('Login successful:', this.user);
       return result.user
     })
@@ -69,6 +70,7 @@ export class AuthService {
     result.user = this.createValidUser(result.user, name);
     this.firebase.addUser(result.user);
     this.user = result.user;
+    sessionStorage.setItem("currentUser", this.user.dispayName);
     return result.user;
   }
 }

@@ -19,7 +19,7 @@ export class UserDataService {
           (docData) =>
             new User({
               id: docData['id'],
-              name: docData['displayName'],
+              displayName: docData['displayName'],
               email: docData['email'],
               img: docData['imgUrl'] ?? './assets/img/profilepic/frederik.png',
               recentEmojis: docData['recentEmojis'] ?? [],
@@ -50,7 +50,7 @@ export class UserDataService {
   /** Konvertiert dein User-Objekt in das Firestore-Format */
   private getCleanJson(user: User): any {
     return {
-      displayName: user.name,
+      displayName: user.displayName,
       email: user.email,
       imgUrl: user.img,
       recentEmojis: user.recentEmojis,

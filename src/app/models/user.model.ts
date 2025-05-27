@@ -1,6 +1,6 @@
 export class User {
   id: string = '';
-  name: string = '';
+  displayName: string = '';
   email: string = '';
   img: string = '';
   recentEmojis?: string[] = [];
@@ -10,7 +10,7 @@ export class User {
 
   constructor(data?: Partial<User>) {
     this.id = data?.id ?? '';
-    this.name = data?.name ?? '';
+    this.displayName = data?.displayName ?? '';
     this.email = data?.email ?? '';
     this.img = data?.img ?? '';
     this.recentEmojis = data?.recentEmojis ?? [];
