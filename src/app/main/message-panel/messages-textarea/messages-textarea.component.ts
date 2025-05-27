@@ -146,7 +146,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     return new Message({
       text,
       userId: this.currentUser!.id,
-      name: this.currentUser!.name,
+      name: this.currentUser!.displayName,
       timestamp: Date.now(),
       channelId,
       threadId,
