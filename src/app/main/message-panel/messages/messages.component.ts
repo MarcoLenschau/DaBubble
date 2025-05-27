@@ -183,7 +183,9 @@ export class MessagesComponent implements OnChanges, OnInit {
 
     this.filteredMessages = [
       msg,
-      ...this.messages.filter((m) => m.threadId === msg.threadId),
+      ...this.messages.filter(
+        (m) => m.threadId === msg.threadId && m.id !== msg.id
+      ),
     ];
 
     this.threadSymbol = msg.channelId ? '#' : '@';
