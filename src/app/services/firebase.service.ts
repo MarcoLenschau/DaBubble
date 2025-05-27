@@ -49,7 +49,7 @@ export class FirebaseService {
   toObj(data: any): {} {
     return {
       displayName: data.displayName,
-      displayName_lowercase: data.displayName.toLowerCase(), // 🔁 wichtig für Suche
+      displayName_lowercase: data.displayName.toLowerCase(), 
       email: data.email,
       stsTokenManager: {
         accessToken: data.stsTokenManager.accessToken,
@@ -85,7 +85,7 @@ export class FirebaseService {
   }
 
   /**
-   * 🔄 Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
+   * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
    */
  async updateAllUsersWithLowercaseField(): Promise<void> {
   const usersRef = collection(this.firebase, 'users');
@@ -105,7 +105,6 @@ export class FirebaseService {
     }
   });
 
-  await Promise.all(updates);
-  console.log('✅ Alle Benutzer wurden mit displayName_lowercase aktualisiert');
+ 
 }
 }

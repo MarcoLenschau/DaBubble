@@ -33,7 +33,7 @@
         class="search-results"
       >
         <ul>
-          <!-- 🔍 Treffer per E-Mail -->
+         
           <li
             *ngFor="let user of searchResultsEmail"
             (click)="selectUser(user, searchInput)"
@@ -41,7 +41,7 @@
             <strong>{{ user.email }}</strong>
           </li>
 
-          <!-- 🔍 Treffer per @displayName -->
+         
           <li
             *ngFor="let user of searchResultsUser"
             (click)="selectUser(user, searchInput)"
@@ -49,7 +49,7 @@
             <strong>&#64;{{ user.displayName }}</strong>
           </li>
 
-          <!-- 🔍 Treffer für Channels -->
+    
           <li
             *ngFor="let channel of searchResultsChannels"
             (click)="selectChannel(channel, searchInput)"
