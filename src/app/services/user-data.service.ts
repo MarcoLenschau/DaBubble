@@ -50,6 +50,7 @@ export class UserDataService {
   /** Konvertiert dein User-Objekt in das Firestore-Format */
   private getCleanJson(user: User): any {
     return {
+      id: user.id,
       displayName: user.displayName,
       email: user.email,
       imgUrl: user.img,

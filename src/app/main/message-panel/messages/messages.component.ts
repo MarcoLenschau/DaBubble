@@ -38,6 +38,7 @@ import {
   updateEmojiDataForUser,
 } from '../../../utils/messages-utils';
 import { user } from '@angular/fire/auth';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-messages',
@@ -90,8 +91,15 @@ export class MessagesComponent implements OnChanges, OnInit {
     return this.mode === 'message';
   }
 
-  ngOnInit() {
-    this.loadUsers();
+  // ngOnInit() {
+  //   this.loadUsers();
+  //   this.loadMessages();
+  //   this.updateSortedEmojis();
+  // }
+
+  async ngOnInit() {
+    this.users = await firstValueFrom(this.userDataService.getUsers());
+    await this.completeMissingUserFieldsInFirebase();
     this.loadMessages();
     this.updateSortedEmojis();
   }
@@ -103,11 +111,19 @@ export class MessagesComponent implements OnChanges, OnInit {
     }
   }
 
-  private loadUsers(): void {
-    this.userDataService.getUsers().subscribe((loadedUsers) => {
-      this.users = loadedUsers;
-      console.log('Users: ', this.users);
-    });
+  // private loadUsers(): void {
+  //   this.userDataService.getUsers().subscribe((loadedUsers) => {
+  //     this.users = loadedUsers;
+  //     console.log('Users: ', this.users);
+  //   });
+  // }
+
+  async completeMissingUserFieldsInFirebase(): Promise<void> {
+    for (const user of this.users) {
+      await this.userDataService.updateUser(user);
+      console.log(`User ${user.displayName} aktualisiert`);
+    }
+    console.log('Alle fehlenden Felder wurden hinzugefügt.');
   }
 
   private loadMessages(): void {
