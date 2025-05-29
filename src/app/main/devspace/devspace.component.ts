@@ -18,15 +18,18 @@ export class DevspaceComponent {
   isChannelHovered: boolean = false;
   isMessageHovered: boolean = false;
 
+  hoveredChannel: string | null = null;
+  activeChannel: string | null = null;
+
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users = [
-    { displayName: 'Frederik Beck (Du)', img: './assets/img/profilepic/frederik.png' },
-    { displayName: 'Sofia Müller', img: './assets/img/profilepic/sofia.png' },
-    { displayName: 'Noah Braun', img: './assets/img/profilepic/noah.png' },
-    { displayName: 'Elise Roth', img: './assets/img/profilepic/elise.png' },
-    { displayName: 'Elias Neumann', img: './assets/img/profilepic/elias.png' },
-    { displayName: 'Steffen Hoffmann', img: './assets/img/profilepic/steffen.png' },
+    { displayName: 'Frederik Beck (Du)', imgUrl: './assets/img/profilepic/frederik.png' },
+    { displayName: 'Sofia Müller', imgUrl: './assets/img/profilepic/sofia.png' },
+    { displayName: 'Noah Braun', imgUrl: './assets/img/profilepic/noah.png' },
+    { displayName: 'Elise Roth', imgUrl: './assets/img/profilepic/elise.png' },
+    { displayName: 'Elias Neumann', imgUrl: './assets/img/profilepic/elias.png' },
+    { displayName: 'Steffen Hoffmann', imgUrl: './assets/img/profilepic/steffen.png' },
   ]
 
   constructor(private firebase: FirebaseService) {
@@ -77,6 +80,7 @@ export class DevspaceComponent {
   }
 
   selectChannel(channelName : string){
+    this.activeChannel = channelName;
     this.channelSelected.emit(channelName);
   }
 }

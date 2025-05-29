@@ -29,8 +29,26 @@
             </div>
 
             <div *ngIf="isChannelOpen">
-                <div class="devspace-channel-content" (click)="selectChannel('Entwicklerteam')">
-                    <img src="./assets/img/devspace/tag-default.png" alt="#">
+                <div 
+                    class="devspace-channel-content"
+                    (mouseenter)="hoveredChannel = 'Entwicklerteam'"
+                    (mouseleave)="hoveredChannel = null"
+                    (click)="selectChannel('Entwicklerteam')"
+                    [ngClass]="{
+                        'hovered': hoveredChannel === 'Entwicklerteam',
+                        'active': activeChannel === 'Entwicklerteam'
+                    }"
+                >
+                    <img 
+                        [src]="
+                        activeChannel === 'Entwicklerteam'
+                            ? './assets/img/devspace/tag-click.png'
+                            : hoveredChannel === 'Entwicklerteam'
+                            ? './assets/img/devspace/tag-hover.png'
+                            : './assets/img/devspace/tag-default.png'
+                        "
+                        alt="#"
+                    >
                     <span>Entwicklerteam</span>
                 </div>
 
@@ -58,7 +76,7 @@
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
                 [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
-                        <img class="profile-pic" [src]="user.img" alt="user">
+                        <img class="profile-pic" [src]="user.imgUrl" alt="user">
                         <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
                     <p>{{user.displayName}}</p>
