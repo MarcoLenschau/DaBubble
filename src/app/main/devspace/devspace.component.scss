@@ -139,3 +139,28 @@ nav {
 .message-title-arrow:hover h2 {
   color: $purple-3;
 }
+
+.devspace-channel-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 42px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  
+
+  &.hovered {
+    background-color: $grey;
+  }
+
+  &.active {
+    background-color: $grey;
+    color: $purple-3;
+    font-weight: 600;
+  }
+
+  span {
+    transition: color 0.2s;
+  }
+}
