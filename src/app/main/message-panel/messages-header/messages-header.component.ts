@@ -15,6 +15,7 @@ import { FirebaseService } from '../../../services/firebase.service';
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
+  @Input() activeChannel: string | null = null;
   @Output() closeThreadWindow = new EventEmitter<boolean>();
 
   constructor(private firebaseService: FirebaseService) {}

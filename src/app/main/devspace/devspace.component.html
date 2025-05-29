@@ -29,7 +29,7 @@
             </div>
 
             <div *ngIf="isChannelOpen">
-                <div class="devspace-channel-content">
+                <div class="devspace-channel-content" (click)="selectChannel('Entwicklerteam')">
                     <img src="./assets/img/devspace/tag-default.png" alt="#">
                     <span>Entwicklerteam</span>
                 </div>

@@ -20,6 +20,7 @@ import { ThreadWindowComponent } from './thread-window/thread-window.component';
 })
 export class MainComponent {
   showThread = false;
+  activeChannel: string | null = null;
   starterMessage?: Message;
   userId?: string;
 
@@ -31,5 +32,9 @@ export class MainComponent {
 
   onThreadClose() {
     this.showThread = false;
+  }
+
+  onChannelSelected(channel: string){
+    this.activeChannel = channel;
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { Observable } from 'rxjs';
 
@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
+  @Output() channelSelected = new EventEmitter<string>();
+
   isChannelOpen: boolean = true;
   isMessageOpen: boolean = true;
 
@@ -72,5 +74,9 @@ export class DevspaceComponent {
 
   setActiveUser(name: string) {
     this.activeUser = name;
+  }
+
+  selectChannel(channelName : string){
+    this.channelSelected.emit(channelName);
   }
 }
