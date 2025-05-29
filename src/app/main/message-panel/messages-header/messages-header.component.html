@@ -1,14 +1,14 @@
-<div
-  class="message-header"
-  [ngClass]="{
+<div class="message-header" [ngClass]="{
     'thread-header-height': isThread,
     'message-header-height': isMessage
-  }"
->
+  }">
   <ng-container *ngIf="isMessage">
     <div class="message-header-content">
       <div class="message-header-content-text">
-        <h2>Neue Nachricht</h2>
+        <h2 *ngIf="activeChannel; else defaultTitle"># {{ activeChannel }}</h2>
+        <ng-template #defaultTitle>
+          <h2>Neue Nachricht</h2>
+        </ng-template>
       </div>
       <div>[channel members]</div>
       <!--Im channel-view werden hier channel members angezeigt-->
@@ -16,44 +16,27 @@
 
     <!-- Empfänger-Eingabe + Suchergebnisse -->
     <div class="recipient-search">
-      <input
-        #searchInput
-        type="search"
-        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
-        [(ngModel)]="textInput"
-        (input)="onSearch($event)"
-      />
+      <input #searchInput type="search" placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        [(ngModel)]="textInput" (input)="onSearch($event)" />
 
-      <div
-        *ngIf="
+      <div *ngIf="
           searchResultsUser.length ||
           searchResultsEmail.length ||
           searchResultsChannels.length
-        "
-        class="search-results"
-      >
+        " class="search-results">
         <ul>
-         
-          <li
-            *ngFor="let user of searchResultsEmail"
-            (click)="selectUser(user, searchInput)"
-          >
+
+          <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user, searchInput)">
             <strong>{{ user.email }}</strong>
           </li>
 
-         
-          <li
-            *ngFor="let user of searchResultsUser"
-            (click)="selectUser(user, searchInput)"
-          >
+
+          <li *ngFor="let user of searchResultsUser" (click)="selectUser(user, searchInput)">
             <strong>&#64;{{ user.displayName }}</strong>
           </li>
 
-    
-          <li
-            *ngFor="let channel of searchResultsChannels"
-            (click)="selectChannel(channel, searchInput)"
-          >
+
+          <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
             <strong>#{{ channel.channelName }}</strong>
           </li>
         </ul>

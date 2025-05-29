@@ -21,6 +21,7 @@ export class MessagePanelComponent {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
+  @Input() activeChannel: string | null = null;
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
     userId: string;

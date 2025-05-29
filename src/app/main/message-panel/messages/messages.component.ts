@@ -50,6 +50,7 @@ export class MessagesComponent implements OnChanges, OnInit {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
+  @Input() activeChannel: string | null = null;
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;

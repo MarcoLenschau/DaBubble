@@ -1,7 +1,7 @@
 <div class="main-component">
-  <app-devspace></app-devspace>
+  <app-devspace (channelSelected)="onChannelSelected($event)"></app-devspace>
   <app-message-window
-    (threadStart)="onThreadStart($event)"
+    (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
   ></app-message-window>
   <app-thread-window
     [starterMessage]="starterMessage"

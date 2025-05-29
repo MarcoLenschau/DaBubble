@@ -12,6 +12,7 @@ export class MessageWindowComponent {
   @Input() mode: 'message' | 'thread' = 'message';
   @Input() starterMessage?: Message;
   @Input() userId?: string;
+  @Input() activeChannel: string | null = null;
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
     userId: string;
