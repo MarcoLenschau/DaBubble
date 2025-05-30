@@ -6,6 +6,8 @@ export class Message {
   timestamp: number = Date.now();
   text: string = '';
   userId: string = '';
+  receiverId?: string;
+  isDirectMessage: boolean = false;
   threadId?: string;
   channelId?: string;
   reactions: Reaction[] = [];
@@ -20,6 +22,8 @@ export class Message {
       this.timestamp = data.timestamp ?? this.timestamp;
       this.text = data.text ?? this.text;
       this.userId = data.userId ?? this.userId;
+      this.receiverId = data.receiverId ?? this.receiverId;
+      this.isDirectMessage = data.isDirectMessage ?? this.isDirectMessage;
       this.threadId = data.threadId ?? this.threadId;
       this.channelId = data.channelId ?? this.channelId;
       this.reactions = data.reactions ?? this.reactions;

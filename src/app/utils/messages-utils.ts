@@ -246,12 +246,14 @@ export function buildNewMessage(
   threadId: string,
   channelId: string
 ): Message {
+  const isDirect = !channelId;
   return {
     id: createTempMessageId(currentUser.displayName),
     name: currentUser.displayName,
     timestamp: Date.now(),
     text: text,
     userId: currentUser.id,
+    isDirectMessage: isDirect,
     threadId: threadId,
     channelId: channelId,
     reactions: [],

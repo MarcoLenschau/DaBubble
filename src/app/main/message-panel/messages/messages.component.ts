@@ -43,6 +43,7 @@ import {
 import { user } from '@angular/fire/auth';
 import { firstValueFrom } from 'rxjs';
 import { Channel } from '../../../models/channel.model';
+import { MessageContext } from '../../../interfaces/message-context.interface';
 
 @Component({
   selector: 'app-messages',
@@ -82,6 +83,13 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
+  messageContext: MessageContext = {
+    type: 'channel',
+    id: '',
+    receiverId: ''
+  };
+
+
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
