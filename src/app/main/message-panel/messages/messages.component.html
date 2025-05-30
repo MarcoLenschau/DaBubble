@@ -1,65 +1,124 @@
 <div class="thread-messages scrollable">
   <ng-container *ngIf="!activeChannel">
-    <ng-container *ngIf="(isThread ? filteredMessages : messages).length > 0; else noMessages">
+    <ng-container
+      *ngIf="
+        (isThread ? filteredMessages : messages).length > 0;
+        else noMessages
+      "
+    >
       <ng-container
-        *ngFor="let msg of isThread ? filteredMessages : messages; let i = index; trackBy: trackByMessageId">
+        *ngFor="
+          let msg of isThread ? filteredMessages : messages;
+          let i = index;
+          trackBy: trackByMessageId
+        "
+      >
         <div class="padding-top" *ngIf="i == 0"></div>
-        <div class="message-wrapper" [ngClass]="{
+        <div
+          class="message-wrapper"
+          [ngClass]="{
             'hover-thread-message not-own-message': !isOwnMessage(msg),
             'hover-own-message': isOwnMessage(msg),
             'hover-message-wrapper': hoveredIndex === i,
-                        }" (mouseenter)="setHoverState(i)" (mouseleave)="setHoverState(null)"
-          (click)="closeEmojiRow($event)">
-          <div class="message-flex-box" [ngClass]="{
+                        }"
+          (mouseenter)="setHoverState(i)"
+          (mouseleave)="setHoverState(null)"
+          (click)="closeEmojiRow($event)"
+        >
+          <div
+            class="message-flex-box"
+            [ngClass]="{
             'thread-message': !isOwnMessage(msg),
             'own-message': isOwnMessage(msg),
             
-                        }">
-            <img class="message-img" [src]="
-            getUserById(msg.userId)?.img ??
-            './assets/img/profilepic/frederik.png'
-          " alt="Profilbild {{ msg.name }}" />
-            <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
-              <div class="message-body-header" [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }">
+                        }"
+          >
+            <img
+              class="message-img"
+              [src]="
+                getUserById(msg.userId)?.img ??
+                './assets/img/profilepic/frederik.png'
+              "
+              alt="Profilbild {{ msg.name }}"
+            />
+            <div
+              class="message-body"
+              [ngClass]="{ 'own-message-body': isOwnMessage(msg) }"
+            >
+              <div
+                class="message-body-header"
+                [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }"
+              >
                 <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
                 <p>{{ formatTime(msg.timestamp) }}</p>
               </div>
-              <p class="thread-message-text" [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
+              <p
+                class="thread-message-text"
+                [ngClass]="{ 'own-message-text': isOwnMessage(msg) }"
+              >
                 {{ msg.text }}
               </p>
             </div>
             <ng-container>
-              <div class="emoji-row" [ngClass]="{
+              <div
+                class="emoji-row"
+                [ngClass]="{
                 'emoji-row-left-aligned': isOwnMessage(msg),
                 'emoji-row-right-aligned': !isOwnMessage(msg),
                 'make-visible': hoveredIndex === i,
                 'emoji-row-open scrollable': emojiMenuOpen[i], 
                 'emoji-row-closed': !emojiMenuOpen[i],
 
-              }" (click)="$event.stopPropagation()" (mouseleave)="onEmojiRowMouseLeave(i)">
-                <ng-container *ngIf="isThread"><ng-container *ngIf="emojiMenuOpen[i]">
-                    <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
-                      (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+              }"
+                (click)="$event.stopPropagation()"
+                (mouseleave)="onEmojiRowMouseLeave(i)"
+              >
+                <ng-container *ngIf="isThread"
+                  ><ng-container *ngIf="emojiMenuOpen[i]">
+                    <span
+                      *ngFor="let emoji of sortedEmojis"
+                      class="emoji-icon top-emojis"
+                      (click)="handleEmojiClick(emoji.name, msg)"
+                      title="{{ emoji.name }}"
+                    >
                       {{ emoji.unicode }}
                     </span>
                   </ng-container>
                 </ng-container>
 
-                <ng-container *ngIf="isMessage"><span *ngFor="let emoji of sortedEmojis.slice(0, 2)"
-                    class="emoji-icon top-emojis" (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+                <ng-container *ngIf="isMessage"
+                  ><span
+                    *ngFor="let emoji of sortedEmojis.slice(0, 2)"
+                    class="emoji-icon top-emojis"
+                    (click)="handleEmojiClick(emoji.name, msg)"
+                    title="{{ emoji.name }}"
+                  >
                     {{ emoji.unicode }}
                   </span>
                   <ng-container *ngIf="emojiMenuOpen[i]">
-                    <span *ngFor="let emoji of sortedEmojis.slice(2)" class="emoji-icon top-emojis"
-                      (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+                    <span
+                      *ngFor="let emoji of sortedEmojis.slice(2)"
+                      class="emoji-icon top-emojis"
+                      (click)="handleEmojiClick(emoji.name, msg)"
+                      title="{{ emoji.name }}"
+                    >
                       {{ emoji.unicode }}
                     </span>
                   </ng-container>
                 </ng-container>
 
-                <div class="toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
-                  <img src="assets/img/message-icons/add-reaction.svg" class="default" />
-                  <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
+                <div
+                  class="toggle-icon"
+                  (click)="toggleEmojiMenu(i); $event.stopPropagation()"
+                >
+                  <img
+                    src="assets/img/message-icons/add-reaction.svg"
+                    class="default"
+                  />
+                  <img
+                    src="assets/img/message-icons/add-reaction-hover.svg"
+                    class="hover"
+                  />
                 </div>
 
                 <ng-container *ngIf="isThread">
@@ -67,8 +126,14 @@
                     <div class="toggle-icon" (click)="setReplyToMessage(msg)">
                       <!-- oder <div class="toggle-icon" (click)="openThread(msg)"> ??? -->
                       <!-- <button (click)="cancelReply()">Abbrechen</button> -->
-                      <img src="assets/img/message-icons/answer.svg" class="default" />
-                      <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
+                      <img
+                        src="assets/img/message-icons/answer.svg"
+                        class="default"
+                      />
+                      <img
+                        src="assets/img/message-icons/answer-hover.svg"
+                        class="hover"
+                      />
                     </div>
                   </ng-container>
                 </ng-container>
@@ -76,40 +141,65 @@
                 <ng-container *ngIf="isMessage">
                   <div class="toggle-icon" (click)="openThread(msg)">
                     <!-- <button (click)="cancelReply()">Abbrechen</button> -->
-                    <img src="assets/img/message-icons/answer.svg" class="default" />
-                    <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
+                    <img
+                      src="assets/img/message-icons/answer.svg"
+                      class="default"
+                    />
+                    <img
+                      src="assets/img/message-icons/answer-hover.svg"
+                      class="hover"
+                    />
                   </div>
                 </ng-container>
 
                 <ng-container *ngIf="isOwnMessage(msg)">
                   <div class="toggle-icon">
-                    <img src="assets/img/message-icons/option.svg" class="default" />
-                    <img src="assets/img/message-icons/option-hover.svg" class="hover" />
+                    <img
+                      src="assets/img/message-icons/option.svg"
+                      class="default"
+                    />
+                    <img
+                      src="assets/img/message-icons/option-hover.svg"
+                      class="hover"
+                    />
                   </div>
                 </ng-container>
               </div>
             </ng-container>
           </div>
 
-          <div class="reactions" [ngClass]="{
+          <div
+            class="reactions"
+            [ngClass]="{
           'thread-reactions': isThread,
           'message-reactions': isMessage, 'reactions-right-aligned': isOwnMessage(msg),
           'reactions-left-aligned': !isOwnMessage(msg),
-        }" *ngIf="msg.reactions?.length">
-            <div *ngFor="let reaction of msg.reactions; let j = index" class="bottom-emoji-wrapper" (mouseenter)="
-            setTooltipHoveredState(j, reaction.userIds);
-            onMouseEnterEmojiWrapper($event, j)
-          " (mouseleave)="setTooltipHoveredState(null, null)">
+        }"
+            *ngIf="msg.reactions?.length"
+          >
+            <div
+              *ngFor="let reaction of msg.reactions; let j = index"
+              class="bottom-emoji-wrapper"
+              (mouseenter)="
+                setTooltipHoveredState(j, reaction.userIds);
+                onMouseEnterEmojiWrapper($event, j)
+              "
+              (mouseleave)="setTooltipHoveredState(null, null)"
+            >
               <span class="bottom-emoji">{{
                 getEmojiByName(reaction.emojiName)?.unicode
-                }}</span>
+              }}</span>
 
               <span class="count">{{ reaction.userIds.length }}</span>
 
-              <div *ngIf="hoveredIndex === i && tooltipHoveredIndex == j" #emojiTooltip class="bottom-emoji-tooltip">
+              <div
+                *ngIf="hoveredIndex === i && tooltipHoveredIndex == j"
+                #emojiTooltip
+                class="bottom-emoji-tooltip"
+              >
                 <span class="tooltip-emoji">{{
                   getEmojiByName(reaction.emojiName)?.unicode
-                  }}</span>
+                }}</span>
 
                 <div>
                   <p class="tooltip-names">
@@ -119,14 +209,26 @@
                 </div>
               </div>
             </div>
-            <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
-              <img src="assets/img/message-icons/add-reaction.svg" class="default" />
-              <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
+            <div
+              class="reduce-gap bottom-toggle-icon"
+              (click)="toggleEmojiMenu(i); $event.stopPropagation()"
+            >
+              <img
+                src="assets/img/message-icons/add-reaction.svg"
+                class="default"
+              />
+              <img
+                src="assets/img/message-icons/add-reaction-hover.svg"
+                class="hover"
+              />
             </div>
           </div>
         </div>
         <ng-container *ngIf="isThread">
-          <div *ngIf="i === 0 && filteredMessages.length > 1" class="thread-replies-divider">
+          <div
+            *ngIf="i === 0 && filteredMessages.length > 1"
+            class="thread-replies-divider"
+          >
             <p>
               {{ filteredMessages.length - 1 }}
               {{ filteredMessages.length - 1 === 1 ? "Antwort" : "Antworten" }}
@@ -137,7 +239,6 @@
       </ng-container>
     </ng-container>
   </ng-container>
-
 
   <ng-container *ngIf="activeChannel">
     <div class="no-messages">Noch keine Nachrichten in diesem Channel.</div>

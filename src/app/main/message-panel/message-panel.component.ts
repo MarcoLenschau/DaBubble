@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { Message } from '../../models/message.model';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesHeaderComponent } from './messages-header/messages-header.component';
@@ -26,8 +26,9 @@ export class MessagePanelComponent {
     starterMessage: Message;
     userId: string;
   }>();
-  /** Weitergabe des Close-Events an Parent (ThreadWindow) */
   @Output() closeThreadPanelWindow = new EventEmitter<void>();
+
+  @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
   textInput = '';
 
@@ -45,5 +46,9 @@ export class MessagePanelComponent {
 
   onCloseClick() {
     this.closeThreadPanelWindow.emit();
+  }
+
+  onMessageSent() {
+    this.messagesComponent.reloadMessages();
   }
 }

@@ -8,9 +8,11 @@ import {
   ViewChildren,
   ElementRef,
   QueryList,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserDataService } from '../../../services/user-data.service';
@@ -48,7 +50,8 @@ import { Channel } from '../../../models/channel.model';
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.scss',
 })
-export class MessagesComponent implements OnChanges, OnInit {
+export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
+
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
@@ -81,6 +84,7 @@ export class MessagesComponent implements OnChanges, OnInit {
   channelId: string = '';
 
   private lastThreadId: string | null = null;
+  private messagesSubscription?: Subscription;
 
   constructor(
     private userDataService: UserDataService,
@@ -108,9 +112,33 @@ export class MessagesComponent implements OnChanges, OnInit {
   async ngOnInit() {
     this.users = await firstValueFrom(this.userDataService.getUsers());
     await this.completeMissingUserFieldsInFirebase();
-    this.loadMessages();
+    this.subscribeToMessages();
     this.updateSortedEmojis();
 
+
+  }
+
+
+  ngOnDestroy() {
+    this.messagesSubscription?.unsubscribe();
+  }
+
+  private subscribeToMessages(): void {
+    this.messagesSubscription?.unsubscribe();
+    this.messagesSubscription = this.messageDataService.getMessages().subscribe((loadedMessages) => {
+      this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+
+      if (this.isThread && this.starterMessage) {
+        this.setReplyToMessage(this.starterMessage)
+      }
+      console.log("Messages: ", this.messages);
+      console.log("Filtered Messages: ", this.filteredMessages);
+    });
+
+  }
+
+  reloadMessages(): void {
+    this.subscribeToMessages();
   }
 
   ngOnChanges() {
@@ -119,7 +147,6 @@ export class MessagesComponent implements OnChanges, OnInit {
       this.lastThreadId = this.starterMessage.id;
     }
   }
-
   // private loadUsers(): void {
   //   this.userDataService.getUsers().subscribe((loadedUsers) => {
   //     this.users = loadedUsers;
@@ -222,6 +249,8 @@ export class MessagesComponent implements OnChanges, OnInit {
       ? this.channels.find((c) => c.id === msg.channelId)?.name ??
       'Unbekannter Kanal'
       : msg.name;
+
+    console.log("Filtered Messages: ", this.filteredMessages);
   }
 
   cancelReply() {

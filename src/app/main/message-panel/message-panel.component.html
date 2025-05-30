@@ -22,6 +22,7 @@
         [mode]="mode"
         [starterMessage]="starterMessage"
         [textInput]="textInput"
+        (messageSent)="onMessageSent()"
         placeholder="Nachricht schreiben..."
       ></app-messages-textarea>
     </div>

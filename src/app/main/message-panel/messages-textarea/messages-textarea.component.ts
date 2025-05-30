@@ -1,7 +1,7 @@
 import {
   inject,
   Component,
-  Input,
+  Input, Output, EventEmitter,
   ViewChild,
   ElementRef,
   OnInit,
@@ -39,6 +39,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() toolbarWidth: string = '100%';
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
+  @Output() messageSent = new EventEmitter<void>();
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
@@ -121,8 +122,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
     try {
       await this.messageDataService.addMessage(message);
-      console.log('Message: ', message);
       this.resetInputField();
+      this.messageSent.emit();
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
       // Benachrichtigung an den Benutzer

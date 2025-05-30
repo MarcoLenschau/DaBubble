@@ -25,7 +25,7 @@ export class MainComponent {
   userId?: string;
 
   onThreadStart(event: { starterMessage: Message; userId: string }) {
-    this.starterMessage = event.starterMessage;
+    this.starterMessage = { ...event.starterMessage };
     this.userId = event.userId;
     this.showThread = true;
   }
