@@ -41,7 +41,6 @@ export class AuthService {
         this.isUserExists(result, userCreated);
         this.user = result.user;
         sessionStorage.setItem('currentUser', this.user.displayName);
-        console.log('Login successful:', this.user);
         return result.user;
       })
       .catch((error) => {
@@ -61,11 +60,7 @@ export class AuthService {
     }
   }
 
-  async register(
-    name: string,
-    email: string,
-    password: string
-  ): Promise<User | null> {
+  async register( name: string, email: string, password: string ): Promise<User | null> {
     try {
       const result = await this.createUserWithEmail(email, password, name);
       return result;

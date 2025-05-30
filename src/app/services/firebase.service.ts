@@ -57,18 +57,16 @@ export class FirebaseService {
   // }
 
   toObj(data: any): {} {
-    //Testcode
     return {
       displayName: data.displayName,
       displayName_lowercase: data.displayName.toLowerCase(),
       email: data.email,
-      stsTokenManager: data.stsTokenManager
-        ? {
-            accessToken: data.stsTokenManager.accessToken,
-            expirationTime: data.stsTokenManager.expirationTime,
-            refreshToken: data.stsTokenManager.refreshToken,
-          }
-        : null,
+      imgPath: data.photoURL,
+      stsTokenManager: {
+        accessToken: data.stsTokenManager.accessToken,
+        expirationTime: data.stsTokenManager.expirationTime,
+        refreshToken: data.stsTokenManager.refreshToken,
+      }
     };
   }
 
