@@ -85,7 +85,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const editable = this.editableDiv.nativeElement;
     editable.focus();
     document.execCommand('insertText', false, unicodeEmoji);
-    this.textInput = editable.innerHTML;
+    this.textInput = editable.innerText;
 
     updateEmojiDataForUser({ id: 'current-user' } as any, unicodeEmoji);
     this.updateSortedEmojis();
