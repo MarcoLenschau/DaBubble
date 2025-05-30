@@ -10,7 +10,7 @@ import { doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 export class UserDataService {
   private readonly collectionPath = 'users';
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService) { }
 
   getUsers(): Observable<User[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
@@ -58,4 +58,18 @@ export class UserDataService {
       emojiUsage: user.emojiUsage,
     };
   }
+
+  getCurrentUser(): User {
+    const userJson = sessionStorage.getItem('currentUser');
+    if (userJson) {
+      return JSON.parse(userJson);
+    }
+    return new User({
+      id: 'defaultUser',
+      displayName: 'Gast',
+      email: '',
+      img: './assets/img/profilepic/frederik.png',
+    });
+  }
+
 }

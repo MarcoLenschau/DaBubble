@@ -261,12 +261,12 @@ export function buildNewMessage(
 // Später löschen ************************************************************ */
 // Dummy-Daten:
 
-export const currentUser: User = {
-  id: 'user4',
-  displayName: 'Frederik Beck',
-  email: 'frederik@example.com',
-  img: './assets/img/profilepic/frederik.png',
-};
+// export const currentUser: User = {
+//   id: 'user4',
+//   displayName: 'Frederik Beck',
+//   email: 'frederik@example.com',
+//   img: './assets/img/profilepic/frederik.png',
+// };
 
 // export const users: User[] = [
 //   {
@@ -307,130 +307,130 @@ export const currentUser: User = {
 //   },
 // ];
 
-export const messages: Message[] = [
-  {
-    id: 'msg1',
-    name: 'Elise Roth',
-    timestamp: 1684411440000,
-    text: 'Hallo zusammen, wie läuft das aktuelle Projekt bei euch?',
-    userId: 'user1',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      { emojiName: 'thumbs-up', userIds: ['user1', 'user4', 'user6'] },
-      { emojiName: 'check-mark', userIds: ['user3'] },
-    ],
-  },
-  {
-    id: 'msg2',
-    name: 'Sofia Müller',
-    timestamp: 1684413060000,
-    text: 'Bei uns läuft alles gut.',
-    userId: 'user2',
-    threadId: '',
-    channelId: '',
-    reactions: [{ emojiName: 'hands-up', userIds: ['user1', 'user6'] }],
-  },
-  {
-    id: 'msg3',
-    name: 'Noah Braun',
-    timestamp: 1684413420000,
-    text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    userId: 'user3',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
-      { emojiName: 'rocket', userIds: ['user3'] },
-      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
-      { emojiName: 'check-mark', userIds: ['user3'] },
-      { emojiName: 'hands-up', userIds: ['user3'] },
-      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
-      { emojiName: 'rocket', userIds: ['user3'] },
-      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
-      { emojiName: 'check-mark', userIds: ['user3'] },
-      { emojiName: 'hands-up', userIds: ['user3'] },
-    ],
-  },
-  {
-    id: 'msg4',
-    name: 'Frederik Beck',
-    timestamp: 1684413840000,
-    text: 'Ja genau.',
-    userId: 'user4',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      {
-        emojiName: 'thumbs-up',
-        userIds: ['user1', 'user3', 'user4', 'user6'],
-      },
-      { emojiName: 'hands-up', userIds: ['user3'] },
-    ],
-  },
-  {
-    id: 'msg5',
-    name: 'Elias Neumann',
-    timestamp: 1684414000000,
-    text: 'Könntest du bitte die Dokumentation noch einmal überprüfen? Ich habe einige Fehler gefunden, besonders bei den API-Endpunkten.',
-    userId: 'user5',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
-      { emojiName: 'rocket', userIds: ['user3'] },
-    ],
-  },
-  {
-    id: 'msg6',
-    name: 'Steffen Hoffmann',
-    timestamp: 1684414200000,
-    text: 'Ich stimme Lena zu. Lorem ipsum.',
-    userId: 'user6',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      { emojiName: 'check-mark', userIds: ['user3', 'user4', 'user6'] },
-    ],
-  },
-  {
-    id: 'msg7',
-    name: 'Frederik Beck',
-    timestamp: 1684414264000,
-    text: 'Lorem ipsum dolor, sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-    userId: 'user4',
-    threadId: '',
-    channelId: '',
-    reactions: [
-      { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
-      { emojiName: 'rocket', userIds: ['user3'] },
-      { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
-      { emojiName: 'check-mark', userIds: ['user3'] },
-      { emojiName: 'hands-up', userIds: ['user3'] },
-    ],
-  },
-];
+// export const messages: Message[] = [
+//   {
+//     id: 'msg1',
+//     name: 'Elise Roth',
+//     timestamp: 1684411440000,
+//     text: 'Hallo zusammen, wie läuft das aktuelle Projekt bei euch?',
+//     userId: 'user1',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       { emojiName: 'thumbs-up', userIds: ['user1', 'user4', 'user6'] },
+//       { emojiName: 'check-mark', userIds: ['user3'] },
+//     ],
+//   },
+//   {
+//     id: 'msg2',
+//     name: 'Sofia Müller',
+//     timestamp: 1684413060000,
+//     text: 'Bei uns läuft alles gut.',
+//     userId: 'user2',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [{ emojiName: 'hands-up', userIds: ['user1', 'user6'] }],
+//   },
+//   {
+//     id: 'msg3',
+//     name: 'Noah Braun',
+//     timestamp: 1684413420000,
+//     text: 'Super, dann können wir ja bald mit dem Testing starten! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+//     userId: 'user3',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+//       { emojiName: 'rocket', userIds: ['user3'] },
+//       { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
+//       { emojiName: 'check-mark', userIds: ['user3'] },
+//       { emojiName: 'hands-up', userIds: ['user3'] },
+//       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+//       { emojiName: 'rocket', userIds: ['user3'] },
+//       { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
+//       { emojiName: 'check-mark', userIds: ['user3'] },
+//       { emojiName: 'hands-up', userIds: ['user3'] },
+//     ],
+//   },
+//   {
+//     id: 'msg4',
+//     name: 'Frederik Beck',
+//     timestamp: 1684413840000,
+//     text: 'Ja genau.',
+//     userId: 'user4',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       {
+//         emojiName: 'thumbs-up',
+//         userIds: ['user1', 'user3', 'user4', 'user6'],
+//       },
+//       { emojiName: 'hands-up', userIds: ['user3'] },
+//     ],
+//   },
+//   {
+//     id: 'msg5',
+//     name: 'Elias Neumann',
+//     timestamp: 1684414000000,
+//     text: 'Könntest du bitte die Dokumentation noch einmal überprüfen? Ich habe einige Fehler gefunden, besonders bei den API-Endpunkten.',
+//     userId: 'user5',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+//       { emojiName: 'rocket', userIds: ['user3'] },
+//     ],
+//   },
+//   {
+//     id: 'msg6',
+//     name: 'Steffen Hoffmann',
+//     timestamp: 1684414200000,
+//     text: 'Ich stimme Lena zu. Lorem ipsum.',
+//     userId: 'user6',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       { emojiName: 'check-mark', userIds: ['user3', 'user4', 'user6'] },
+//     ],
+//   },
+//   {
+//     id: 'msg7',
+//     name: 'Frederik Beck',
+//     timestamp: 1684414264000,
+//     text: 'Lorem ipsum dolor, sit amet. Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+//     userId: 'user4',
+//     threadId: '',
+//     channelId: '',
+//     reactions: [
+//       { emojiName: 'thumbs-up', userIds: ['user4', 'user6'] },
+//       { emojiName: 'rocket', userIds: ['user3'] },
+//       { emojiName: 'nerd', userIds: ['user1', 'user4', 'user6'] },
+//       { emojiName: 'check-mark', userIds: ['user3'] },
+//       { emojiName: 'hands-up', userIds: ['user3'] },
+//     ],
+//   },
+// ];
 
-export const channels: Channel[] = [
-  new Channel({
-    id: 'chan1',
-    name: 'Entwicklerteam',
-    description: 'Diskussionen rund um die Entwicklung',
-    members: ['user1', 'user2', 'user3', 'user4'],
-    messages: messages.filter((m) => m.channelId === 'chan1'),
-  }),
-  new Channel({
-    id: 'chan2',
-    name: 'Design-Team',
-    description: 'UX/UI, Farben, Schriften',
-    members: ['user2', 'user5', 'user6'],
-    messages: messages.filter((m) => m.channelId === 'chan2'),
-  }),
-  new Channel({
-    id: 'chan3',
-    name: 'Allgemein',
-    description: 'Teamweite Kommunikation',
-    members: ['user1', 'user2', 'user3', 'user4', 'user5', 'user6'],
-    messages: messages.filter((m) => m.channelId === 'chan3'),
-  }),
-];
+// export const channels: Channel[] = [
+//   new Channel({
+//     id: 'chan1',
+//     name: 'Entwicklerteam',
+//     description: 'Diskussionen rund um die Entwicklung',
+//     members: ['user1', 'user2', 'user3', 'user4'],
+//     messages: messages.filter((m) => m.channelId === 'chan1'),
+//   }),
+//   new Channel({
+//     id: 'chan2',
+//     name: 'Design-Team',
+//     description: 'UX/UI, Farben, Schriften',
+//     members: ['user2', 'user5', 'user6'],
+//     messages: messages.filter((m) => m.channelId === 'chan2'),
+//   }),
+//   new Channel({
+//     id: 'chan3',
+//     name: 'Allgemein',
+//     description: 'Teamweite Kommunikation',
+//     members: ['user1', 'user2', 'user3', 'user4', 'user5', 'user6'],
+//     messages: messages.filter((m) => m.channelId === 'chan3'),
+//   }),
+// ];

@@ -19,10 +19,10 @@ import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
-  currentUser,
+  // currentUser,
   // users,
   // messages,
-  channels,
+  // channels,
   formatTime,
   getEmojiByName,
   getEmojiByUnicode,
@@ -36,9 +36,11 @@ import {
   buildNewMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
+  // currentUser,
 } from '../../../utils/messages-utils';
 import { user } from '@angular/fire/auth';
 import { firstValueFrom } from 'rxjs';
+import { Channel } from '../../../models/channel.model';
 
 @Component({
   selector: 'app-messages',
@@ -59,8 +61,10 @@ export class MessagesComponent implements OnChanges, OnInit {
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users: User[] = [];
-  currentUser = currentUser;
+  currentUser: User;
+  // currentUser = currentUser;
   messages: Message[] = [];
+  channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   emojiMenuOpen: boolean[] = [];
@@ -81,8 +85,11 @@ export class MessagesComponent implements OnChanges, OnInit {
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+
+  ) {
+    this.currentUser = this.userDataService.getCurrentUser();
+  }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -103,6 +110,7 @@ export class MessagesComponent implements OnChanges, OnInit {
     await this.completeMissingUserFieldsInFirebase();
     this.loadMessages();
     this.updateSortedEmojis();
+
   }
 
   ngOnChanges() {
@@ -140,12 +148,16 @@ export class MessagesComponent implements OnChanges, OnInit {
 
   openThread(msg: Message) {
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
-    console.log(msg, currentUser.id);
+    console.log(msg, this.currentUser.id);
   }
 
   openUserDialog(userId?: string): void {
+    console.log('USerId: ', userId);
+
     if (!userId) return;
     const user = this.getUserById(userId);
+    console.log('USer: ', user);
+    console.log('USers: ', this.users);
     if (user) {
       this.dialog.open(DialogUserDetailsComponent, {
         data: user,
@@ -207,8 +219,8 @@ export class MessagesComponent implements OnChanges, OnInit {
 
     this.threadSymbol = msg.channelId ? '#' : '@';
     this.threadTitle = msg.channelId
-      ? channels.find((c) => c.id === msg.channelId)?.name ??
-        'Unbekannter Kanal'
+      ? this.channels.find((c) => c.id === msg.channelId)?.name ??
+      'Unbekannter Kanal'
       : msg.name;
   }
 

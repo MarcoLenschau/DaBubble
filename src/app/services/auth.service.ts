@@ -11,7 +11,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from '@angular/fire/auth';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, firstValueFrom } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 
 @Injectable({
@@ -113,11 +113,19 @@ export class AuthService {
     await this.firebase.addUser(result.user);
     this.user = result.user;
 
+    const allUsers = await firstValueFrom(this.firebase.getColRef('users'));
+    const firestoreUser = allUsers.find( // besser: mit Abfrage suchen
+      (u: any) => u.email === result.user.email
+    );
+
+    if (!firestoreUser) {
+      throw new Error('User wurde in Firestore nicht gefunden.');
+    }
     const currentUser = {
-      id: result.user.uid,
+      id: firestoreUser.id,
       displayName: result.user.displayName,
       email: result.user.email,
-      img: './assets/img/profilepic/default.png',
+      img: './assets/img/profilepic/frederik.png',
     };
 
     sessionStorage.setItem('currentUser', JSON.stringify(currentUser));

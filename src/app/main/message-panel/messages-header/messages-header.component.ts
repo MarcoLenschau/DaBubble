@@ -2,7 +2,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../../models/message.model';
-import { channels } from '../../../utils/messages-utils';
+// import { channels } from '../../../utils/messages-utils';
 import { FirebaseService } from '../../../services/firebase.service';
 
 @Component({
@@ -18,12 +18,12 @@ export class MessagesHeaderComponent {
   @Input() activeChannel: string | null = null;
   @Output() closeThreadWindow = new EventEmitter<boolean>();
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService) { }
 
 
-ngOnInit() {
-  this.firebaseService.updateAllUsersWithLowercaseField();
-}
+  ngOnInit() {
+    this.firebaseService.updateAllUsersWithLowercaseField();
+  }
   textInput = '';
   selectedRecipients: { id: string; displayName: string }[] = [];
 
@@ -52,7 +52,7 @@ ngOnInit() {
     if (!this.starterMessage) return '';
     if (this.starterMessage.channelId) {
       return (
-        channels.find((c) => c.id === this.starterMessage!.channelId)?.name ??
+        this.allChannels.find((c) => c.id === this.starterMessage!.channelId)?.channelName ??
         'Unbekannter Kanal'
       );
     }
@@ -78,18 +78,18 @@ ngOnInit() {
     }
   }
 
- selectUser(user: any, input: HTMLInputElement) {
-  const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
-  if (match) {
-    this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
-  } else {
-    this.textInput += `@${user.displayName} `;
-  }
+  selectUser(user: any, input: HTMLInputElement) {
+    const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
+    if (match) {
+      this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
+    } else {
+      this.textInput += `@${user.displayName} `;
+    }
 
-  this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
-  input.value = '';
-  this.clearResults();
-}
+    this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
+    input.value = '';
+    this.clearResults();
+  }
 
 
   selectChannel(channel: any, input: HTMLInputElement) {

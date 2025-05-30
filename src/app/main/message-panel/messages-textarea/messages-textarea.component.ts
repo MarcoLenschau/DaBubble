@@ -10,14 +10,16 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageDataService } from '../../../services/message-data.service';
+import { UserDataService } from '../../../services/user-data.service';
 
 import { EMOJIS, Emoji } from '../../../interfaces/emojis-interface';
 import { Message } from '../../../models/message.model';
 import { Channel } from '../../../models/channel.model';
+import { User } from '../../../models/user.model';
 import { Reaction } from '../../../interfaces/reaction.interface';
 import {
   addEmojiToTextarea,
-  currentUser,
+  // currentUser,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
 } from '../../../utils/messages-utils';
@@ -41,13 +43,16 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
 
-  constructor(private messageDataService: MessageDataService) {}
 
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
-  currentUser = currentUser;
+  currentUser: User;
+
+  constructor(private messageDataService: MessageDataService, private userDataService: UserDataService) {
+    this.currentUser = this.userDataService.getCurrentUser();
+  }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -111,9 +116,12 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     if (!text || !this.currentUser) return;
 
     const message = this.createMessage(text);
+    console.log('Message: ', message);
+
 
     try {
       await this.messageDataService.addMessage(message);
+      console.log('Message: ', message);
       this.resetInputField();
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
