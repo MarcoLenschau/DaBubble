@@ -1,4 +1,14 @@
-<div [class.flex-row]="reverse">
+<div class="input-prefix-wrapper" [class.flex-row]="reverse">
     <img [class.none]="img === 'none'" src="./assets/img/input/{{img}}" alt="{{img}}">
-    <input [style.height.px]="height" [class.input-distance]="reverse" [class.distance]="img === 'none'" type="text" [placeholder]="placeholder" (change)="addData($event)">
+    <span *ngIf="prefix" class="input-prefix">{{prefix}}</span>
+    <input
+      [style.height.px]="height"
+      [class.input-distance]="reverse"
+      [class.distance]="img === 'none'"
+      type="text"
+      [placeholder]="placeholder"
+      [value]="value"
+      (input)="addData($event)"
+      style="width: 100%;"
+    >
 </div>

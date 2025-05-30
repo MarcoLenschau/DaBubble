@@ -16,39 +16,34 @@
                 <div class="channel-title-arrow" (click)="toggleChannels()" (mouseenter)="isChannelHovered = true"
                     (mouseleave)="isChannelHovered = false">
 
-                    <img [src]="getChannelArrowIcon()"
-                        alt="arrow">
+                    <img [src]="getChannelArrowIcon()" alt="arrow">
 
                     <div class="channel-title">
-                        <img [src]="isChannelHovered ? './assets/img/devspace/workspace-icon-hover.png': './assets/img/devspace/workspaces-icon-default.png'" alt="workspace">
+                        <img [src]="isChannelHovered ? './assets/img/devspace/workspace-icon-hover.png': './assets/img/devspace/workspaces-icon-default.png'"
+                            alt="workspace">
                         <h2>Channels</h2>
                     </div>
                 </div>
 
-                <img src="./assets/img/devspace/add.png" alt="add">
+                <img src="./assets/img/devspace/add.png" alt="add" (click)="showAddChannel = true" style="cursor:pointer;">
+
+                <app-add-channel-overlay *ngIf="showAddChannel" (close)="showAddChannel = false">
+                </app-add-channel-overlay>
             </div>
 
             <div *ngIf="isChannelOpen">
-                <div 
-                    class="devspace-channel-content"
-                    (mouseenter)="hoveredChannel = 'Entwicklerteam'"
-                    (mouseleave)="hoveredChannel = null"
-                    (click)="selectChannel('Entwicklerteam')"
-                    [ngClass]="{
+                <div class="devspace-channel-content" (mouseenter)="hoveredChannel = 'Entwicklerteam'"
+                    (mouseleave)="hoveredChannel = null" (click)="selectChannel('Entwicklerteam')" [ngClass]="{
                         'hovered': hoveredChannel === 'Entwicklerteam',
                         'active': activeChannel === 'Entwicklerteam'
-                    }"
-                >
-                    <img 
-                        [src]="
+                    }">
+                    <img [src]="
                         activeChannel === 'Entwicklerteam'
                             ? './assets/img/devspace/tag-click.png'
                             : hoveredChannel === 'Entwicklerteam'
                             ? './assets/img/devspace/tag-hover.png'
                             : './assets/img/devspace/tag-default.png'
-                        "
-                        alt="#"
-                    >
+                        " alt="#">
                     <span>Entwicklerteam</span>
                 </div>
 
@@ -63,18 +58,19 @@
 
         <div class="devspace-messages">
             <div class="message-title-arrow" (click)="toggleMessage()" (mouseenter)="isMessageHovered = true"
-            (mouseleave)="isMessageHovered = false">
+                (mouseleave)="isMessageHovered = false">
 
                 <img [src]="getMessageArrowIcon()" alt="arrow">
                 <div class="message-title">
-                    <img [src]=" isMessageHovered ?  './assets/img/devspace/account-circle-hover.png': './assets/img/devspace/account-circle-default.png'" alt="account">
+                    <img [src]=" isMessageHovered ?  './assets/img/devspace/account-circle-hover.png': './assets/img/devspace/account-circle-default.png'"
+                        alt="account">
                     <h2>Direktnachrichten</h2>
                 </div>
             </div>
 
             <div class="profile-users" *ngIf="isMessageOpen">
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
-                [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
+                    [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
                         <img class="profile-pic" [src]="user.imgUrl" alt="user">
                         <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
@@ -82,7 +78,7 @@
                     <p>{{user.displayName}}</p>
                 </div>
 
-                
+
             </div>
 
 

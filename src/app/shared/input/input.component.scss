@@ -11,8 +11,8 @@ div {
     }
 
     input {
-        padding-left: 48px;
-        width: 250px;
+        
+        
         height: 32px;
         border-radius: 24px;
         border: 1.5px rgba(0, 0, 0, 0.3) solid;
@@ -33,4 +33,23 @@ div {
 
 .flex-row {
     flex-direction: row-reverse;
+}
+.input-prefix-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 18px;
+  color: #5a5be7;
+  font-size: 1.5rem;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+}
+
+input {
+  padding-left: 32px; // Platz für das Prefix
 }

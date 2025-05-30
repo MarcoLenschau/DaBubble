@@ -1,0 +1,92 @@
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.overlay-card {
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 4px 24px rgba(80,80,200,0.10);
+  padding: 40px 36px 32px 36px;
+  min-width: 420px;
+  max-width: 95vw;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+h2 {
+  margin-bottom: 12px;
+}
+
+.desc {
+  margin-bottom: 28px;
+  color: #222;
+  font-size: 1.08rem;
+}
+
+.hashtag {
+  color: #5a5be7;
+}
+
+label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.optional {
+  color: #aaa;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+
+
+  app-input {
+    flex: 1;
+    margin-left: 12px;
+  }
+
+
+input[type="text"] {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1.15rem;
+  padding: 16px 0;
+  flex: 1;
+}
+
+.create-btn {
+  margin-top: 24px;
+  float: right;
+  background: #5a5be7;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.create-btn:hover {
+  background: #3d3ee6;
+}

@@ -14,6 +14,7 @@ export class InputComponent {
   @Input() value: string = '';
   @Input() height: number = 32;
   @Input() reverse: boolean = false;
+  @Input() prefix: string = '';
   @Output() valueChange = new EventEmitter<string>();
 
   constructor() {}
