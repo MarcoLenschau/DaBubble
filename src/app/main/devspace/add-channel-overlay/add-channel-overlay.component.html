@@ -1,0 +1,32 @@
+<div class="overlay-backdrop">
+  <div class="overlay-card">
+    <button class="close-btn" (click)="close.emit()">&times;</button>
+    <h2>Channel erstellen</h2>
+    <p class="desc">
+      Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein<br>
+      <span class="hashtag">#marketing</span> zum Beispiel.
+    </p>
+    <form (ngSubmit)="createChannel()">
+      <label>Channel-Name</label>
+      
+    
+        <app-input
+            [(value)]="channelName"
+            placeholder="z.B. Kooperationsprojekte"
+            img="none"
+            [height]="50"
+            prefix="#"
+            ></app-input> 
+    
+
+      <label>Beschreibung <span class="optional">(optional)</span></label>
+      <app-input
+        [(value)]="description"
+        placeholder="Dein Text hier"
+        img="none"
+        [height]="50"
+        ></app-input>
+      <button class="create-btn" type="submit">Erstellen</button>
+    </form>
+  </div>
+</div>

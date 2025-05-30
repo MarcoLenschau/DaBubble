@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { Observable } from 'rxjs';
+import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
 
 @Component({
   selector: 'app-devspace',
-  imports: [CommonModule],
+  imports: [CommonModule, AddChannelOverlayComponent],
   templateUrl: './devspace.component.html',
   styleUrl: './devspace.component.scss'
 })
@@ -20,6 +21,7 @@ export class DevspaceComponent {
 
   hoveredChannel: string | null = null;
   activeChannel: string | null = null;
+  showAddChannel = false;
 
   activeUser: string | null = null;
   user$: Observable<any[]>;
