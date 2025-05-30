@@ -34,7 +34,7 @@ export class MainComponent {
     this.showThread = false;
   }
 
-  onChannelSelected(channel: string){
+  onChannelSelected(channel: string) {
     this.activeChannel = channel;
   }
 }
