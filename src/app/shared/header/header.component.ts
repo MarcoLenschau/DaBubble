@@ -5,6 +5,7 @@ import { InputComponent } from '../input/input.component';
 import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/dialog-user-options.component';
 import {MatDialog} from '@angular/material/dialog'
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -14,13 +15,21 @@ import { AuthService } from '../../services/auth.service';
 })
 export class HeaderComponent {
   user = {
-    id: 'user',
-    displayName: 'Gast',
-    email:  'gast@gmail.com',
-    img: ''
+    displayName: "Gast",
+    img: ""
   };
+
+  users: Subscription
   
-  constructor(private dialog: MatDialog, public router: RouterService) {}
+  constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService) {
+    this.users = this.auth.user$.subscribe(user => {
+      this.user = user;
+    });
+  }
+
+  ngOnDestroy() {
+    this.users.unsubscribe();
+  }
 
   openDialog() {
     let dialogRef = this.dialog.open(DialogUserOptionsComponent);

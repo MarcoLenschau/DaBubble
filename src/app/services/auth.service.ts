@@ -1,30 +1,22 @@
 import { Injectable } from '@angular/core';
-import {
-  Auth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-  User,
-  user,
-} from '@angular/fire/auth';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-} from '@angular/fire/auth';
-import { Observable, Subscription, firstValueFrom } from 'rxjs';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user } from '@angular/fire/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
 import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<any>;
+  private userSubject = new BehaviorSubject<any>({});
+  user$ = this.userSubject.asObservable();
+  users$: Observable<any>;
   users: any[] = [];
   user: any = {};
 
   constructor(private auth: Auth, private firebase: FirebaseService) {
-    this.user$ = this.firebase.getColRef('users');
-    this.user$.forEach((users: any) => {
+    this.users$ = this.firebase.getColRef('users');
+    this.users$.forEach((users: any) => {
       this.users = users;
     });
   }
@@ -40,6 +32,7 @@ export class AuthService {
       .then((result) => {
         this.isUserExists(result, userCreated);
         this.user = result.user;
+        this.userSubject.next(this.user);
         sessionStorage.setItem('currentUser', this.user.displayName);
         return result.user;
       })
