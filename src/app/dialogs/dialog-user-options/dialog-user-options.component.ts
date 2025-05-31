@@ -3,9 +3,7 @@ import { RouterService } from '../../services/router.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
-import { User } from '../../models/user.model';
-import { FirebaseService } from '../../services/firebase.service';
-import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dialog-user-options',
@@ -16,10 +14,10 @@ import { Observable } from 'rxjs';
 export class DialogUserOptionsComponent {
   @Input() user: any = {};
 
-  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>) {}
+  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>, private auth: AuthService) {}
 
   logOut() {
-    this.router.switchRoute('');
+    this.auth.logout();
     this.dialogRef.close();
   }
 

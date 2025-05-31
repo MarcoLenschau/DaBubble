@@ -2,7 +2,6 @@ import { EventEmitter } from '@angular/core';
 import { Emoji } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
-import { Channel } from '../models/channel.model';
 import { Reaction } from '../interfaces/reaction.interface';
 import { MessageContext } from '../interfaces/message-context.interface';
 

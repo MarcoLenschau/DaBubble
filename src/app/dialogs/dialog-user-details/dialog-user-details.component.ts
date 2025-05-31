@@ -1,7 +1,7 @@
-import { Component, Input, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { User } from '../../models/user.model';
+import { Component, Input } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DialogUserEditComponent } from '../dialog-user-edit/dialog-user-edit.component';
+
 
 @Component({
   selector: 'app-dialog-user-details',

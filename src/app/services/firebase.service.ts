@@ -1,17 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  collectionData,
-  doc,
-  addDoc,
-  updateDoc,
-  getDocs,
-  query,
-  where,
-  getDoc,
-} from '@angular/fire/firestore';
-import { User } from '../models/user.model';
+import {Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, query, where} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +20,7 @@ export class FirebaseService {
   }
 
   /**
-   * Fügt neuen Benutzer hinzu
+   * Add new user in firebase.
    */
   async addUser(data: any) {
     if (data != null || data != undefined || data != '') {
@@ -59,7 +47,6 @@ export class FirebaseService {
   toObj(data: any): {} {
     return {
       displayName: data.displayName,
-      displayName_lowercase: data.displayName.toLowerCase(),
       email: data.email,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       stsTokenManager: data.stsTokenManager

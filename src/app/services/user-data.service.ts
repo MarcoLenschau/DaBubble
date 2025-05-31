@@ -48,12 +48,12 @@ export class UserDataService {
     await deleteDoc(docRef);
   }
 
-  private getCleanJson(user: User): any {
+  private getCleanJson(user: any): any {
     return {
       id: user.id,
       displayName: user.displayName,
       email: user.email,
-      img: user.img,
+      photoURL: user.photoURL,
       recentEmojis: user.recentEmojis,
       emojiUsage: user.emojiUsage,
     };

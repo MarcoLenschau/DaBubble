@@ -3,6 +3,7 @@ import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user } from '
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
 import { FirebaseService } from './firebase.service';
+import { RouterService } from './router.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class AuthService {
   users: any[] = [];
   user: any = {};
 
-  constructor(private auth: Auth, private firebase: FirebaseService) {
+  constructor(private auth: Auth, private firebase: FirebaseService, private router: RouterService) {
     this.users$ = this.firebase.getColRef('users');
     this.users$.forEach((users: any) => {
       this.users = users;
@@ -25,6 +26,14 @@ export class AuthService {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 
+  logout() {
+    this.auth.signOut().then(() => {
+      this.router.switchRoute('/');
+    }).catch((error) => {
+      console.error('Logout-Fehler:', error);
+    });  
+  }
+
   async loginWithGoogle(): Promise<User | null> {
     let userCreated = false;
     const provider = new GoogleAuthProvider();
@@ -33,7 +42,6 @@ export class AuthService {
         this.isUserExists(result, userCreated);
         this.user = result.user;
         this.userSubject.next(this.user);
-        sessionStorage.setItem('currentUser', this.user.displayName);
         return result.user;
       })
       .catch((error) => {
@@ -63,15 +71,11 @@ export class AuthService {
     }
   }
 
-  // createValidUser(result: any, name: string): any { // Originalcode
-  //   return { ...result.user, displayName: name };
-  // }
-
   createValidUser(user: any, name: string): any {
-    // Testcode
     return {
       uid: user.uid,
       email: user.email,
+      photoURL: user.photoURL,
       displayName: name,
       stsTokenManager: user.stsTokenManager ?? null,
     };
@@ -91,16 +95,12 @@ export class AuthService {
   // }
 
   async createUserWithEmail(email: string, password: string, name: string) {
-    // Testcode
-    const result = await createUserWithEmailAndPassword(
-      this.auth,
-      email,
-      password
-    );
+    const result = await createUserWithEmailAndPassword(this.auth, email, password);
     result.user = this.createValidUser(result.user, name);
     await this.firebase.addUser(result.user);
     this.user = result.user;
-
+    this.user.photoURL = "./assets/img/profilepic/frederik.png"
+    this.userSubject.next(this.user);
     const allUsers = await firstValueFrom(this.firebase.getColRef('users'));
     const firestoreUser = allUsers.find( // besser: mit Abfrage suchen
       (u: any) => u.email === result.user.email
@@ -109,14 +109,6 @@ export class AuthService {
     if (!firestoreUser) {
       throw new Error('User wurde in Firestore nicht gefunden.');
     }
-    const currentUser = {
-      id: firestoreUser.id,
-      displayName: result.user.displayName,
-      email: result.user.email,
-      img: './assets/img/profilepic/frederik.png',
-    };
-
-    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
     return result.user;
   }
 }
