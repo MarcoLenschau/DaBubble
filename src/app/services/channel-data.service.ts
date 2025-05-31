@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Channel } from '../models/channel.model';
 import { Observable, map } from 'rxjs';
-import { doc, updateDoc, deleteDoc, addDoc, collection } from '@angular/fire/firestore';
+import { doc, updateDoc, deleteDoc, addDoc, collection, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,10 @@ export class ChannelDataService {
 
   async addChannel(channel: Channel): Promise<void> {
     if (!channel) return;
-    await addDoc(this.firebaseService.getDocRef(this.collectionPath), this.getCleanJson(channel));
+    const collectionRef = this.firebaseService.getDocRef(this.collectionPath);
+    const docRef = doc(collectionRef); // Neue Referenz mit ID
+    channel.id = docRef.id;
+    await setDoc(docRef, this.getCleanJson(channel));
   }
 
   async updateChannel(channel: Channel): Promise<void> {

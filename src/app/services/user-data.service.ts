@@ -52,7 +52,7 @@ export class UserDataService {
       id: user.id,
       displayName: user.displayName,
       email: user.email,
-      imgUrl: user.img,
+      img: user.img,
       recentEmojis: user.recentEmojis,
       emojiUsage: user.emojiUsage,
     };
