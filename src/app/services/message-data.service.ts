@@ -85,6 +85,17 @@ export class MessageDataService {
     );
   }
 
+  getMessagesForThread(threadId: string): Observable<Message[]> {
+    const q = query(
+      collection(this.firestore, 'messages'),
+      where('threadId', '==', threadId),
+      orderBy('timestamp', 'asc')
+    );
+
+    return collectionData(q).pipe(this.mapToMessages());
+  }
+
+
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
     let q: Query<DocumentData>;
 
