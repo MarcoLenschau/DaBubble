@@ -61,7 +61,7 @@ export class FirebaseService {
       displayName: data.displayName,
       displayName_lowercase: data.displayName.toLowerCase(),
       email: data.email,
-      img: data.photoURL || './assets/img/profilepic/frederik.png',
+      photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       stsTokenManager: data.stsTokenManager
         ? {
           accessToken: data.stsTokenManager.accessToken,

@@ -72,7 +72,7 @@
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
                     [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
-                        <img class="profile-pic" [src]="user.imgUrl" alt="user">
+                        <img class="profile-pic" [src]="user.photoURL" alt="user">
                         <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
                     <p>{{user.displayName}}</p>

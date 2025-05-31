@@ -59,9 +59,7 @@ export class UserDataService {
     };
   }
 
-  getCurrentUser(): any {
-    this.auth.user$.subscribe(user => {
-      return user;
-    })
+  getCurrentUser(): User {
+    return this.auth.user;
   }
 }
