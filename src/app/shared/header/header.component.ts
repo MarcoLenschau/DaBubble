@@ -14,7 +14,11 @@ import { Subscription } from 'rxjs';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user: any;
+  user = {
+    displayName: "Gast",
+    img: ""
+  };
+
   users: Subscription
   
   constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService) {
