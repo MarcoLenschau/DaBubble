@@ -9,7 +9,7 @@ import { RouterService } from './router.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private userSubject = new BehaviorSubject<any>({});
+  userSubject = new BehaviorSubject<any>({});
   user$ = this.userSubject.asObservable();
   users$: Observable<any>;
   users: any[] = [];

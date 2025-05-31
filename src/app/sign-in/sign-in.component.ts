@@ -13,14 +13,41 @@ import { FirebaseService } from '../services/firebase.service';
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
+  email = "";
+  password = "";
 
   constructor(public router: RouterService, private authService: AuthService, private firebase: FirebaseService) {}
+
+  async loginWithEmail() {
+    const user = await this.authService.login(this.email, this.password);;
+    if (user) {
+      let user = await this.firebase.searchUsersByEmail(this.email);
+      this.authService.userSubject.next(user[0]);
+      console.log(this.authService.user)
+      this.router.switchRoute("message");
+    }
+  }
 
   async googleLogin() {
     const user = await this.authService.loginWithGoogle();
     if (user) {
       this.authService.user = this.firebase.toObj(user);
       this.router.switchRoute("message");
+    }
+  }
+
+  gastLogin() {
+    this.authService.userSubject.next({
+        displayName: "Gast",
+        photoURL: "/assets/img/profilepic/frederik.png"
+    });
+  }
+
+  setValue(eventValue: string, type: string){
+    if (type === 'email') {
+      this.email = eventValue;  
+    } else if (type === 'password') {
+      this.password = eventValue;  
     }
   }
 }
