@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../../../app/shared/input/input.component';
+import { ChannelDataService } from '../../../services/channel-data.service';
+import { UserDataService } from '../../../services/user-data.service';
+import { Channel } from '../../../models/channel.model';
 
 @Component({
   selector: 'app-add-channel-overlay',
@@ -9,11 +12,26 @@ import { InputComponent } from '../../../../app/shared/input/input.component';
   styleUrl: './add-channel-overlay.component.scss'
 })
 export class AddChannelOverlayComponent {
-    @Output() close = new EventEmitter<void>();
-    channelName = '';
-    description = '';
+  @Output() close = new EventEmitter<void>();
+  channelName = '';
+  description = '';
 
-    createChannel(){
-      this.close.emit();
+  constructor(private channelDataService: ChannelDataService, private userDataService: UserDataService) { }
+
+  async createChannel() {
+    if (!this.channelName.trim()) {
+      return;
     }
+    const currentUser = this.userDataService.getCurrentUser();
+    const newChannel = new Channel({
+      name: this.channelName.trim(),
+      description: this.description.trim(),
+      members: [currentUser.id],
+      messages: [],
+      createdBy: currentUser.displayName,
+    });
+
+    await this.channelDataService.addChannel(newChannel);
+    this.close.emit();
+  }
 }

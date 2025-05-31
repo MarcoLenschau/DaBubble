@@ -17,6 +17,11 @@ export class MessageWindowComponent {
     starterMessage: Message;
     userId: string;
   }>();
+  @Output() showThreadClosing = new EventEmitter<boolean>();
+
+  onInnerClose() {
+    this.showThreadClosing.emit(false);
+  }
 
   threadOpen(message: Message, userId: string) {
     this.threadStart.emit({ starterMessage: message, userId });

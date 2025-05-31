@@ -147,24 +147,24 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   // }
 
+
+
+
+
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
 
-    const messageSource$ = this.isMessage
-      ? this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id)
-      : this.messageDataService.getMessages();
+    const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id)
 
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
-      this.messages = this.isMessage
-        ? loadedMessages
-        : loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
-
-
-      if (this.isThread && this.starterMessage) {
-        this.setReplyToMessage(this.starterMessage);
+      this.messages = loadedMessages;
+      if (this.isMessage) {
+        console.log("this.isMessage: Messages: ", this.messages);
       }
-
+      if (this.isThread) {
+        console.log("this.isThreade: Messages: ", this.messages);
+      }
       console.log("Messages: ", this.messages);
       console.log("Filtered Messages: ", this.filteredMessages);
     });
@@ -180,7 +180,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.subscribeToMessages();
     }
 
-    if (
+    if (this.isThread &&
       changes['starterMessage'] &&
       this.starterMessage &&
       this.starterMessage.id !== this.lastThreadId
@@ -278,21 +278,28 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     this.threadId = msg.threadId;
+    this.messagesSubscription?.unsubscribe();
 
-    this.filteredMessages = [
-      msg,
-      ...this.messages.filter(
-        (m) => m.threadId === msg.threadId && m.id !== msg.id
-      ),
-    ];
+    this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
+      this.messages = loadedMessages;
+      console.log("Messages setReplyToMessage: ", this.messages);
+      this.filteredMessages = [
+        msg,
+        ...this.messages.filter((m) => m.id !== msg.id
+        ),
+      ];
 
-    this.threadSymbol = msg.channelId ? '#' : '@';
-    this.threadTitle = msg.channelId
-      ? this.channels.find((c) => c.id === msg.channelId)?.name ??
-      'Unbekannter Kanal'
-      : msg.name;
+      this.threadSymbol = msg.channelId ? '#' : '@';
+      this.threadTitle = msg.channelId
+        ? this.channels.find((c) => c.id === msg.channelId)?.name ??
+        'Unbekannter Kanal'
+        : msg.name;
 
-    console.log("Filtered Messages: ", this.filteredMessages);
+      console.log("Filtered Messages setReplyToMessage: ", this.filteredMessages);
+
+    });
+
+
   }
 
   cancelReply() {

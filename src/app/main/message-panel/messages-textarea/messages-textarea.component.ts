@@ -17,6 +17,7 @@ import { Message } from '../../../models/message.model';
 import { Channel } from '../../../models/channel.model';
 import { User } from '../../../models/user.model';
 import { Reaction } from '../../../interfaces/reaction.interface';
+import { MessageContext } from '../../../interfaces/message-context.interface';
 import {
   addEmojiToTextarea,
   // currentUser,
@@ -39,6 +40,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() toolbarWidth: string = '100%';
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
+  @Input() messageContext?: MessageContext;
+
   @Output() messageSent = new EventEmitter<void>();
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
@@ -144,7 +147,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   private findChannelId() {
-    return this.channel?.id || this.starterMessage?.channelId || '';
+    if (this.mode === 'message' && this.messageContext?.type === 'channel' && this.messageContext.id) {
+      return this.messageContext.id;
+    }
+    return '';
   }
 
   private buildMessage(

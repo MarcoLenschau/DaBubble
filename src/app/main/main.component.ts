@@ -32,6 +32,8 @@ export class MainComponent {
 
   onThreadClose() {
     this.showThread = false;
+    console.log("Close Output has reached MainComponent");
+
   }
 
   onChannelSelected(channel: string) {
