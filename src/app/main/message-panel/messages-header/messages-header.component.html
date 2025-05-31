@@ -39,6 +39,12 @@
           <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
             <strong>#{{ channel.channelName }}</strong>
           </li>
+
+          <li *ngFor="let msg of searchResultsMessages" (click)="selectSearchResult(msg)">
+            <div>{{ msg.text }}</div>
+            <div class="meta">{{ msg.name }} • {{ msg.timestamp }}</div>
+          </li>
+
         </ul>
       </div>
     </div>

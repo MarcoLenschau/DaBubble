@@ -17,7 +17,7 @@ import { User } from '../models/user.model';
   providedIn: 'root',
 })
 export class FirebaseService {
-  constructor(private firebase: Firestore) {}
+  constructor(private firebase: Firestore) { }
 
   getDocRef(docRef: string) {
     return collection(this.firebase, docRef);
@@ -61,12 +61,14 @@ export class FirebaseService {
       displayName: data.displayName,
       displayName_lowercase: data.displayName.toLowerCase(),
       email: data.email,
-      imgPath: data.photoURL,
-      stsTokenManager: {
-        accessToken: data.stsTokenManager.accessToken,
-        expirationTime: data.stsTokenManager.expirationTime,
-        refreshToken: data.stsTokenManager.refreshToken,
-      }
+      imgPath: data.photoURL || './assets/img/profilepic/frederik.png',
+      stsTokenManager: data.stsTokenManager
+        ? {
+          accessToken: data.stsTokenManager.accessToken,
+          expirationTime: data.stsTokenManager.expirationTime,
+          refreshToken: data.stsTokenManager.refreshToken,
+        }
+        : null,
     };
   }
 
@@ -94,6 +96,8 @@ export class FirebaseService {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
+
+  // TODO: async searchMessagesForUser(term: string, userId: string): Promise<Message[]> {}
 
   /**
    * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld

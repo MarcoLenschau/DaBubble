@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
-import { Observable, map } from 'rxjs';
+import { Observable, map, OperatorFunction } from 'rxjs';
 import {
   doc,
   updateDoc,
@@ -32,25 +32,28 @@ export class MessageDataService {
     private firestore: Firestore
   ) { }
 
-  getMessages(): Observable<Message[]> {
-    return this.firebaseService.getColRef(this.collectionPath).pipe(
-      map((firestoreDocs) =>
-        firestoreDocs.map(
-          (docData) =>
-            new Message({
-              id: docData['id'],
-              name: docData['name'],
-              text: docData['text'],
-              timestamp: docData['timestamp'],
-              userId: docData['userId'],
-              channelId: docData['channelId'] ?? '',
-              threadId: docData['threadId'] ?? '',
-              reactions: docData['reactions'] ?? [],
-            })
-        )
-      )
-    );
-  }
+
+  // getMessages(): Observable<Message[]> {
+  //   return this.firebaseService.getColRef(this.collectionPath).pipe(
+  //     map((firestoreDocs) =>
+  //       firestoreDocs.map(
+  //         (docData) =>
+  //           new Message({
+  //             id: docData['id'],
+  //             name: docData['name'],
+  //             text: docData['text'],
+  //             timestamp: docData['timestamp'],
+  //             userId: docData['userId'],
+  //             receiverId: docData['receiverId'] ?? '',
+  //             isDirectMessage: docData['isDirectMessage'] ?? false,
+  //             channelId: docData['channelId'] ?? '',
+  //             threadId: docData['threadId'] ?? '',
+  //             reactions: docData['reactions'] ?? [],
+  //           })
+  //       )
+  //     )
+  //   );
+  // }
 
   async addMessage(message: Message): Promise<void> {
     const messageRef = doc(collection(this.firestore, 'messages'));
@@ -76,17 +79,10 @@ export class MessageDataService {
     await deleteDoc(docRef);
   }
 
-  private getCleanJson(message: Message): any {
-    return {
-      id: message.id,
-      name: message.name,
-      text: message.text,
-      timestamp: message.timestamp,
-      userId: message.userId,
-      channelId: message.channelId,
-      threadId: message.threadId,
-      reactions: message.reactions,
-    };
+  getMessages(): Observable<Message[]> {
+    return this.firebaseService.getColRef(this.collectionPath).pipe(
+      this.mapToMessages()
+    );
   }
 
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
@@ -111,7 +107,44 @@ export class MessageDataService {
       throw new Error('Invalid context type');
     }
 
-    return collectionData(q) as Observable<Message[]>;
+    // return collectionData(q) as Observable<Message[]>;
+    return collectionData(q).pipe(
+      this.mapToMessages()
+    );
   }
 
+  private getCleanJson(message: Message): any {
+    return {
+      id: message.id,
+      name: message.name,
+      text: message.text,
+      timestamp: message.timestamp,
+      userId: message.userId,
+      channelId: message.channelId,
+      receiverId: message.receiverId ?? null,
+      isDirectMessage: message.isDirectMessage ?? false,
+      threadId: message.threadId,
+      reactions: message.reactions,
+    };
+  }
+
+  private mapToMessages(): OperatorFunction<DocumentData[], Message[]> {
+    return map((docs) =>
+      docs.map(
+        (doc) =>
+          new Message({
+            id: doc['id'],
+            name: doc['name'],
+            text: doc['text'],
+            timestamp: doc['timestamp'],
+            userId: doc['userId'],
+            receiverId: doc['receiverId'] ?? '',
+            isDirectMessage: doc['isDirectMessage'] ?? false,
+            channelId: doc['channelId'] ?? '',
+            threadId: doc['threadId'] ?? '',
+            reactions: doc['reactions'] ?? [],
+          })
+      )
+    );
+  }
 }

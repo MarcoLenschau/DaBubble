@@ -1,5 +1,5 @@
 export interface MessageContext {
     type: 'channel' | 'direct';
-    id?: string;
-    receiverId?: string;
+    id?: string; // channelId oder userId
+    receiverId?: string; // für Direktnachrichten
 }

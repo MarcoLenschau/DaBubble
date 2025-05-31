@@ -47,7 +47,6 @@ export class UserDataService {
     await deleteDoc(docRef);
   }
 
-  /** Konvertiert dein User-Objekt in das Firestore-Format */
   private getCleanJson(user: User): any {
     return {
       id: user.id,

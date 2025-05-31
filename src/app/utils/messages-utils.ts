@@ -1,8 +1,10 @@
+import { EventEmitter } from '@angular/core';
 import { Emoji } from '../interfaces/emojis-interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Channel } from '../models/channel.model';
 import { Reaction } from '../interfaces/reaction.interface';
+import { MessageContext } from '../interfaces/message-context.interface';
 
 export function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -258,6 +260,13 @@ export function buildNewMessage(
     channelId: channelId,
     reactions: [],
   };
+}
+
+export function emitContextSelected(
+  emitter: EventEmitter<MessageContext>,
+  context: MessageContext
+): void {
+  emitter.emit(context);
 }
 
 // Später löschen ************************************************************ */

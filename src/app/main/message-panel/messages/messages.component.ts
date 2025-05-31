@@ -9,6 +9,7 @@ import {
   ElementRef,
   QueryList,
   OnDestroy,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -57,6 +58,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
+  @Input() messageContext?: MessageContext;
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
@@ -83,11 +85,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
-  messageContext: MessageContext = {
-    type: 'channel',
-    id: '',
-    receiverId: ''
-  };
+  // messageContext: MessageContext = {
+  //   type: 'channel',
+  //   id: '',
+  //   receiverId: ''
+  // };
 
 
 
@@ -131,26 +133,58 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.messagesSubscription?.unsubscribe();
   }
 
+  // private subscribeToMessages(): void {
+  //   this.messagesSubscription?.unsubscribe();
+  //   this.messagesSubscription = this.messageDataService.getMessages().subscribe((loadedMessages) => {
+  //     this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+
+  //     if (this.isThread && this.starterMessage) {
+  //       this.setReplyToMessage(this.starterMessage)
+  //     }
+  //     console.log("Messages: ", this.messages);
+  //     console.log("Filtered Messages: ", this.filteredMessages);
+  //   });
+
+  // }
+
   private subscribeToMessages(): void {
+    if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
-    this.messagesSubscription = this.messageDataService.getMessages().subscribe((loadedMessages) => {
-      this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+
+    const messageSource$ = this.isMessage
+      ? this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id)
+      : this.messageDataService.getMessages();
+
+    this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
+      this.messages = this.isMessage
+        ? loadedMessages
+        : loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+
 
       if (this.isThread && this.starterMessage) {
-        this.setReplyToMessage(this.starterMessage)
+        this.setReplyToMessage(this.starterMessage);
       }
+
       console.log("Messages: ", this.messages);
       console.log("Filtered Messages: ", this.filteredMessages);
     });
-
   }
+
 
   reloadMessages(): void {
     this.subscribeToMessages();
   }
 
-  ngOnChanges() {
-    if (this.starterMessage && this.starterMessage.id !== this.lastThreadId) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.isMessage && (changes['messageContext'] || changes['currentUserId'])) {
+      this.subscribeToMessages();
+    }
+
+    if (
+      changes['starterMessage'] &&
+      this.starterMessage &&
+      this.starterMessage.id !== this.lastThreadId
+    ) {
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
     }
@@ -170,12 +204,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     console.log('Alle fehlenden Felder wurden hinzugefügt.');
   }
 
-  private loadMessages(): void {
-    this.messageDataService.getMessages().subscribe((loadedMessages) => {
-      this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
-      console.log('Messages: ', this.messages);
-    });
-  }
+  // private loadMessages(): void {
+  //   this.messageDataService.getMessages().subscribe((loadedMessages) => {
+  //     this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+  //     console.log('Messages: ', this.messages);
+  //   });
+  // }
 
   saveMessage(msg: Message) {
     this.messageDataService.updateMessage(msg);

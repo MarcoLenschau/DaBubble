@@ -3,6 +3,7 @@ import { Message } from '../../models/message.model';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesHeaderComponent } from './messages-header/messages-header.component';
 import { MessagesTextareaComponent } from './messages-textarea/messages-textarea.component';
+import { MessageContext } from '../../interfaces/message-context.interface';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -31,6 +32,7 @@ export class MessagePanelComponent {
   @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
   textInput = '';
+  messageContext?: MessageContext;
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -50,5 +52,9 @@ export class MessagePanelComponent {
 
   onMessageSent() {
     this.messagesComponent.reloadMessages();
+  }
+
+  onContextSelected(context: MessageContext): void {
+    this.messageContext = context;
   }
 }
