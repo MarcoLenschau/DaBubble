@@ -96,7 +96,7 @@ export class MessageDataService {
     } else if (context.type === 'direct') {
       const isSelf = context.receiverId === currentUserId;
       const filters = [
-        where('channelId', '==', null),
+        where('channelId', '==', ''),
         where('receiverId', '==', context.receiverId),
       ];
       if (isSelf) {
