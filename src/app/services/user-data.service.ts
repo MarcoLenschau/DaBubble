@@ -3,6 +3,7 @@ import { FirebaseService } from './firebase.service';
 import { User } from '../models/user.model';
 import { Observable, map } from 'rxjs';
 import { doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
 export class UserDataService {
   private readonly collectionPath = 'users';
 
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(private firebaseService: FirebaseService, private auth: AuthService) { }
 
   getUsers(): Observable<User[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
@@ -58,17 +59,9 @@ export class UserDataService {
     };
   }
 
-  getCurrentUser(): User {
-    const userJson = sessionStorage.getItem('currentUser');
-    if (userJson) {
-      return JSON.parse(userJson);
-    }
-    return new User({
-      id: 'defaultUser',
-      displayName: 'Gast',
-      email: '',
-      img: './assets/img/profilepic/frederik.png',
-    });
+  getCurrentUser(): any {
+    this.auth.user$.subscribe(user => {
+      return user;
+    })
   }
-
 }

@@ -15,8 +15,8 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent {
   user = {
-    displayName: "Gast",
-    img: ""
+    displayName: "",
+    photoURL: ""
   };
 
   users: Subscription

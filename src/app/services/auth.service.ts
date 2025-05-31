@@ -33,7 +33,6 @@ export class AuthService {
         this.isUserExists(result, userCreated);
         this.user = result.user;
         this.userSubject.next(this.user);
-        sessionStorage.setItem('currentUser', this.user.displayName);
         return result.user;
       })
       .catch((error) => {
@@ -55,7 +54,7 @@ export class AuthService {
 
   async register( name: string, email: string, password: string ): Promise<User | null> {
     try {
-      const result = await this.createUserWithEmail(email, password, name);
+      const result = await this.createUserWithEmail(email, password, name, "/assets/img/profilepic/frederik.png");
       return result;
     } catch (error) {
       console.error('Registrierung fehlgeschlagen:', error);
@@ -67,12 +66,13 @@ export class AuthService {
   //   return { ...result.user, displayName: name };
   // }
 
-  createValidUser(user: any, name: string): any {
+  createValidUser(user: any, name: string, img: string): any {
     // Testcode
     return {
       uid: user.uid,
       email: user.email,
       displayName: name,
+      photoURL: img,
       stsTokenManager: user.stsTokenManager ?? null,
     };
   }
@@ -90,16 +90,12 @@ export class AuthService {
   //   return result.user;
   // }
 
-  async createUserWithEmail(email: string, password: string, name: string) {
+  async createUserWithEmail(email: string, password: string, name: string, img: string) {
     // Testcode
-    const result = await createUserWithEmailAndPassword(
-      this.auth,
-      email,
-      password
-    );
-    result.user = this.createValidUser(result.user, name);
+    const result = await createUserWithEmailAndPassword(this.auth, email, password);
+    result.user = this.createValidUser(result.user, name, img);
     await this.firebase.addUser(result.user);
-    this.user = result.user;
+    this.userSubject.next(result.user);
 
     const allUsers = await firstValueFrom(this.firebase.getColRef('users'));
     const firestoreUser = allUsers.find( // besser: mit Abfrage suchen
@@ -115,8 +111,6 @@ export class AuthService {
       email: result.user.email,
       img: './assets/img/profilepic/frederik.png',
     };
-
-    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
     return result.user;
   }
 }
