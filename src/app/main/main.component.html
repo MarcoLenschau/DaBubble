@@ -1,12 +1,7 @@
 <div class="main-component">
   <app-devspace (channelSelected)="onChannelSelected($event)"></app-devspace>
-  <app-message-window
-    (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
-  ></app-message-window>
-  <app-thread-window
-    [starterMessage]="starterMessage"
-    [userId]="userId"
-    [ngClass]="{ visible: showThread, hidden: !showThread }"
-    (showThreadClosing)="onThreadClose()"
-  ></app-thread-window>
+  <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
+    (showThreadClosing)="onThreadClose()"></app-message-window>
+  <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
+    [ngClass]="{ visible: showThread, hidden: !showThread }" (showThreadClosing)="onThreadClose()"></app-thread-window>
 </div>

@@ -68,16 +68,14 @@
                   <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
                 </div>
 
-                <ng-container *ngIf="isThread">
+                <!-- <ng-container *ngIf="isThread">
                   <ng-container *ngIf="emojiMenuOpen[i]">
                     <div class="toggle-icon" (click)="setReplyToMessage(msg)">
-                      <!-- oder <div class="toggle-icon" (click)="openThread(msg)"> ??? -->
-                      <!-- <button (click)="cancelReply()">Abbrechen</button> -->
                       <img src="assets/img/message-icons/answer.svg" class="default" />
                       <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
                     </div>
                   </ng-container>
-                </ng-container>
+                </ng-container> -->
 
                 <ng-container *ngIf="isMessage">
                   <div class="toggle-icon" (click)="openThread(msg)">

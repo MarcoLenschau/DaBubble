@@ -1,7 +1,3 @@
-<app-message-panel
-  [mode]="'message'"
-  [starterMessage]="starterMessage"
-  [userId]="userId"
-  (threadStart)="threadOpen($event.starterMessage, $event.userId)"
-  [activeChannel]="activeChannel"
-></app-message-panel>
+<app-message-panel [mode]="'message'" [starterMessage]="starterMessage" [userId]="userId"
+  (threadStart)="threadOpen($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"
+  (closeThreadPanelWindow)="onInnerClose()"></app-message-panel>

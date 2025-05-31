@@ -37,7 +37,7 @@
 
 
           <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
-            <strong>#{{ channel.channelName }}</strong>
+            <strong>#{{ channel.name }}</strong>
           </li>
 
           <li *ngFor="let msg of searchResultsMessages" (click)="selectSearchResult(msg)">
