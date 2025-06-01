@@ -22,7 +22,9 @@ export class AddChannelOverlayComponent {
     if (!this.channelName.trim()) {
       return;
     }
-    const currentUser = this.userDataService.getCurrentUser();
+    const currentUser = this.userDataService.currentUser;
+    if (!currentUser) return;
+
     const newChannel = new Channel({
       name: this.channelName.trim(),
       description: this.description.trim(),

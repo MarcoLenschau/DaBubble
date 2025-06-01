@@ -8,7 +8,7 @@ import { User } from '../../../models/user.model';
 import { UserDataService } from '../../../services/user-data.service';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { Channel } from '../../../models/channel.model';
-import { emitContextSelected } from '../../../utils/messages-utils';
+import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
 
 @Component({
   selector: 'app-messages-header',
@@ -26,7 +26,7 @@ export class MessagesHeaderComponent {
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
 
   constructor(private firebaseService: FirebaseService, private userDataService: UserDataService, private channelDataService: ChannelDataService) {
-    this.currentUser = this.userDataService.getCurrentUser();
+    this.currentUser = this.userDataService.currentUser;
   }
 
   textInput = '';
@@ -73,26 +73,38 @@ export class MessagesHeaderComponent {
   }
 
   async onSearch(event: Event) {
-    const term = (event.target as HTMLInputElement).value;
+    const term = (event.target as HTMLInputElement).value.trim();
+    this.textInput = term;
     this.clearResults();
+
+    if (!term) return;
 
     if (term.startsWith('@')) {
       const query = term.slice(1).toLowerCase();
-      if (query.length >= 1) {
+
+      if (this.validateEmail(query)) {
+        // Suche nach E-Mail (z. B. @max@example.de)
+        this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+      } else if (query.length >= 1) {
+        // Suche nach Namen
         this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
       }
+
     } else if (term.startsWith('#')) {
       const query = term.slice(1).toLowerCase();
       this.searchResultsChannels = this.allChannels.filter((channel) =>
         channel.name.toLowerCase().includes(query)
       );
 
-    } else if (term.length > 2 && term.includes('@')) {
-      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term.toLowerCase());
-
-    } else if (term.length >= 3) {
-      // this.searchResultsMessages = await this.firebaseService.searchMessagesForUser(term, this.currentUser.id);
+    } else if (this.validateEmail(term)) {
+      // Direkte E-Mail-Suche (ohne @ am Anfang)
+      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
     }
+  }
+
+  private validateEmail(email: string): boolean {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email.toLowerCase());
   }
 
   selectUser(user: any, input: HTMLInputElement) {
@@ -105,11 +117,9 @@ export class MessagesHeaderComponent {
     }
 
     this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
-    emitContextSelected(this.contextSelected, {
-      type: 'direct',
-      id: user.id,
-      receiverId: this.currentUser.id,
-    });
+
+    emitDirectUserContext(this.contextSelected, user.id, this.currentUser.id);
+
 
     input.value = '';
     this.clearResults();
@@ -119,28 +129,18 @@ export class MessagesHeaderComponent {
 
   selectChannel(channel: Channel, input: HTMLInputElement) {
     console.log(channel.name);
+    console.log(channel.id);
     this.textInput += `#${channel.name} `;
-    emitContextSelected(this.contextSelected, {
-      type: 'channel',
-      id: channel.id,
-      receiverId: '',
-    });
+
+    emitChannelContext(this.contextSelected, channel.id);
+
     input.value = '';
     this.clearResults();
     this.closeThread();
   }
 
   selectSearchResult(msg: Message) {
-    const type = msg.channelId ? 'channel' : 'direct';
-    const id = msg.channelId ?? msg.userId;
-    const receiverId = msg.channelId ? '' : this.currentUser.id;
-
-
-    emitContextSelected(this.contextSelected, {
-      type,
-      id,
-      receiverId,
-    });
+    emitMessageContextFromMessage(this.contextSelected, msg, this.currentUser.id);
 
     this.searchResultSelected.emit(msg);
     this.textInput = '';

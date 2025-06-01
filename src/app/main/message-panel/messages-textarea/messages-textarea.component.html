@@ -1,4 +1,5 @@
 <div class="main-message-box" [ngStyle]="{ padding: mainMessageBoxPadding }">
+  <!-- Eingabefeld -->
   <div
     class="textarea"
     contenteditable="true"
@@ -7,13 +8,43 @@
     (input)="onInput($event)"
   ></div>
 
+  <!-- Mention-Dropdown bei @ -->
+  <div
+    class="search-results"
+    *ngIf="filteredMentionUsers.length"
+    [style.top.px]="mentionBoxPosition.top"
+    [style.left.px]="mentionBoxPosition.left"
+  >
+    <ul>
+      <li *ngFor="let user of filteredMentionUsers" (click)="selectMentionUser(user)">
+        <strong>&#64;{{ user.displayName }}</strong>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Benutzer-Dropdown durch Icon -->
+  <div
+    class="search-results"
+    *ngIf="showUserDropdown"
+    style="top: 100%; left: 16px;"
+  >
+    <ul>
+      <li *ngFor="let user of allUsers" (click)="selectUserFromSmiley(user)">
+        <strong>&#64;{{ user.displayName }}</strong>
+      </li>
+    </ul>
+  </div>
+
   <!-- Linke Icons im Eingabefeld -->
   <div class="textarea-left-icons">
     <img
       src="assets/img/message-icons/smiley2.svg"
       (click)="toggleMainEmojiMenu($event)"
     />
-    <img src="assets/img/message-icons/smiley.svg" />
+    <img
+      src="assets/img/message-icons/smiley.svg"
+      (click)="toggleUserDropdown($event)"
+    />
   </div>
 
   <!-- Emoji Picker -->

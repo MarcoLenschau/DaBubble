@@ -22,10 +22,6 @@ import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
-  // currentUser,
-  // users,
-  // messages,
-  // channels,
   formatTime,
   getEmojiByName,
   getEmojiByUnicode,
@@ -36,12 +32,9 @@ import {
   formatUserNames,
   isOwnMessage,
   trackByMessageId,
-  buildNewMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-  // currentUser,
 } from '../../../utils/messages-utils';
-import { user } from '@angular/fire/auth';
 import { firstValueFrom } from 'rxjs';
 import { Channel } from '../../../models/channel.model';
 import { MessageContext } from '../../../interfaces/message-context.interface';
@@ -67,8 +60,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users: User[] = [];
-  currentUser: User;
-  // currentUser = currentUser;
+  currentUser: User = new User({
+    id: 'gast',
+    displayName: 'Gast',
+    email: 'example@email.com',
+    img: './assets/img/profilepic/frederik.png',
+    recentEmojis: [],
+    emojiUsage: {},
+  });
   messages: Message[] = [];
   channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
@@ -85,13 +84,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
-  // messageContext: MessageContext = {
-  //   type: 'channel',
-  //   id: '',
-  //   receiverId: ''
-  // };
-
-
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
@@ -100,10 +92,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
     private dialog: MatDialog,
-
-  ) {
-    this.currentUser = this.userDataService.getCurrentUser();
-  }
+  ) { }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -113,43 +102,18 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return this.mode === 'message';
   }
 
-  // ngOnInit() {
-  //   this.loadUsers();
-  //   this.loadMessages();
-  //   this.updateSortedEmojis();
-  // }
-
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
+    this.currentUser = this.userDataService.currentUser;
     this.users = await firstValueFrom(this.userDataService.getUsers());
+
     await this.completeMissingUserFieldsInFirebase();
     this.subscribeToMessages();
     this.updateSortedEmojis();
-
-
   }
-
 
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
   }
-
-  // private subscribeToMessages(): void {
-  //   this.messagesSubscription?.unsubscribe();
-  //   this.messagesSubscription = this.messageDataService.getMessages().subscribe((loadedMessages) => {
-  //     this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
-
-  //     if (this.isThread && this.starterMessage) {
-  //       this.setReplyToMessage(this.starterMessage)
-  //     }
-  //     console.log("Messages: ", this.messages);
-  //     console.log("Filtered Messages: ", this.filteredMessages);
-  //   });
-
-  // }
-
-
-
-
 
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
@@ -159,24 +123,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       this.messages = loadedMessages;
-      if (this.isMessage) {
-        console.log("this.isMessage: Messages: ", this.messages);
-      }
-      if (this.isThread) {
-        console.log("this.isThreade: Messages: ", this.messages);
-      }
+
       console.log("Messages: ", this.messages);
-      console.log("Filtered Messages: ", this.filteredMessages);
     });
   }
-
 
   reloadMessages(): void {
     this.subscribeToMessages();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.isMessage && (changes['messageContext'] || changes['currentUserId'])) {
+    if (this.isMessage && (changes['messageContext'] || changes['currentUser.id'])) {
       this.subscribeToMessages();
     }
 
@@ -189,27 +146,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.lastThreadId = this.starterMessage.id;
     }
   }
-  // private loadUsers(): void {
-  //   this.userDataService.getUsers().subscribe((loadedUsers) => {
-  //     this.users = loadedUsers;
-  //     console.log('Users: ', this.users);
-  //   });
-  // }
 
   async completeMissingUserFieldsInFirebase(): Promise<void> {
     for (const user of this.users) {
       await this.userDataService.updateUser(user);
-      console.log(`User ${user.displayName} aktualisiert`);
     }
-    console.log('Alle fehlenden Felder wurden hinzugefügt.');
   }
-
-  // private loadMessages(): void {
-  //   this.messageDataService.getMessages().subscribe((loadedMessages) => {
-  //     this.messages = loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
-  //     console.log('Messages: ', this.messages);
-  //   });
-  // }
 
   saveMessage(msg: Message) {
     this.messageDataService.updateMessage(msg);
@@ -217,16 +159,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   openThread(msg: Message) {
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
-    console.log(msg, this.currentUser.id);
   }
 
   openUserDialog(userId?: string): void {
-    console.log('USerId: ', userId);
 
     if (!userId) return;
     const user = this.getUserById(userId);
-    console.log('USer: ', user);
-    console.log('USers: ', this.users);
     if (user) {
       this.dialog.open(DialogUserDetailsComponent, {
         data: user,
@@ -237,37 +175,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   closeThread() {
     this.showThreadChange.emit(false);
   }
-
-  // postThreadMessage() {
-  //   if (!this.starterMessage || !this.currentUser) return;
-
-  //   const newMessage = buildNewMessage(
-  //     this.textareaContent,
-  //     this.currentUser,
-  //     this.starterMessage.id,
-  //     this.starterMessage.channelId || ''
-  //   );
-
-  //   this.messages.push(newMessage);
-  //   this.filteredMessages = this.messages.filter(
-  //     (m) => m.threadId === this.starterMessage!.id
-  //   );
-  //   this.clearTextarea();
-  // }
-
-  // postMessage() {
-  //   if (!this.currentUser) return;
-
-  //   const newMessage = buildNewMessage(
-  //     this.textareaContent,
-  //     this.currentUser,
-  //     '',
-  //     this.channelId || ''
-  //   );
-
-  //   this.messages.push(newMessage);
-  //   this.clearTextarea();
-  // }
 
   setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
@@ -298,8 +205,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       console.log("Filtered Messages setReplyToMessage: ", this.filteredMessages);
 
     });
-
-
   }
 
   cancelReply() {
@@ -355,8 +260,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     if (!wasAlreadyReacted && isReactedNow) {
       updateEmojiDataForUser(this.currentUser, emojiName);
     }
-
-    // this.updateSortedEmojis();
     this.saveMessage(msg);
   }
 
@@ -416,7 +319,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   getEmojiByUnicode = (unicode: string) =>
     getEmojiByUnicode(this.emojis, unicode);
   addEmojiToTextarea = (unicodeEmoji: string) => {
-    // TODO: im HTML implementieren
     this.textareaContent = addEmojiToTextarea(
       this.textareaContent,
       unicodeEmoji

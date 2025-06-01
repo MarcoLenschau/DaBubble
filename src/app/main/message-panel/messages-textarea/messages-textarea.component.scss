@@ -100,3 +100,35 @@
     background-color: $grey;
   }
 }
+.search-results {
+  position: absolute;
+  top: 80px;
+  left: 40px;
+  right: 40px;
+  background-color: $white;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  
+
+  ul {
+    margin: 0;
+    padding: 10px;
+    list-style: none;
+
+    li {
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: "Nunito", sans-serif;
+
+      &:hover {
+        background-color: $light-purple;
+        color: $white;
+      }
+    }
+  }
+}
