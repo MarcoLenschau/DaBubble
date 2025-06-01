@@ -23,13 +23,20 @@ export class SignInComponent {
     if (user) {
       let user = await this.firebase.searchUsersByEmail(this.email);
       this.authService.userSubject.next(user[0]);
-      console.log(this.authService.user)
       this.router.switchRoute("message");
     }
   }
 
   async googleLogin() {
     const user = await this.authService.loginWithGoogle();
+    if (user) {
+      this.authService.user = this.firebase.toObj(user);
+      this.router.switchRoute("message");
+    }
+  }
+
+  async loginWithGithub() {
+    const user = await this.authService.loginWithGitHub();
     if (user) {
       this.authService.user = this.firebase.toObj(user);
       this.router.switchRoute("message");

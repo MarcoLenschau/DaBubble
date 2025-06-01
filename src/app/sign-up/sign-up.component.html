@@ -7,7 +7,7 @@
         <span>Mit deinem Namen und deiner E-Mail Adresse hast du dein neues DABubble-Konto.</span>
         <app-input (valueChange)="setValue($event, 'name')" [placeholder]="'Name und Nachnahme'" [img]="'name.svg'"></app-input>
         <app-input (valueChange)="setValue($event, 'email')" [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'"></app-input>
-        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'"></app-input>
+        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'"></app-input>
         <div class="checkbox-container">
             <div id="checkbox" (click)="acceptPrivacy()" class="checkbox"></div>
             <div>

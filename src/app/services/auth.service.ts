@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider} from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
 import { FirebaseService } from './firebase.service';
@@ -49,7 +49,23 @@ export class AuthService {
         return null;
       });
   }
-
+  
+  async loginWithGitHub() {
+    let userCreated = false;
+    const provider = new GithubAuthProvider();
+    return signInWithPopup(this.auth, provider)
+      .then((result) => {
+        this.isUserExists(result, userCreated);
+        this.user = result.user;
+        this.userSubject.next(this.user);
+        return result.user;
+      })
+      .catch((error) => {
+        console.error('Login failed:', error);
+        return null;
+      });
+  }
+  
   isUserExists(result: any, userCreated: boolean) {
     this.users.forEach((user) => {
       if (user.email === result.user.email) {

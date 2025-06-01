@@ -21,13 +21,14 @@ a {
 }
 
 .main-container {
-  @include dFlex($g: 24px, $f: column);
+  @include dFlex($jc: none, $g: 18px, $f: column);
   height: 100vh;
+  padding: 18px;
   > .main-container {
     background-color: $white;
     border-radius: 24px;
     padding: 12px;
-    height: 65vh;
+    height: 540px;
   }
   > span {
     text-align: center;

@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class InputComponent {
   @Input() placeholder: string = '';
+  @Input() type: string = 'text';
   @Input() img: string = '';
   @Input() value: string = '';
   @Input() height: number = 32;
