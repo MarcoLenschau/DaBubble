@@ -260,11 +260,14 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   private findChannelId() {
+    console.log(this.messageContext?.id);
     if (
       this.mode === 'message' &&
       this.messageContext?.type === 'channel' &&
       this.messageContext.id
     ) {
+      console.log(this.messageContext?.id);
+      console.log(this.messageContext?.type);
       return this.messageContext.id;
     }
     return '';

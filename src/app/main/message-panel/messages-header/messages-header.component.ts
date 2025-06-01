@@ -72,40 +72,40 @@ export class MessagesHeaderComponent {
     });
   }
 
- async onSearch(event: Event) {
-  const term = (event.target as HTMLInputElement).value.trim();
-  this.textInput = term;
-  this.clearResults();
+  async onSearch(event: Event) {
+    const term = (event.target as HTMLInputElement).value.trim();
+    this.textInput = term;
+    this.clearResults();
 
-  if (!term) return;
+    if (!term) return;
 
-  if (term.startsWith('@')) {
-    const query = term.slice(1).toLowerCase();
+    if (term.startsWith('@')) {
+      const query = term.slice(1).toLowerCase();
 
-    if (this.validateEmail(query)) {
-      // Suche nach E-Mail (z. B. @max@example.de)
-      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
-    } else if (query.length >= 1) {
-      // Suche nach Namen
-      this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
+      if (this.validateEmail(query)) {
+        // Suche nach E-Mail (z. B. @max@example.de)
+        this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+      } else if (query.length >= 1) {
+        // Suche nach Namen
+        this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
+      }
+
+    } else if (term.startsWith('#')) {
+      const query = term.slice(1).toLowerCase();
+      this.searchResultsChannels = this.allChannels.filter((channel) =>
+        channel.name.toLowerCase().includes(query)
+      );
+
+    } else if (this.validateEmail(term)) {
+      // Direkte E-Mail-Suche (ohne @ am Anfang)
+      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
     }
-
-  } else if (term.startsWith('#')) {
-    const query = term.slice(1).toLowerCase();
-    this.searchResultsChannels = this.allChannels.filter((channel) =>
-      channel.name.toLowerCase().includes(query)
-    );
-
-  } else if (this.validateEmail(term)) {
-    // Direkte E-Mail-Suche (ohne @ am Anfang)
-    this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
   }
-}
 
-private validateEmail(email: string): boolean {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email.toLowerCase());
-}
+  private validateEmail(email: string): boolean {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email.toLowerCase());
+  }
 
   selectUser(user: any, input: HTMLInputElement) {
     console.log('👤 User selected:', user);
@@ -129,6 +129,7 @@ private validateEmail(email: string): boolean {
 
   selectChannel(channel: Channel, input: HTMLInputElement) {
     console.log(channel.name);
+    console.log(channel.id);
     this.textInput += `#${channel.name} `;
 
     emitChannelContext(this.contextSelected, channel.id);

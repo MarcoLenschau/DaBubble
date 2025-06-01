@@ -21,6 +21,19 @@ export class AuthService {
     this.users$.forEach((users: any) => {
       this.users = users;
     });
+    this.restoreAuthState();
+  }
+
+  private async restoreAuthState(): Promise<void> {
+    this.auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        this.user = user;
+        this.userSubject.next(user);
+        await this.userDataService.initCurrentUser();
+      } else {
+        this.userSubject.next(null);
+      }
+    });
   }
 
   async login(email: string, password: string): Promise<UserCredential | null> {
