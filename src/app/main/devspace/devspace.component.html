@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="profile-users" *ngIf="isMessageOpen">
+            <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users.length > 6">
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
                     [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">

@@ -36,7 +36,7 @@ export class DevspaceComponent {
     { displayName: 'Elias Neumann', photoURL: './assets/img/profilepic/elias.png' },
     { displayName: 'Steffen Hoffmann', photoURL: './assets/img/profilepic/steffen.png' },
   ]
-
+  
   constructor(
     private firebase: FirebaseService,
     private channelDataService: ChannelDataService

@@ -99,6 +99,7 @@ nav {
   gap: 18px;
   border-radius: 35px;
   align-items: center;
+  margin-left: 34px;
   transition: background-color 0.2s, color 0.2s;
 
   &:hover {
@@ -163,4 +164,10 @@ nav {
   span {
     transition: color 0.2s;
   }
+}
+
+.scrollbar {
+  overflow-y: scroll;
+  height: 450px;
+  width: 315px;
 }
