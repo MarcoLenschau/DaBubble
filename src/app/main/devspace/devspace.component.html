@@ -47,8 +47,8 @@
                     <span>Entwicklerteam</span>
                 </div>
 
-                <div class="devspace-channel-add">
-                    <img src="./assets/img/devspace/add-circle.png" alt="user">
+                <div class="devspace-channel-add" (click)="showAddChannel = true" style="cursor:pointer;">
+                    <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'" alt="user">
                     <span>Channel hinzufügen</span>
                 </div>
             </div>
