@@ -28,22 +28,6 @@ export class FirebaseService {
     }
   }
 
-  /**
-   * Wandelt Userdaten in speicherbares Objekt um
-   */
-  // toObj(data: any): {} { // Originalcode
-  //   return {
-  //     displayName: data.displayName,
-  //     displayName_lowercase: data.displayName.toLowerCase(),
-  //     email: data.email,
-  //     stsTokenManager: {
-  //       accessToken: data.stsTokenManager.accessToken,
-  //       expirationTime: data.stsTokenManager.expirationTime,
-  //       refreshToken: data.stsTokenManager.refreshToken,
-  //     },
-  //   };
-  // }
-
   toObj(data: any): {} {
     return {
       displayName: data.displayName,
@@ -60,7 +44,7 @@ export class FirebaseService {
   }
 
   /**
-   *  Suche User anhand eines @namens (case-insensitive)
+   *  Search user by @namens (case-insensitive)
    */
   async searchUsersByNameFragment(fragment: string): Promise<any[]> {
     const usersRef = collection(this.firebase, 'users');
@@ -75,7 +59,7 @@ export class FirebaseService {
   }
 
   /**
-   * Suche User per exakter E-Mail
+   * Search user by email
    */
   async searchUsersByEmail(email: string): Promise<any[]> {
     const usersRef = collection(this.firebase, 'users');
