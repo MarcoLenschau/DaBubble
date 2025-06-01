@@ -55,7 +55,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   currentUser: User;
 
   constructor(private messageDataService: MessageDataService, private userDataService: UserDataService) {
-    this.currentUser = this.userDataService.getCurrentUser();
+    this.currentUser = this.userDataService.currentUser;
   }
 
   get isThread(): boolean {

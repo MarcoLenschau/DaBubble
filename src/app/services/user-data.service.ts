@@ -11,8 +11,10 @@ import { AuthService } from './auth.service';
 export class UserDataService {
   private readonly collectionPath = 'users';
 
+  currentUser: User = this.createGuestUser();
+
   constructor(private firebaseService: FirebaseService, private auth: AuthService) { }
-  
+
   /**
    * Get user data from all user
    * 
@@ -34,6 +36,13 @@ export class UserDataService {
         )
       )
     );
+  }
+
+  public async initCurrentUser(): Promise<void> {
+    const userDoc = await this.getCurrentUserDoc();
+    if (userDoc) {
+      this.currentUser = this.mapToUser(userDoc);
+    }
   }
 
   /**
@@ -85,7 +94,52 @@ export class UserDataService {
    *
    * @returns {User} The current user.
    */
-  getCurrentUser(): User {
-    return this.auth.user;
+  async getCurrentUser(): Promise<User | null> {
+    const userDoc = await this.getCurrentUserDoc();
+    if (!userDoc) return null;
+
+    return this.mapToUser(userDoc);
+  }
+
+  /**
+  * Retrieves the current user's Firestore document based on the authenticated user's email.
+  * 
+  * @returns {Promise<any | null>} A promise resolving to the user document data or null if no matching user is found.
+  */
+  private async getCurrentUserDoc(): Promise<any | null> {
+    const email = this.auth.user?.email ?? null;
+    if (!email) {
+      return null;
+    }
+    const users = await this.firebaseService.searchUsersByEmail(email);
+    return users.length > 0 ? users[0] : null;
+  }
+
+  /**
+   * Maps a Firestore user document to a User instance.
+   * 
+   * @param {any} userDoc - The user document data from Firestore.
+   * @returns {User} The mapped User object.
+   */
+  private mapToUser(userDoc: any): User {
+    return new User({
+      id: userDoc.id,
+      displayName: userDoc.displayName,
+      email: userDoc.email,
+      img: userDoc.photoURL ?? './assets/img/profilepic/frederik.png',
+      recentEmojis: userDoc.recentEmojis ?? [],
+      emojiUsage: userDoc.emojiUsage ?? {},
+    });
+  }
+
+  private createGuestUser(): User {
+    return new User({
+      id: 'gast',
+      displayName: 'Gast',
+      email: 'example@email.com',
+      img: './assets/img/profilepic/frederik.png',
+      recentEmojis: [],
+      emojiUsage: {},
+    });
   }
 }

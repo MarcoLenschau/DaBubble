@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
-import { Observable, map, OperatorFunction } from 'rxjs';
+import { Observable, map, OperatorFunction, combineLatest } from 'rxjs';
 import {
   doc,
   updateDoc,
@@ -95,34 +95,96 @@ export class MessageDataService {
     return collectionData(q).pipe(this.mapToMessages());
   }
 
-
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
-    let q: Query<DocumentData>;
-
     if (context.type === 'channel') {
-      q = query(collection(this.firestore, 'messages'),
-        where('channelId', '==', context.id),
-        orderBy('timestamp', 'asc')
-      );
-    } else if (context.type === 'direct') {
-      const isSelf = context.receiverId === currentUserId;
-      const filters = [
-        where('channelId', '==', ''),
-        where('receiverId', '==', context.receiverId),
-      ];
-      if (isSelf) {
-        filters.push(where('userId', '==', currentUserId));
-      }
-      q = query(collection(this.firestore, 'messages'), ...filters, orderBy('timestamp', 'asc'));
-    } else {
-      throw new Error('Invalid context type');
+      if (!context.id) throw new Error('Channel context must include an id');
+      return this.getChannelMessages(context.id);
     }
 
-    // return collectionData(q) as Observable<Message[]>;
-    return collectionData(q).pipe(
-      this.mapToMessages()
+    if (context.type === 'direct') {
+      if (!context.receiverId) throw new Error('Direct context must include a receiverId');
+      const isSelf = context.receiverId === currentUserId;
+      return isSelf
+        ? this.getSelfMessages(currentUserId)
+        : this.getDirectMessages(currentUserId, context.receiverId);
+    }
+
+    throw new Error('Invalid context type');
+  }
+
+  private getChannelMessages(channelId: string): Observable<Message[]> {
+    const q = query(
+      collection(this.firestore, 'messages'),
+      where('channelId', '==', channelId),
+      orderBy('timestamp', 'asc')
+    );
+    return collectionData(q).pipe(this.mapToMessages());
+  }
+
+  private getDirectMessages(currentUser: string, directContact: string): Observable<Message[]> {
+    const q1 = query(
+      collection(this.firestore, 'messages'),
+      where('channelId', '==', ''),
+      where('userId', '==', currentUser),
+      where('receiverId', '==', directContact),
+      orderBy('timestamp', 'asc')
+    );
+
+    const q2 = query(
+      collection(this.firestore, 'messages'),
+      where('channelId', '==', ''),
+      where('userId', '==', directContact),
+      where('receiverId', '==', currentUser),
+      orderBy('timestamp', 'asc')
+    );
+
+    const messages1$ = collectionData(q1).pipe(this.mapToMessages());
+    const messages2$ = collectionData(q2).pipe(this.mapToMessages());
+
+    return combineLatest([messages1$, messages2$]).pipe(
+      map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp))
     );
   }
+
+  private getSelfMessages(userId: string): Observable<Message[]> {
+    const q = query(
+      collection(this.firestore, 'messages'),
+      where('channelId', '==', ''),
+      where('userId', '==', userId),
+      where('receiverId', '==', userId),
+      orderBy('timestamp', 'asc')
+    );
+    return collectionData(q).pipe(this.mapToMessages());
+  }
+
+
+  // getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
+  //   let q: Query<DocumentData>;
+
+  //   if (context.type === 'channel') {
+  //     q = query(collection(this.firestore, 'messages'),
+  //       where('channelId', '==', context.id),
+  //       orderBy('timestamp', 'asc')
+  //     );
+  //   } else if (context.type === 'direct') {
+  //     const isSelf = context.receiverId === currentUserId;
+  //     const filters = [
+  //       where('channelId', '==', ''),
+  //       where('receiverId', '==', context.receiverId),
+  //     ];
+  //     if (isSelf) {
+  //       filters.push(where('userId', '==', currentUserId));
+  //     }
+  //     q = query(collection(this.firestore, 'messages'), ...filters, orderBy('timestamp', 'asc'));
+  //   } else {
+  //     throw new Error('Invalid context type');
+  //   }
+
+  //   // return collectionData(q) as Observable<Message[]>;
+  //   return collectionData(q).pipe(
+  //     this.mapToMessages()
+  //   );
+  // }
 
   private getCleanJson(message: Message): any {
     return {

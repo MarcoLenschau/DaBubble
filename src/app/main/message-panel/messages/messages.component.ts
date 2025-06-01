@@ -18,6 +18,7 @@ import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details
 import { MatDialog } from '@angular/material/dialog';
 import { UserDataService } from '../../../services/user-data.service';
 import { MessageDataService } from '../../../services/message-data.service';
+import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
@@ -67,8 +68,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users: User[] = [];
-  currentUser: User;
-  // currentUser = currentUser;
+  currentUser: User = new User({
+    id: 'gast',
+    displayName: 'Gast',
+    email: 'example@email.com',
+    img: './assets/img/profilepic/frederik.png',
+    recentEmojis: [],
+    emojiUsage: {},
+  });
   messages: Message[] = [];
   channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
@@ -85,13 +92,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
-  // messageContext: MessageContext = {
-  //   type: 'channel',
-  //   id: '',
-  //   receiverId: ''
-  // };
-
-
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
@@ -100,10 +100,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
     private dialog: MatDialog,
-
-  ) {
-    this.currentUser = this.userDataService.getCurrentUser();
-  }
+  ) { }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -119,8 +116,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   this.updateSortedEmojis();
   // }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
+    this.currentUser = this.userDataService.currentUser;
     this.users = await firstValueFrom(this.userDataService.getUsers());
+
     await this.completeMissingUserFieldsInFirebase();
     this.subscribeToMessages();
     this.updateSortedEmojis();
