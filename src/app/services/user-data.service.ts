@@ -59,8 +59,8 @@ export class UserDataService {
       this.collectionPath,
       user.id
     );
-    console.log(this.getCleanJson(user))
-    await updateDoc(docRef, this.getCleanJson(user));
+    // This line has a fail what the profile picture updates
+    // await updateDoc(docRef, this.getCleanJson(user));
   }
 
   /**

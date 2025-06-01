@@ -108,8 +108,8 @@ export class AuthService {
       }
     });
     if (!userCreated) {
-      console.log(result.user)
       this.firebase.addUser(result.user);
+
     }
   }
 

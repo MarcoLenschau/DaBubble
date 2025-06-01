@@ -22,7 +22,7 @@
             
                         }">
             <img class="message-img" [src]="
-                getUserById(msg.userId)?.img ??
+                getUserById(msg.userId)?.photoURL ??
                 './assets/img/profilepic/frederik.png'
               " alt="Profilbild {{ msg.name }}" />
             <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">

@@ -23,7 +23,7 @@ export class MainComponent {
   activeChannel: string | null = null;
   starterMessage?: Message;
   userId?: string;
-
+  
   onThreadStart(event: { starterMessage: Message; userId: string }) {
     this.starterMessage = { ...event.starterMessage };
     this.userId = event.userId;
