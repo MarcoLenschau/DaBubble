@@ -12,7 +12,12 @@ export class UserDataService {
   private readonly collectionPath = 'users';
 
   constructor(private firebaseService: FirebaseService, private auth: AuthService) { }
-
+  
+  /**
+   * Get user data from all user
+   * 
+   * @returns {Observable<User[]>} Observable from array of all user in the database 
+   */
   getUsers(): Observable<User[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
       map((firestoreDocs) =>
@@ -31,7 +36,12 @@ export class UserDataService {
     );
   }
 
-  async updateUser(user: User) {
+  /**
+   * Update user data for firebase
+   * 
+   * @param user - User object from database
+   */
+  async updateUser(user: User): Promise<void> {
     const docRef = this.firebaseService.getSingleDocRef(
       this.collectionPath,
       user.id
@@ -39,8 +49,12 @@ export class UserDataService {
     await updateDoc(docRef, this.getCleanJson(user));
   }
 
-  /** User löschen */
-  async deleteUser(userId: string) {
+  /**
+   * Delete user from firebase
+   * 
+   * @param userId - ID from user
+   */
+  async deleteUser(userId: string): Promise<void> {
     const docRef = this.firebaseService.getSingleDocRef(
       this.collectionPath,
       userId
@@ -48,6 +62,13 @@ export class UserDataService {
     await deleteDoc(docRef);
   }
 
+  /**
+   * Get clean JSON from a user
+   * 
+   * @param user - User object from database
+   * 
+   * @returns {} - Clean JSON with user data
+   */
   private getCleanJson(user: any): any {
     return {
       id: user.id,
@@ -59,6 +80,11 @@ export class UserDataService {
     };
   }
 
+  /**
+   * Gets the current user data.
+   *
+   * @returns {User} The current user.
+   */
   getCurrentUser(): User {
     return this.auth.user;
   }
