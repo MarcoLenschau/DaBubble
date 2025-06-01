@@ -18,6 +18,10 @@
   position: relative;
 }
 
+:host ::ng-deep app-input input {
+  text-align: left !important;
+}
+
 .close-btn {
   position: absolute;
   top: 24px;
@@ -63,7 +67,7 @@ label {
     margin-left: 12px;
   }
 
-
+  
 input[type="text"] {
   border: none;
   background: transparent;
@@ -90,3 +94,5 @@ input[type="text"] {
 .create-btn:hover {
   background: #3d3ee6;
 }
+
+
