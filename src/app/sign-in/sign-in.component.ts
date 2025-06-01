@@ -38,6 +38,7 @@ export class SignInComponent {
     const user = await this.authService.loginWithGitHub();
     if (user) {
       this.authService.user = this.firebase.toObj(user);
+      console.log(this.authService.user)
       this.router.switchRoute("message");
     }
   }
