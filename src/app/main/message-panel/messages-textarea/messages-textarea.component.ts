@@ -274,13 +274,15 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   private buildMessage(text: string, threadId: string, channelId: string): Message {
+    console.log('buildMessage: this.messageContext?.type: ', this.messageContext?.type);
+
     const isDirect = this.messageContext?.type === 'direct';
     return new Message({
       name: this.currentUser.displayName,
       timestamp: Date.now(),
       text,
       userId: this.currentUser.id,
-      receiverId: isDirect ? this.messageContext!.id : '',
+      receiverId: isDirect ? this.messageContext!.receiverId : '',
       isDirectMessage: isDirect,
       threadId,
       channelId,

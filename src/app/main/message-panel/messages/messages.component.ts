@@ -153,29 +153,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  saveMessage(msg: Message) {
-    this.messageDataService.updateMessage(msg);
-  }
-
-  openThread(msg: Message) {
-    this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
-  }
-
-  openUserDialog(userId?: string): void {
-
-    if (!userId) return;
-    const user = this.getUserById(userId);
-    if (user) {
-      this.dialog.open(DialogUserDetailsComponent, {
-        data: user,
-      });
-    }
-  }
-
-  closeThread() {
-    this.showThreadChange.emit(false);
-  }
-
   setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
 
@@ -206,6 +183,30 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     });
   }
+
+  saveMessage(msg: Message) {
+    this.messageDataService.updateMessage(msg);
+  }
+
+  openThread(msg: Message) {
+    this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
+  }
+
+  openUserDialog(userId?: string): void {
+
+    if (!userId) return;
+    const user = this.getUserById(userId);
+    if (user) {
+      this.dialog.open(DialogUserDetailsComponent, {
+        data: user,
+      });
+    }
+  }
+
+  closeThread() {
+    this.showThreadChange.emit(false);
+  }
+
 
   cancelReply() {
     this.replyToMessage = null;

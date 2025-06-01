@@ -118,7 +118,7 @@ export class MessagesHeaderComponent {
 
     this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
 
-    emitDirectUserContext(this.contextSelected, user.id, this.currentUser.id);
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
 
 
     input.value = '';

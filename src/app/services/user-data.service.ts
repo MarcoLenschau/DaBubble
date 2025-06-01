@@ -87,7 +87,7 @@ export class UserDataService {
       id: user.id,
       displayName: user.displayName,
       email: user.email,
-      photoURL: user.photoURL ?? './assets/img/profilepic/frederik.png',
+      photoURL: user.photoURL,
       recentEmojis: user.recentEmojis,
       emojiUsage: user.emojiUsage,
     };
@@ -130,7 +130,7 @@ export class UserDataService {
       id: userDoc.id,
       displayName: userDoc.displayName,
       email: userDoc.email,
-      img: userDoc.photoURL ?? './assets/img/profilepic/frederik.png',
+      img: userDoc.photoURL,
       recentEmojis: userDoc.recentEmojis ?? [],
       emojiUsage: userDoc.emojiUsage ?? {},
     });
