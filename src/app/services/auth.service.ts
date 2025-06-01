@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider} from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
 import { FirebaseService } from './firebase.service';
@@ -65,6 +65,17 @@ export class AuthService {
         return null;
       });
   }
+  
+  resetPassword(email: string): Promise<void> {
+    return sendPasswordResetEmail(this.auth, email)
+      .then(() => {
+        console.log('Passwort-Reset-E-Mail gesendet!');
+      })
+      .catch((error) => {
+        console.error('Fehler beim Senden der Reset-E-Mail:', error);
+        throw error;
+      });
+  }  
   
   isUserExists(result: any, userCreated: boolean) {
     this.users.forEach((user) => {
