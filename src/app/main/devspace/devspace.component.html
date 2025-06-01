@@ -47,6 +47,26 @@
                     <span>Entwicklerteam</span>
                 </div>
 
+                <ng-container *ngFor="let channel of channels$ | async">
+                    <div class="devspace-channel-content"
+                        (mouseenter)="hoveredChannel = channel.id"
+                        (mouseleave)="hoveredChannel = null"
+                        (click)="selectChannel(channel.id)"
+                        [ngClass]="{
+                            'hovered': hoveredChannel === channel.id,
+                            'active': activeChannel === channel.id
+                        }">
+                        <img [src]="
+                            activeChannel === channel.id
+                                ? './assets/img/devspace/tag-click.png'
+                                : hoveredChannel === channel.id
+                                    ? './assets/img/devspace/tag-hover.png'
+                                    : './assets/img/devspace/tag-default.png'
+                        " alt="#">
+                        <span>{{ channel.name }}</span>
+                    </div>
+                </ng-container>
+
                 <div class="devspace-channel-add" (click)="showAddChannel = true" style="cursor:pointer;">
                     <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'" alt="user">
                     <span>Channel hinzufügen</span>

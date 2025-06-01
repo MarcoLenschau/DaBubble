@@ -3,6 +3,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
 import { Observable } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
+import { ChannelDataService } from '../../services/channel-data.service';
+import { Channel } from '../../models/channel.model';
 
 @Component({
   selector: 'app-devspace',
@@ -23,6 +25,7 @@ export class DevspaceComponent {
   activeChannel: string | null = null;
   showAddChannel = false;
 
+  channels$!: Observable<Channel[]>;
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users = [
@@ -34,13 +37,17 @@ export class DevspaceComponent {
     { displayName: 'Steffen Hoffmann', photoURL: './assets/img/profilepic/steffen.png' },
   ]
 
-  constructor(private firebase: FirebaseService) {
+  constructor(
+    private firebase: FirebaseService,
+    private channelDataService: ChannelDataService
+    ) {
     this.user$ = this.firebase.getColRef("users"); 
       this.user$.forEach((users) => {
         if (users.length > 0) {
           this.users = users;
         }
     })
+    this.channels$ = this.channelDataService.getChannels();
   }
 
   toggleChannels() {
