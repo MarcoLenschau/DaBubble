@@ -72,28 +72,40 @@ export class MessagesHeaderComponent {
     });
   }
 
-  async onSearch(event: Event) {
-    const term = (event.target as HTMLInputElement).value;
-    this.clearResults();
+ async onSearch(event: Event) {
+  const term = (event.target as HTMLInputElement).value.trim();
+  this.textInput = term;
+  this.clearResults();
 
-    if (term.startsWith('@')) {
-      const query = term.slice(1).toLowerCase();
-      if (query.length >= 1) {
-        this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
-      }
-    } else if (term.startsWith('#')) {
-      const query = term.slice(1).toLowerCase();
-      this.searchResultsChannels = this.allChannels.filter((channel) =>
-        channel.name.toLowerCase().includes(query)
-      );
+  if (!term) return;
 
-    } else if (term.length > 2 && term.includes('@')) {
-      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term.toLowerCase());
+  if (term.startsWith('@')) {
+    const query = term.slice(1).toLowerCase();
 
-    } else if (term.length >= 3) {
-      // this.searchResultsMessages = await this.firebaseService.searchMessagesForUser(term, this.currentUser.id);
+    if (this.validateEmail(query)) {
+      // Suche nach E-Mail (z. B. @max@example.de)
+      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+    } else if (query.length >= 1) {
+      // Suche nach Namen
+      this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
     }
+
+  } else if (term.startsWith('#')) {
+    const query = term.slice(1).toLowerCase();
+    this.searchResultsChannels = this.allChannels.filter((channel) =>
+      channel.name.toLowerCase().includes(query)
+    );
+
+  } else if (this.validateEmail(term)) {
+    // Direkte E-Mail-Suche (ohne @ am Anfang)
+    this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
   }
+}
+
+private validateEmail(email: string): boolean {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email.toLowerCase());
+}
 
   selectUser(user: any, input: HTMLInputElement) {
     console.log('👤 User selected:', user);
