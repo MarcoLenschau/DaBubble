@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
 import { FirebaseService } from './firebase.service';
@@ -22,51 +22,52 @@ export class AuthService {
     });
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Promise<UserCredential | null> {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  logout() {
-    this.auth.signOut().then(() => {
-      this.router.switchRoute('/');
-    }).catch((error) => {
-      console.error('Logout-Fehler:', error);
-    });  
+  logout(): void {
+    this.auth.signOut()
+      .then(() => {
+        this.router.switchRoute('/');
+      })
+      .catch((error) => {
+        console.error('Logout-Fehler:', error);
+      });  
   }
 
   async loginWithGoogle(): Promise<User | null> {
     let userCreated = false;
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(this.auth, provider)
-      .then((result) => {
-        this.isUserExists(result, userCreated);
-        this.user = result.user;
-        this.userSubject.next(this.user);
-        return result.user;
-      })
-      .catch((error) => {
-        console.error('Login failed:', error);
-        return null;
-      });
+    return this.loginWithProvider(provider, userCreated)
   }
   
-  async loginWithGitHub() {
+  async loginWithGitHub(): Promise<User | null> {
     let userCreated = false;
     const provider = new GithubAuthProvider();
+    return this.loginWithProvider(provider, userCreated);
+  }
+  
+  async loginWithProvider(provider: any, userCreated: boolean): Promise<User | null> {
     return signInWithPopup(this.auth, provider)
       .then((result) => {
         this.isUserExists(result, userCreated);
-        this.user = result.user;
-        this.userSubject.next(this.user);
+        this.saveCurrentUser(result);
         return result.user;
       })
       .catch((error) => {
-        console.error('Login failed:', error);
+        console.error(`Login with ${provider.providerId} failed :`, error);
         return null;
       });
   }
-  
-  async resetPassword(email: string): Promise<void> {
+
+  saveCurrentUser(result: any, photoURL = ""): void {
+    this.user = result.user;
+    if (photoURL) { this.user.photoURL = photoURL }
+    this.userSubject.next(this.user);
+  }
+
+  async resetPassword(email: string): Promise<any> {
     return sendPasswordResetEmail(this.auth, email)
       .then(() => {
         console.log('Passwort-Reset-E-Mail gesendet!');
@@ -77,7 +78,7 @@ export class AuthService {
       });
   }  
   
-  isUserExists(result: any, userCreated: boolean) {
+  isUserExists(result: any, userCreated: boolean): void {
     this.users.forEach((user) => {
       if (user.email === result.user.email) {
         userCreated = true;
@@ -87,15 +88,10 @@ export class AuthService {
       this.firebase.addUser(result.user);
     }
   }
-
-  async register( name: string, email: string, password: string ): Promise<User | null> {
-    try {
-      const result = await this.createUserWithEmail(email, password, name);
-      return result;
-    } catch (error) {
-      console.error('Registrierung fehlgeschlagen:', error);
-      return null;
-    }
+  
+  async register(name: string, email: string, password: string): Promise<User | null> {
+    return this.createUserWithEmail(email, password, name)
+      .catch(() => null);
   }
 
   createValidUser(user: any, name: string): any {
@@ -108,34 +104,22 @@ export class AuthService {
     };
   }
 
-  // async createUserWithEmail(email: string, password: string, name: string) { //Originalcode
-  //   const result = await createUserWithEmailAndPassword(
-  //     this.auth,
-  //     email,
-  //     password
-  //   );
-  //   result.user = this.createValidUser(result.user, name);
-  //   this.firebase.addUser(result.user);
-  //       this.user = result.user;
-  //   sessionStorage.setItem("currentUser", this.user.dispayName);
-  //   return result.user;
-  // }
-
-  async createUserWithEmail(email: string, password: string, name: string) {
+  async createUserWithEmail(email: string, password: string, name: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
     result.user = this.createValidUser(result.user, name);
     await this.firebase.addUser(result.user);
-    this.user = result.user;
-    this.user.photoURL = "./assets/img/profilepic/frederik.png"
-    this.userSubject.next(this.user);
+    this.saveCurrentUser(result, "./assets/img/profilepic/frederik.png");
+    await this.checkAllUser(result);
+    return result.user;
+  }
+
+  async checkAllUser(result: any): Promise<any> {
     const allUsers = await firstValueFrom(this.firebase.getColRef('users'));
-    const firestoreUser = allUsers.find( // besser: mit Abfrage suchen
+    const firestoreUser = allUsers.find(
       (u: any) => u.email === result.user.email
     );
-
     if (!firestoreUser) {
       throw new Error('User wurde in Firestore nicht gefunden.');
     }
-    return result.user;
   }
 }
