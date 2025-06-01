@@ -5,12 +5,12 @@
   <ng-container *ngIf="isMessage">
     <div class="message-header-content">
       <div class="message-header-content-text">
-        <h2 *ngIf="activeChannel; else defaultTitle"># {{ activeChannel }}</h2>
+        <h2 *ngIf="activeChannel; else defaultTitle"># {{ activeChannel.name }}</h2>
         <ng-template #defaultTitle>
           <h2>Neue Nachricht</h2>
         </ng-template>
       </div>
-      <div>[channel members]</div>
+      <div>[channelMembers]</div>
       <!--Im channel-view werden hier channel members angezeigt-->
     </div>
 

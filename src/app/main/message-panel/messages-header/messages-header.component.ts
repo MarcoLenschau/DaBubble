@@ -9,6 +9,7 @@ import { UserDataService } from '../../../services/user-data.service';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { Channel } from '../../../models/channel.model';
 import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-messages-header',
@@ -20,7 +21,7 @@ import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMes
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
-  @Input() activeChannel: string | null = null;
+  @Input() activeChannel: any = {};
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
@@ -67,8 +68,6 @@ export class MessagesHeaderComponent {
     this.firebaseService.updateAllUsersWithLowercaseField();
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
-      console.log("Kanäle: ", channels);
-
     });
   }
 
