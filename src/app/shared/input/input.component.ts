@@ -17,6 +17,7 @@ export class InputComponent {
   @Input() width: number = 350;
   @Input() reverse: boolean = false;
   @Input() prefix: string = '';
+  @Input() prefixIcon: string = '';
   @Output() valueChange = new EventEmitter<string>();
 
   constructor() {}
