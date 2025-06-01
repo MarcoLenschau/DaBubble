@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { User } from '../models/user.model';
 import { Observable, map } from 'rxjs';
@@ -13,7 +13,11 @@ export class UserDataService {
 
   currentUser: User = this.createGuestUser();
 
-  constructor(private firebaseService: FirebaseService, private auth: AuthService) { }
+  constructor(private firebaseService: FirebaseService, private injector: Injector) { }
+
+  private get auth(): AuthService {
+    return this.injector.get(AuthService);
+  }
 
   /**
    * Get user data from all user
@@ -83,7 +87,7 @@ export class UserDataService {
       id: user.id,
       displayName: user.displayName,
       email: user.email,
-      photoURL: user.photoURL,
+      photoURL: user.photoURL ?? './assets/img/profilepic/frederik.png',
       recentEmojis: user.recentEmojis,
       emojiUsage: user.emojiUsage,
     };
