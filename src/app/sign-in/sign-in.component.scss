@@ -38,3 +38,7 @@
 .button-container {
     @include dFlex($ai: none, $g: 24px);
 }
+
+app-input {
+    padding-left: 38px
+}

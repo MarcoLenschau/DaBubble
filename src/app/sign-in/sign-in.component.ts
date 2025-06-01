@@ -3,7 +3,6 @@ import { InputComponent } from '../shared/input/input.component';
 import { RouterService } from '../services/router.service';
 import { ButtonComponent } from '../shared/button/button.component';
 import { AuthService } from '../services/auth.service';
-import { HeaderComponent } from '../shared/header/header.component';
 import { FirebaseService } from '../services/firebase.service';
 
 @Component({
