@@ -17,8 +17,8 @@ export class PasswordResetComponent {
 
   constructor(private auth: AuthService) {}
   
-  resetPassword() {
-    this.auth.resetPassword(this.email)
+  async resetPassword() {
+    await this.auth.resetPassword(this.email)
       .then(() =>{
         this.emailMessageShow();
         this.emailMessage = "Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner."

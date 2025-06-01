@@ -66,7 +66,7 @@ export class AuthService {
       });
   }
   
-  resetPassword(email: string): Promise<void> {
+  async resetPassword(email: string): Promise<void> {
     return sendPasswordResetEmail(this.auth, email)
       .then(() => {
         console.log('Passwort-Reset-E-Mail gesendet!');
