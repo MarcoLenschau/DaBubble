@@ -28,7 +28,7 @@ export class AddChannelOverlayComponent {
     const newChannel = new Channel({
       name: this.channelName.trim(),
       description: this.description.trim(),
-      members: [currentUser.id],
+      members: [JSON.stringify(currentUser)],
       messages: [],
       createdBy: currentUser.displayName,
     });

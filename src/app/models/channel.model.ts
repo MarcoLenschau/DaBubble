@@ -4,7 +4,7 @@ export class Channel {
   id: string = '';
   name: string = ''; // title
   description?: string;
-  members: string[] = []; // userIds
+  members: any = []; // userIds
   messages: Message[] = [];
   // isPrivate?: boolean;
   // createdAt?: number;

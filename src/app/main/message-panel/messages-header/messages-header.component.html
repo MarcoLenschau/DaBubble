@@ -10,7 +10,9 @@
           <h2>Neue Nachricht</h2>
         </ng-template>
       </div>
-      <div>[channelMembers]</div>
+      <div *ngIf="activeChannel">
+          <img class="member-picture" [src]="loadMember()">
+      </div>
       <!--Im channel-view werden hier channel members angezeigt-->
     </div>
 

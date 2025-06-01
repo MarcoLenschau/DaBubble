@@ -157,4 +157,9 @@ export class MessagesHeaderComponent {
   closeThread() {
     this.closeThreadWindow.emit(false);
   }
+
+  loadMember() {
+    const members = JSON.parse(this.activeChannel.members);
+    return members.photoURL;
+  }
 }
