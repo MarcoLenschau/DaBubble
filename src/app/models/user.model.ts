@@ -2,7 +2,7 @@ export class User {
   id: string = '';
   displayName: string = '';
   email: string = '';
-  img: string = '';
+  photoURL: string = '';
   recentEmojis?: string[] = [];
   emojiUsage?: { [emojiName: string]: number } = {};
   // status?: 'online' | 'offline';
@@ -12,7 +12,7 @@ export class User {
     this.id = data?.id ?? '';
     this.displayName = data?.displayName ?? '';
     this.email = data?.email ?? '';
-    this.img = data?.img ?? '';
+    this.photoURL = data?.photoURL ?? '';
     this.recentEmojis = data?.recentEmojis ?? [];
     this.emojiUsage = data?.emojiUsage ?? {};
   }

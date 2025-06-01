@@ -64,7 +64,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     id: 'gast',
     displayName: 'Gast',
     email: 'example@email.com',
-    img: './assets/img/profilepic/frederik.png',
+    photoURL: './assets/img/profilepic/frederik.png',
     recentEmojis: [],
     emojiUsage: {},
   });

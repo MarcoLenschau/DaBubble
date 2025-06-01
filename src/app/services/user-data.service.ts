@@ -33,7 +33,7 @@ export class UserDataService {
               id: docData['id'],
               displayName: docData['displayName'],
               email: docData['email'],
-              img: docData['imgUrl'] ?? './assets/img/profilepic/frederik.png',
+              photoURL: docData['imgUrl'] ?? './assets/img/profilepic/frederik.png',
               recentEmojis: docData['recentEmojis'] ?? [],
               emojiUsage: docData['emojiUsage'] ?? {},
             })
@@ -59,6 +59,7 @@ export class UserDataService {
       this.collectionPath,
       user.id
     );
+    console.log(this.getCleanJson(user))
     await updateDoc(docRef, this.getCleanJson(user));
   }
 
@@ -130,7 +131,7 @@ export class UserDataService {
       id: userDoc.id,
       displayName: userDoc.displayName,
       email: userDoc.email,
-      img: userDoc.photoURL,
+      photoURL: userDoc.photoURL,
       recentEmojis: userDoc.recentEmojis ?? [],
       emojiUsage: userDoc.emojiUsage ?? {},
     });
@@ -141,7 +142,7 @@ export class UserDataService {
       id: 'gast',
       displayName: 'Gast',
       email: 'example@email.com',
-      img: './assets/img/profilepic/frederik.png',
+      photoURL: './assets/img/profilepic/frederik.png',
       recentEmojis: [],
       emojiUsage: {},
     });
