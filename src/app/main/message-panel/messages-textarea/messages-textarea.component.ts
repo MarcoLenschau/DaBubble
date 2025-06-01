@@ -63,7 +63,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     private messageDataService: MessageDataService,
     private userDataService: UserDataService
   ) {
-    this.currentUser = this.userDataService.getCurrentUser();
+    this.currentUser = this.userDataService.currentUser;
   }
 
   get isThread(): boolean {
@@ -125,31 +125,30 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   selectMentionUser(user: User) {
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return;
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
 
-  const range = sel.getRangeAt(0);
-  range.deleteContents();
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
 
-  const mentionText = `@${user.displayName} `;
-  const currentText = this.getTextFromEditableDiv();
-  const newText = currentText.replace(/@[\wäöüßÄÖÜ\-]*$/, mentionText);
+    const mentionText = `@${user.displayName} `;
+    const currentText = this.getTextFromEditableDiv();
+    const newText = currentText.replace(/@[\wäöüßÄÖÜ\-]*$/, mentionText);
 
-  this.editableDiv.nativeElement.innerText = newText;
-  this.placeCursorAtEnd(this.editableDiv.nativeElement);
+    this.editableDiv.nativeElement.innerText = newText;
+    this.placeCursorAtEnd(this.editableDiv.nativeElement);
 
-  this.textInput = newText;
+    this.textInput = newText;
 
-  this.showMentionDropdown = false;
-  this.filteredMentionUsers = [];
+    this.showMentionDropdown = false;
+    this.filteredMentionUsers = [];
 
-  this.messageContext = {
-    type: 'direct',
-    id: user.id,
-    receiverId: this.currentUser.id,
-  };
-}
-
+    this.messageContext = {
+      type: 'direct',
+      id: user.id,
+      receiverId: this.currentUser.id,
+    };
+  }
 
   toggleUserDropdown(event: MouseEvent): void {
     this.showUserDropdown = !this.showUserDropdown;

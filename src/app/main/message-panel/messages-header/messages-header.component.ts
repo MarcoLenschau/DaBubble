@@ -26,7 +26,7 @@ export class MessagesHeaderComponent {
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
 
   constructor(private firebaseService: FirebaseService, private userDataService: UserDataService, private channelDataService: ChannelDataService) {
-    this.currentUser = this.userDataService.getCurrentUser();
+    this.currentUser = this.userDataService.currentUser;
   }
 
   textInput = '';

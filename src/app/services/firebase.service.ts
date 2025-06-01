@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, query, where} from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,7 @@ export class FirebaseService {
   getSingleDocRef(docRef: string, docId: any) {
     return doc(this.firebase, docRef, docId);
   }
+
 
   /**
    * Add new user in firebase.

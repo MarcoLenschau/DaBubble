@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { Observable, Subscription, firstValueFrom , BehaviorSubject} from 'rxjs';
+import { Observable, Subscription, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { RouterService } from './router.service';
+import { UserDataService } from './user-data.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,15 +16,23 @@ export class AuthService {
   users: any[] = [];
   user: any = {};
 
-  constructor(private auth: Auth, private firebase: FirebaseService, private router: RouterService) {
+  constructor(private auth: Auth, private firebase: FirebaseService, private router: RouterService, private userDataService: UserDataService) {
     this.users$ = this.firebase.getColRef('users');
     this.users$.forEach((users: any) => {
       this.users = users;
     });
   }
 
-  login(email: string, password: string): Promise<UserCredential | null> {
-    return signInWithEmailAndPassword(this.auth, email, password);
+  async login(email: string, password: string): Promise<UserCredential | null> {
+    try {
+      const result = await signInWithEmailAndPassword(this.auth, email, password);
+      this.saveCurrentUser(result);
+      return result;
+    }
+    catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   logout(): void {
@@ -33,7 +42,7 @@ export class AuthService {
       })
       .catch((error) => {
         console.error('Logout-Fehler:', error);
-      });  
+      });
   }
 
   async loginWithGoogle(): Promise<User | null> {
@@ -41,18 +50,18 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     return this.loginWithProvider(provider, userCreated)
   }
-  
+
   async loginWithGitHub(): Promise<User | null> {
     let userCreated = false;
     const provider = new GithubAuthProvider();
     return this.loginWithProvider(provider, userCreated);
   }
-  
+
   async loginWithProvider(provider: any, userCreated: boolean): Promise<User | null> {
     return signInWithPopup(this.auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         this.isUserExists(result, userCreated);
-        this.saveCurrentUser(result);
+        await this.saveCurrentUser(result);
         return result.user;
       })
       .catch((error) => {
@@ -61,10 +70,11 @@ export class AuthService {
       });
   }
 
-  saveCurrentUser(result: any, photoURL = ""): void {
+  async saveCurrentUser(result: any, photoURL = ""): Promise<void> {
     this.user = result.user;
     if (photoURL) { this.user.photoURL = photoURL }
     this.userSubject.next(this.user);
+    await this.userDataService.initCurrentUser();
   }
 
   async resetPassword(email: string): Promise<any> {
@@ -76,8 +86,8 @@ export class AuthService {
         console.error('Fehler beim Senden der Reset-E-Mail:', error);
         throw error;
       });
-  }  
-  
+  }
+
   isUserExists(result: any, userCreated: boolean): void {
     this.users.forEach((user) => {
       if (user.email === result.user.email) {
@@ -88,7 +98,7 @@ export class AuthService {
       this.firebase.addUser(result.user);
     }
   }
-  
+
   async register(name: string, email: string, password: string): Promise<User | null> {
     return this.createUserWithEmail(email, password, name)
       .catch(() => null);
@@ -108,7 +118,7 @@ export class AuthService {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
     result.user = this.createValidUser(result.user, name);
     await this.firebase.addUser(result.user);
-    this.saveCurrentUser(result, "./assets/img/profilepic/frederik.png");
+    await this.saveCurrentUser(result, "./assets/img/profilepic/frederik.png");
     await this.checkAllUser(result);
     return result.user;
   }
