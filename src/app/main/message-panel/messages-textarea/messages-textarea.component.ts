@@ -120,8 +120,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     if (!text || !this.currentUser) return;
 
     const message = this.createMessage(text);
-    console.log('Message: ', message);
-
 
     try {
       await this.messageDataService.addMessage(message);
@@ -129,7 +127,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       this.messageSent.emit();
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
-      // Benachrichtigung an den Benutzer
     }
   }
 
@@ -158,13 +155,16 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     threadId: string,
     channelId: string
   ): Message {
+    const isDirect = this.messageContext?.type === 'direct';
     return new Message({
-      text,
-      userId: this.currentUser!.id,
       name: this.currentUser!.displayName,
       timestamp: Date.now(),
-      channelId,
+      text,
+      userId: this.currentUser!.id,
+      receiverId: isDirect ? this.messageContext!.id : '',
+      isDirectMessage: isDirect,
       threadId,
+      channelId,
       reactions: this.reaction || {},
     });
   }
