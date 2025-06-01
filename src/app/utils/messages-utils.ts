@@ -268,6 +268,42 @@ export function emitContextSelected(
   emitter.emit(context);
 }
 
+export function emitDirectUserContext(
+  emitter: EventEmitter<MessageContext>,
+  userId: string,
+  receiverId: string
+): void {
+  emitContextSelected(emitter, {
+    type: 'direct',
+    id: userId,
+    receiverId,
+  });
+}
+
+export function emitChannelContext(
+  emitter: EventEmitter<MessageContext>,
+  channelId: string
+): void {
+  emitContextSelected(emitter, {
+    type: 'channel',
+    id: channelId,
+    receiverId: '',
+  });
+}
+
+export function emitMessageContextFromMessage(
+  emitter: EventEmitter<MessageContext>,
+  msg: Message,
+  currentUserId: string
+): void {
+  const type = msg.channelId ? 'channel' : 'direct';
+  const id = msg.channelId ?? msg.userId;
+  const receiverId = msg.channelId ? '' : currentUserId;
+
+  emitContextSelected(emitter, { type, id, receiverId });
+}
+
+
 // Später löschen ************************************************************ */
 // Dummy-Daten:
 

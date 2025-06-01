@@ -175,7 +175,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.isMessage && (changes['messageContext'] || changes['currentUserId'])) {
+    if (this.isMessage && (changes['messageContext'] || changes['currentUser.id'])) {
       this.subscribeToMessages();
     }
 

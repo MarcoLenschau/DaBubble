@@ -8,7 +8,7 @@ import { User } from '../../../models/user.model';
 import { UserDataService } from '../../../services/user-data.service';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { Channel } from '../../../models/channel.model';
-import { emitContextSelected } from '../../../utils/messages-utils';
+import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
 
 @Component({
   selector: 'app-messages-header',
@@ -117,11 +117,9 @@ private validateEmail(email: string): boolean {
     }
 
     this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
-    emitContextSelected(this.contextSelected, {
-      type: 'direct',
-      id: user.id,
-      receiverId: this.currentUser.id,
-    });
+
+    emitDirectUserContext(this.contextSelected, user.id, this.currentUser.id);
+
 
     input.value = '';
     this.clearResults();
@@ -132,27 +130,16 @@ private validateEmail(email: string): boolean {
   selectChannel(channel: Channel, input: HTMLInputElement) {
     console.log(channel.name);
     this.textInput += `#${channel.name} `;
-    emitContextSelected(this.contextSelected, {
-      type: 'channel',
-      id: channel.id,
-      receiverId: '',
-    });
+
+    emitChannelContext(this.contextSelected, channel.id);
+
     input.value = '';
     this.clearResults();
     this.closeThread();
   }
 
   selectSearchResult(msg: Message) {
-    const type = msg.channelId ? 'channel' : 'direct';
-    const id = msg.channelId ?? msg.userId;
-    const receiverId = msg.channelId ? '' : this.currentUser.id;
-
-
-    emitContextSelected(this.contextSelected, {
-      type,
-      id,
-      receiverId,
-    });
+    emitMessageContextFromMessage(this.contextSelected, msg, this.currentUser.id);
 
     this.searchResultSelected.emit(msg);
     this.textInput = '';
