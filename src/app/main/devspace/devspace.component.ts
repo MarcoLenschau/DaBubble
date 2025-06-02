@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
 import { ChannelDataService } from '../../services/channel-data.service';
 import { Channel } from '../../models/channel.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-devspace',
@@ -31,19 +32,11 @@ export class DevspaceComponent {
   channels$!: Observable<Channel[]>;
   activeUser: string | null = null;
   user$: Observable<any[]>;
-  users = [
-    { displayName: 'Frederik Beck (Du)', photoURL: './assets/img/profilepic/frederik.png' },
-    { displayName: 'Sofia Müller', photoURL: './assets/img/profilepic/sofia.png' },
-    { displayName: 'Noah Braun', photoURL: './assets/img/profilepic/noah.png' },
-    { displayName: 'Elise Roth', photoURL: './assets/img/profilepic/elise.png' },
-    { displayName: 'Elias Neumann', photoURL: './assets/img/profilepic/elias.png' },
-    { displayName: 'Steffen Hoffmann', photoURL: './assets/img/profilepic/steffen.png' },
-  ]
+  users: any;
   
   constructor(
     private firebase: FirebaseService,
-    private channelDataService: ChannelDataService
-    ) {
+    private channelDataService: ChannelDataService, public auth: AuthService) {
     this.user$ = this.firebase.getColRef("users"); 
       this.user$.forEach((users) => {
         if (users.length > 0) {
@@ -97,6 +90,6 @@ export class DevspaceComponent {
   }
 
   toggleWorkspace() {
-  this.isWorkspaceOpen = !this.isWorkspaceOpen;
-}
+    this.isWorkspaceOpen = !this.isWorkspaceOpen;
+  }
 }

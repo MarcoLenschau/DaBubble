@@ -118,6 +118,7 @@
                         <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
                     <p>{{user.displayName}}</p>
+                    <span *ngIf="user.email === auth.user.email">(Du)</span>
                 </div>
 
 
