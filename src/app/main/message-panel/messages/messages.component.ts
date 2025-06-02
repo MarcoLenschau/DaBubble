@@ -98,6 +98,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return this.mode === 'message';
   }
 
+  showData(msg: Message) {
+    console.log("Show Message-Data: ", msg);
+
+  }
+
   async ngOnInit(): Promise<void> {
     this.currentUser = this.userDataService.currentUser;
     this.users = await firstValueFrom(this.userDataService.getUsers());
@@ -118,7 +123,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       this.messages = loadedMessages;
 
-      console.log("Messages: ", this.messages);
+      // console.log("Messages: ", this.messages);
     });
   }
 
@@ -154,7 +159,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
       this.messages = loadedMessages;
-      console.log("Messages setReplyToMessage: ", this.messages);
+      // console.log("Messages setReplyToMessage: ", this.messages);
       this.filteredMessages = [
         msg,
         ...this.messages.filter((m) => m.id !== msg.id
@@ -167,7 +172,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         'Unbekannter Kanal'
         : msg.name;
 
-      console.log("Filtered Messages setReplyToMessage: ", this.filteredMessages);
+      // console.log("Filtered Messages setReplyToMessage: ", this.filteredMessages);
 
     });
   }

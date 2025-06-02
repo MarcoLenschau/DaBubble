@@ -244,7 +244,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
     }
+
+    this.updateStarterMessage();
   }
+
 
   private createMessage(text: string): Message {
     const threadId = this.findThreadId();
@@ -291,8 +294,23 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     });
   }
 
+  async updateStarterMessage() {
+
+    if (this.mode === 'thread' && this.starterMessage) {
+      this.starterMessage.replies++;
+      console.log("Updating StarterMessage-Replies: Adding 1: ", this.starterMessage);
+
+
+      await this.messageDataService.updateMessageFields(this.starterMessage.id, {
+        replies: this.starterMessage.replies,
+        lastReplyTimestamp: Date.now(),
+      });
+    }
+  }
+
   private resetInputField(): void {
     this.textInput = '';
     this.editableDiv.nativeElement.innerHTML = '';
   }
 }
+

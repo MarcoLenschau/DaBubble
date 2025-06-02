@@ -48,6 +48,11 @@ export class MessageDataService {
     await updateDoc(docRef, this.getCleanJson(message));
   }
 
+  async updateMessageFields(id: string, data: Partial<Message>): Promise<void> {
+    const docRef = this.firebaseService.getSingleDocRef(this.collectionPath, id);
+    await updateDoc(docRef, data);
+  }
+
   async deleteMessage(messageId: string) {
     const docRef = this.firebaseService.getSingleDocRef(
       this.collectionPath,
@@ -149,12 +154,15 @@ export class MessageDataService {
       isDirectMessage: message.isDirectMessage ?? false,
       threadId: message.threadId,
       reactions: message.reactions,
+      lastReplyTimestamp: message.lastReplyTimestamp ?? null,
+      replies: message.replies ?? 0,
+
     };
   }
 
   private mapToMessages(): OperatorFunction<DocumentData[], Message[]> {
-    return map((docs) => {
-      const messages = docs.map((doc) =>
+    return map((docs) =>
+      docs.map((doc) =>
         new Message({
           id: doc['id'],
           name: doc['name'],
@@ -166,34 +174,14 @@ export class MessageDataService {
           channelId: doc['channelId'] ?? '',
           threadId: doc['threadId'] ?? '',
           reactions: doc['reactions'] ?? [],
+          lastReplyTimestamp: doc['lastReplyTimestamp'],
+          replies: doc['replies'] ?? 0,
         })
-      );
-      this.countReplies(messages);
-
-
-      return messages;
-    });
+      )
+    );
   }
 
-  countReplies(messages: Message[]) {
-    const replyMeta: { [threadId: string]: { count: number; lastTimestamp: number } } = {};
 
-    for (const msg of messages) {
-      if (msg.threadId && msg.threadId !== msg.id) {
-        const entry = replyMeta[msg.threadId] ?? { count: 0, lastTimestamp: 0 };
-        entry.count++;
-        entry.lastTimestamp = Math.max(entry.lastTimestamp, msg.timestamp);
-        replyMeta[msg.threadId] = entry;
-      }
-    }
 
-    for (const msg of messages) {
-      if (msg.threadId === msg.id) {
-        const meta = replyMeta[msg.id];
-        msg.replies = meta?.count ?? 0;
-        msg.lastReplyTimestamp = meta?.lastTimestamp;
-      }
-    }
-  }
 
 }

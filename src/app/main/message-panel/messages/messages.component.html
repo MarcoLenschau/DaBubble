@@ -19,11 +19,10 @@
           <div class="date-text">{{ formatDate(msg.timestamp) }}</div>
           <div class="date-line"></div>
         </div>
-
-
-
       </ng-container>
-      <div class="padding-top" *ngIf="i == 0"></div>
+
+
+      <!-- <div class="padding-top" *ngIf="i == 0"></div> -->
       <div class="message-wrapper" [ngClass]="{
             'hover-thread-message not-own-message': !isOwnMessage(msg),
             'hover-own-message': isOwnMessage(msg),
@@ -49,9 +48,11 @@
           </div>
 
 
+          <!-- <ng-container> -->
           <ng-container *ngIf="isMessage && msg.replies > 0">
             <div class="thread-info-line">
-              <span>{{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten' }}</span>
+              <button (click)="showData(msg)">{{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten'
+                }}</button>
               <span>•</span>
               <span *ngIf="msg.lastReplyTimestamp">Letzte Antwort {{ formatRelativeTime(msg.lastReplyTimestamp)
                 }}</span>
