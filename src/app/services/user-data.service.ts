@@ -34,6 +34,7 @@ export class UserDataService {
               displayName: docData['displayName'],
               email: docData['email'],
               photoURL: docData['imgUrl'] ?? './assets/img/profilepic/frederik.png',
+              state: docData['state'] ?? false,
               recentEmojis: docData['recentEmojis'] ?? [],
               emojiUsage: docData['emojiUsage'] ?? {},
             })
@@ -46,6 +47,8 @@ export class UserDataService {
     const userDoc = await this.getCurrentUserDoc();
     if (userDoc) {
       this.currentUser = this.mapToUser(userDoc);
+    } else {
+      this.currentUser = this.createGuestUser();
     }
   }
 
@@ -54,14 +57,14 @@ export class UserDataService {
    * 
    * @param user - User object from database
    */
-  async updateUser(user: User): Promise<void> {
-    const docRef = this.firebaseService.getSingleDocRef(
-      this.collectionPath,
-      user.id
-    );
-    // This line has a fail what the profile picture updates
-    // await updateDoc(docRef, this.getCleanJson(user));
-  }
+  // async updateUser(user: User): Promise<void> {
+  //   const docRef = this.firebaseService.getSingleDocRef(
+  //     this.collectionPath,
+  //     user.id
+  //   );
+  // This line has a fail what the profile picture updates
+  // await updateDoc(docRef, this.getCleanJson(user));
+  // }
 
   /**
    * Delete user from firebase
@@ -89,6 +92,7 @@ export class UserDataService {
       displayName: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
+      state: user.state,
       recentEmojis: user.recentEmojis,
       emojiUsage: user.emojiUsage,
     };
@@ -132,17 +136,19 @@ export class UserDataService {
       displayName: userDoc.displayName,
       email: userDoc.email,
       photoURL: userDoc.photoURL,
+      state: userDoc.state ?? false,
       recentEmojis: userDoc.recentEmojis ?? [],
       emojiUsage: userDoc.emojiUsage ?? {},
     });
   }
 
-  private createGuestUser(): User {
+  public createGuestUser(): User {
     return new User({
       id: 'gast',
       displayName: 'Gast',
       email: 'example@email.com',
       photoURL: './assets/img/profilepic/frederik.png',
+      state: false,
       recentEmojis: [],
       emojiUsage: {},
     });

@@ -4,6 +4,8 @@ import { RouterService } from '../services/router.service';
 import { ButtonComponent } from '../shared/button/button.component';
 import { AuthService } from '../services/auth.service';
 import { FirebaseService } from '../services/firebase.service';
+import { UserDataService } from '../services/user-data.service';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-sign-in',
@@ -15,7 +17,7 @@ export class SignInComponent {
   email = "";
   password = "";
 
-  constructor(public router: RouterService, private authService: AuthService, private firebase: FirebaseService) {}
+  constructor(public router: RouterService, private authService: AuthService, private firebase: FirebaseService, private userDataService: UserDataService) { }
 
   async loginWithEmail() {
     const user = await this.authService.login(this.email, this.password);;
@@ -44,17 +46,16 @@ export class SignInComponent {
   }
 
   gastLogin() {
-    this.authService.userSubject.next({
-        displayName: "Gast",
-        photoURL: "/assets/img/profilepic/frederik.png"
-    });
+    const guestUser = this.userDataService.createGuestUser();
+    guestUser.state = true;
+    this.authService.userSubject.next(guestUser);
   }
 
-  setValue(eventValue: string, type: string){
+  setValue(eventValue: string, type: string) {
     if (type === 'email') {
-      this.email = eventValue;  
+      this.email = eventValue;
     } else if (type === 'password') {
-      this.password = eventValue;  
+      this.password = eventValue;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -24,17 +24,24 @@ export class FirebaseService {
    * Add new user in firebase.
    */
   async addUser(data: any) {
-    if (data != null || data != undefined || data != '') {
-      await addDoc(this.getDocRef('users'), this.toObj(data));
+    if (data && Object.keys(data).length) {
+      const usersCollection = this.getDocRef('users');
+      const userDocRef = doc(usersCollection);
+      data.id = userDocRef.id;
+
+      await setDoc(userDocRef, this.toObj(data));
     }
   }
 
   toObj(data: any): {} {
     return {
+      id: data.id,
       displayName: data.displayName,
       email: data.email,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       state: true,
+      recentEmojis: data.recentEmojis || [],
+      emojiUsage: data.emojiUsage || {},
       stsTokenManager: data.stsTokenManager
         ? {
           accessToken: data.stsTokenManager.accessToken,

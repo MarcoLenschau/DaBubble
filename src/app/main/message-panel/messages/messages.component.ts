@@ -60,14 +60,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users: User[] = [];
-  currentUser: User = new User({
-    id: 'gast',
-    displayName: 'Gast',
-    email: 'example@email.com',
-    photoURL: './assets/img/profilepic/frederik.png',
-    recentEmojis: [],
-    emojiUsage: {},
-  });
+  currentUser!: User;
   messages: Message[] = [];
   channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
@@ -105,8 +98,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.currentUser = this.userDataService.currentUser;
     this.users = await firstValueFrom(this.userDataService.getUsers());
-
-    await this.completeMissingUserFieldsInFirebase();
     this.subscribeToMessages();
     this.updateSortedEmojis();
   }
@@ -144,12 +135,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     ) {
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
-    }
-  }
-
-  async completeMissingUserFieldsInFirebase(): Promise<void> {
-    for (const user of this.users) {
-      await this.userDataService.updateUser(user);
     }
   }
 

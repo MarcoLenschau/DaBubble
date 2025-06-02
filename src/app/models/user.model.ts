@@ -3,9 +3,9 @@ export class User {
   displayName: string = '';
   email: string = '';
   photoURL: string = '';
+  state: boolean = false;
   recentEmojis?: string[] = [];
   emojiUsage?: { [emojiName: string]: number } = {};
-  // status?: 'online' | 'offline';
   // lastSeen?: number;
 
   constructor(data?: Partial<User>) {
@@ -13,6 +13,7 @@ export class User {
     this.displayName = data?.displayName ?? '';
     this.email = data?.email ?? '';
     this.photoURL = data?.photoURL ?? '';
+    this.state = data?.state ?? false;
     this.recentEmojis = data?.recentEmojis ?? [];
     this.emojiUsage = data?.emojiUsage ?? {};
   }
