@@ -25,6 +25,9 @@ export class DevspaceComponent {
   activeChannel: string | null = null;
   showAddChannel = false;
 
+  isWorkspaceOpen: boolean = true;
+  isWorkspaceHovered: boolean = true;
+
   channels$!: Observable<Channel[]>;
   activeUser: string | null = null;
   user$: Observable<any[]>;
@@ -92,4 +95,8 @@ export class DevspaceComponent {
     this.activeChannel = channelName;
     this.channelSelected.emit(channelName);
   }
+
+  toggleWorkspace() {
+  this.isWorkspaceOpen = !this.isWorkspaceOpen;
+}
 }
