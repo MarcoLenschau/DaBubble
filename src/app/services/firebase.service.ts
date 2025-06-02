@@ -34,6 +34,7 @@ export class FirebaseService {
       displayName: data.displayName,
       email: data.email,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
+      state: true,
       stsTokenManager: data.stsTokenManager
         ? {
           accessToken: data.stsTokenManager.accessToken,
@@ -91,5 +92,10 @@ export class FirebaseService {
         return Promise.resolve();
       }
     });
+  }
+
+  updateUserState(user: any) {
+    const docRef = doc(this.firebase, 'users', user.id);
+    updateDoc(docRef, { state: false });
   }
 }

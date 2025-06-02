@@ -48,14 +48,19 @@ export class AuthService {
     }
   }
 
-  logout(): void {
-    this.auth.signOut()
-      .then(() => {
-        this.router.switchRoute('/');
-      })
-      .catch((error) => {
-        console.error('Logout-Fehler:', error);
-      });
+  logout() {
+    this.users.forEach(async(user) => {
+      if (user.email === this.user.email) {
+        this.firebase.updateUserState(user);
+        this.auth.signOut()
+          .then(() => {
+            this.router.switchRoute('/');
+          })
+          .catch((error) => {
+            console.error('Logout-Fehler:', error);
+          });
+      }
+    })
   }
 
   async loginWithGoogle(): Promise<User | null> {
@@ -109,7 +114,6 @@ export class AuthService {
     });
     if (!userCreated) {
       this.firebase.addUser(result.user);
-
     }
   }
 
