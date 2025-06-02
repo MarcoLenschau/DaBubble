@@ -1,4 +1,26 @@
-<nav>
+<div 
+        
+        (click)="toggleWorkspace()"
+        (mouseenter)="isWorkspaceHovered = true"
+        (mouseleave)="isWorkspaceHovered = false"
+        style="position: absolute; left: -20px; top: 560px; cursor: pointer; z-index: 2000;"
+    >
+    <img 
+        [src]="
+            isWorkspaceOpen
+                ? (isWorkspaceHovered
+                    ? 'assets/img/devspace/workspace/workspace-default-hover.svg'
+                    : 'assets/img/devspace/workspace/workspace-default.svg')
+                : (isWorkspaceHovered
+                    ? 'assets/img/devspace/workspace/workspace-show-hover.svg'
+                    : 'assets/img/devspace/workspace/workspace-show.svg')
+                "
+            alt="Workspace Menü"
+            style="width: 100px; height: 300px;"
+    >
+   </div>
+
+<nav *ngIf="isWorkspaceOpen">
     <div class="devspace-content">
         <div class="devspace-headline">
             <div class="headline-title">

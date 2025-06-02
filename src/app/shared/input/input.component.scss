@@ -23,7 +23,7 @@ div {
 }
 
 .distance {
-    padding-left: 12px !important;
+    padding-left: 18px !important;
 }
 
 .input-distance {
@@ -40,16 +40,23 @@ div {
   align-items: center;
 }
 
-.input-prefix {
-  position: absolute;
-  left: 18px;
-  color: #5a5be7;
-  font-size: 1.5rem;
-  pointer-events: none;
-  user-select: none;
-  z-index: 2;
+.input-prefix-wrapper input {
+  padding-left: 0;
 }
 
-input {
-  padding-left: 32px; // Platz für das Prefix
+.input-prefix-wrapper .input-prefix-icon {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 22px;
+  width: 22px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+
+
+:host-context(.with-icon) .input-prefix-wrapper input {
+  padding-left: 42px !important;
 }
