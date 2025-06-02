@@ -153,22 +153,47 @@ export class MessageDataService {
   }
 
   private mapToMessages(): OperatorFunction<DocumentData[], Message[]> {
-    return map((docs) =>
-      docs.map(
-        (doc) =>
-          new Message({
-            id: doc['id'],
-            name: doc['name'],
-            text: doc['text'],
-            timestamp: doc['timestamp'] ?? Date.now(),
-            userId: doc['userId'],
-            receiverId: doc['receiverId'] ?? '',
-            isDirectMessage: doc['isDirectMessage'] ?? false,
-            channelId: doc['channelId'] ?? '',
-            threadId: doc['threadId'] ?? '',
-            reactions: doc['reactions'] ?? [],
-          })
-      )
-    );
+    return map((docs) => {
+      const messages = docs.map((doc) =>
+        new Message({
+          id: doc['id'],
+          name: doc['name'],
+          text: doc['text'],
+          timestamp: doc['timestamp'] ?? Date.now(),
+          userId: doc['userId'],
+          receiverId: doc['receiverId'] ?? '',
+          isDirectMessage: doc['isDirectMessage'] ?? false,
+          channelId: doc['channelId'] ?? '',
+          threadId: doc['threadId'] ?? '',
+          reactions: doc['reactions'] ?? [],
+        })
+      );
+      this.countReplies(messages);
+
+
+      return messages;
+    });
   }
+
+  countReplies(messages: Message[]) {
+    const replyMeta: { [threadId: string]: { count: number; lastTimestamp: number } } = {};
+
+    for (const msg of messages) {
+      if (msg.threadId && msg.threadId !== msg.id) {
+        const entry = replyMeta[msg.threadId] ?? { count: 0, lastTimestamp: 0 };
+        entry.count++;
+        entry.lastTimestamp = Math.max(entry.lastTimestamp, msg.timestamp);
+        replyMeta[msg.threadId] = entry;
+      }
+    }
+
+    for (const msg of messages) {
+      if (msg.threadId === msg.id) {
+        const meta = replyMeta[msg.id];
+        msg.replies = meta?.count ?? 0;
+        msg.lastReplyTimestamp = meta?.lastTimestamp;
+      }
+    }
+  }
+
 }

@@ -4,11 +4,25 @@
         (isThread ? filteredMessages : messages).length > 0;
         else noMessages
       ">
+
+
     <ng-container *ngFor="
           let msg of isThread ? filteredMessages : messages;
           let i = index;
           trackBy: trackByMessageId
         ">
+
+
+      <ng-container *ngIf="isMessage && isNewDay(msg.timestamp, messages[i - 1]?.timestamp)">
+        <div class="date-divider">
+          <div class="date-line"></div>
+          <div class="date-text">{{ formatDate(msg.timestamp) }}</div>
+          <div class="date-line"></div>
+        </div>
+
+
+
+      </ng-container>
       <div class="padding-top" *ngIf="i == 0"></div>
       <div class="message-wrapper" [ngClass]="{
             'hover-thread-message not-own-message': !isOwnMessage(msg),
@@ -19,7 +33,6 @@
         <div class="message-flex-box" [ngClass]="{
             'thread-message': !isOwnMessage(msg),
             'own-message': isOwnMessage(msg),
-            
                         }">
           <img class="message-img" [src]="
                 getUserById(msg.userId)?.photoURL ??
@@ -34,6 +47,18 @@
               {{ msg.text }}
             </p>
           </div>
+
+
+          <ng-container *ngIf="isMessage && msg.replies > 0">
+            <div class="thread-info-line">
+              <span>{{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten' }}</span>
+              <span>•</span>
+              <span *ngIf="msg.lastReplyTimestamp">Letzte Antwort {{ formatRelativeTime(msg.lastReplyTimestamp)
+                }}</span>
+            </div>
+          </ng-container>
+
+
           <ng-container>
             <div class="emoji-row" [ngClass]="{
                 'emoji-row-left-aligned': isOwnMessage(msg),

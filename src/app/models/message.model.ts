@@ -12,8 +12,8 @@ export class Message {
   channelId?: string;
   reactions: Reaction[] = [];
   // isEdited?: boolean;
-  // replyTo?: string; // optional: ID einer anderen Nachricht
-  // reoplies - zum Anzeigen "1 Antwort" oder "2 Antworten"
+  lastReplyTimestamp?: number;
+  replies: number = 0;
 
   constructor(data?: Partial<Message>) {
     if (data) {
@@ -27,6 +27,8 @@ export class Message {
       this.threadId = data.threadId ?? this.threadId;
       this.channelId = data.channelId ?? this.channelId;
       this.reactions = data.reactions ?? this.reactions;
+      this.lastReplyTimestamp = data.lastReplyTimestamp ?? this.lastReplyTimestamp;
+      this.replies = data.replies ?? this.replies;
     }
   }
 }

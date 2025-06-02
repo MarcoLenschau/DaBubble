@@ -287,6 +287,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       threadId,
       channelId,
       reactions: this.reaction || {},
+      replies: 0,
     });
   }
 
