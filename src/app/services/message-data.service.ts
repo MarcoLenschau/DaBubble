@@ -73,7 +73,6 @@ export class MessageDataService {
   }
 
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
-    console.log('getMessagesForContext: context.type: ', context.type);
 
     if (context.type === 'channel') {
       if (!context.id) throw new Error('Channel context must include an id');

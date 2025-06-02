@@ -59,5 +59,7 @@ export class MainComponent {
 
   onContextSelected(context: MessageContext): void {
     this.messageContext = context;
+    console.log("MainComponent: Logging MessageContext: ", context);
+
   }
 }
