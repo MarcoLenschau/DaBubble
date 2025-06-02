@@ -1,12 +1,6 @@
-<div 
-        
-        (click)="toggleWorkspace()"
-        (mouseenter)="isWorkspaceHovered = true"
-        (mouseleave)="isWorkspaceHovered = false"
-        style="position: absolute; left: -20px; top: 560px; cursor: pointer; z-index: 2000;"
-    >
-    <img 
-        [src]="
+<div (click)="toggleWorkspace()" (mouseenter)="isWorkspaceHovered = true" (mouseleave)="isWorkspaceHovered = false"
+    style="position: absolute; left: -20px; top: 560px; cursor: pointer; z-index: 2000;">
+    <img [src]="
             isWorkspaceOpen
                 ? (isWorkspaceHovered
                     ? 'assets/img/devspace/workspace/workspace-default-hover.svg'
@@ -14,11 +8,8 @@
                 : (isWorkspaceHovered
                     ? 'assets/img/devspace/workspace/workspace-show-hover.svg'
                     : 'assets/img/devspace/workspace/workspace-show.svg')
-                "
-            alt="Workspace Menü"
-            style="width: 100px; height: 300px;"
-    >
-   </div>
+                " alt="Workspace Menü" style="width: 100px; height: 300px;">
+</div>
 
 <nav *ngIf="isWorkspaceOpen">
     <div class="devspace-content">
@@ -47,7 +38,8 @@
                     </div>
                 </div>
 
-                <img src="./assets/img/devspace/add.png" alt="add" (click)="showAddChannel = true" style="cursor:pointer;">
+                <img src="./assets/img/devspace/add.png" alt="add" (click)="showAddChannel = true"
+                    style="cursor:pointer;">
 
                 <app-add-channel-overlay *ngIf="showAddChannel" (close)="showAddChannel = false">
                 </app-add-channel-overlay>
@@ -70,11 +62,8 @@
                 </div>
 
                 <ng-container *ngFor="let channel of channels$ | async">
-                    <div class="devspace-channel-content"
-                        (mouseenter)="hoveredChannel = channel.id"
-                        (mouseleave)="hoveredChannel = null"
-                        (click)="selectChannel(channel.id)"
-                        [ngClass]="{
+                    <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
+                        (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel.id)" [ngClass]="{
                             'hovered': hoveredChannel === channel.id,
                             'active': activeChannel === channel.id
                         }">
@@ -90,7 +79,8 @@
                 </ng-container>
 
                 <div class="devspace-channel-add" (click)="showAddChannel = true" style="cursor:pointer;">
-                    <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'" alt="user">
+                    <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'"
+                        alt="user">
                     <span>Channel hinzufügen</span>
                 </div>
             </div>
@@ -111,7 +101,7 @@
             </div>
 
             <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users.length > 6">
-                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName)"
+                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName, user.id)"
                     [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
                         <img class="profile-pic" [src]="user.photoURL" alt="user">

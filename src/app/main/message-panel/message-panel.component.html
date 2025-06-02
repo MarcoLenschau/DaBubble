@@ -2,7 +2,7 @@
   <div class="message-content">
     <!-- TODO: In einem Channel muss der Channel-Titel angezeigt werden. Der Channel muss dann an <app-messages-textarea weitergegeben werden  -->
     <app-messages-header [mode]="mode" [starterMessage]="starterMessage" (closeThreadWindow)="onCloseClick()"
-      [activeChannel]="activeChannel" (contextSelected)="onContextSelected($event)"></app-messages-header>
+      [activeChannel]="activeChannel" (contextSelected)="onContextSelectedFromHeader($event)"></app-messages-header>
 
     <app-messages [mode]="mode" [starterMessage]="starterMessage" [userId]="userId" [messageContext]="messageContext"
       (threadStart)="onStartThread($event.starterMessage, $event.userId)"

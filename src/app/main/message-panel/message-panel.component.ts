@@ -23,6 +23,8 @@ export class MessagePanelComponent {
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
+  @Input() messageContext?: MessageContext;
+  @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
     userId: string;
@@ -32,7 +34,6 @@ export class MessagePanelComponent {
   @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
   textInput = '';
-  messageContext?: MessageContext;
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -54,7 +55,7 @@ export class MessagePanelComponent {
     this.messagesComponent.reloadMessages();
   }
 
-  onContextSelected(context: MessageContext): void {
-    this.messageContext = context;
+  onContextSelectedFromHeader(context: MessageContext): void {
+    this.contextSelected.emit(context);
   }
 }

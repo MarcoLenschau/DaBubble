@@ -91,7 +91,6 @@ function addNewReaction(
 
 export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
   if (!hasEmojiData(user)) {
-    console.log('Defailt Emojis');
     return getDefaultEmojis(emojis);
   }
 
@@ -103,7 +102,6 @@ export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
 }
 
 function hasEmojiData(user: User): boolean {
-  console.log('console.log(user.recentEmojis);', user.recentEmojis);
   return (
     (user.recentEmojis?.length ?? 0) > 0 ||
     Object.keys(user.emojiUsage ?? {}).length > 0

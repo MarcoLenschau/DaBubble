@@ -4,8 +4,12 @@ import { FirebaseService } from '../../services/firebase.service';
 import { Observable } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
 import { ChannelDataService } from '../../services/channel-data.service';
+import { UserDataService } from '../../services/user-data.service';
 import { Channel } from '../../models/channel.model';
+import { User } from '../../models/user.model';
 import { AuthService } from '../../services/auth.service';
+import { MessageContext } from '../../interfaces/message-context.interface';
+import { emitChannelContext, emitDirectUserContext } from '../../utils/messages-utils';
 
 @Component({
   selector: 'app-devspace',
@@ -15,6 +19,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DevspaceComponent {
   @Output() channelSelected = new EventEmitter<string>();
+  @Output() contextSelected = new EventEmitter<MessageContext>();
 
   isChannelOpen: boolean = true;
   isMessageOpen: boolean = true;
@@ -33,17 +38,19 @@ export class DevspaceComponent {
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users: any;
-  
+  currentUser: User;
+
   constructor(
     private firebase: FirebaseService,
-    private channelDataService: ChannelDataService, public auth: AuthService) {
-    this.user$ = this.firebase.getColRef("users"); 
-      this.user$.forEach((users) => {
-        if (users.length > 0) {
-          this.users = users;
-        }
+    private channelDataService: ChannelDataService, public auth: AuthService, private userDataService: UserDataService,) {
+    this.user$ = this.firebase.getColRef("users");
+    this.user$.forEach((users) => {
+      if (users.length > 0) {
+        this.users = users;
+      }
     })
     this.channels$ = this.channelDataService.getChannels();
+    this.currentUser = this.userDataService.currentUser;
   }
 
   toggleChannels() {
@@ -80,14 +87,17 @@ export class DevspaceComponent {
     }
   }
 
-  setActiveUser(name: string) {
+  setActiveUser(name: string, id: string) {
     this.activeUser = name;
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, id);
   }
 
-  selectChannel(channelName : string){
-    this.activeChannel = channelName;
-    this.channelSelected.emit(channelName);
+  selectChannel(id: string) {
+    this.activeChannel = id;
+    this.channelSelected.emit(id);
+    emitChannelContext(this.contextSelected, id);
   }
+
 
   toggleWorkspace() {
     this.isWorkspaceOpen = !this.isWorkspaceOpen;
