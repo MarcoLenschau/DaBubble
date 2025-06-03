@@ -110,6 +110,11 @@ export class UserDataService {
     return this.mapToUser(userDoc);
   }
 
+  setCurrentUser(user: User): void {
+    this.currentUser = user;
+  }
+
+
   /**
   * Retrieves the current user's Firestore document based on the authenticated user's email.
   * 

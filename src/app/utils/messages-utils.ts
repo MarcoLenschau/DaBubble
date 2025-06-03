@@ -30,18 +30,20 @@ export function addEmojiToMessage(
   emojiName: string,
   message: Message,
   userId: string
-) {
-  const existingReaction = processReaction(message, emojiName);
+): Message {
+  const existingReaction = message.reactions.find((r) => r.emojiName === emojiName);
 
-  if (existingReaction) {
-    if (existingReaction.userIds.includes(userId)) {
-      removeUserFromReaction(existingReaction, message, userId);
-    } else {
-      addUserToReaction(existingReaction, userId);
-    }
+  let newReactions: Reaction[];
+
+  if (!existingReaction) {
+    newReactions = addNewReaction(message.reactions, emojiName, userId);
+  } else if (existingReaction.userIds.includes(userId)) {
+    newReactions = removeUserFromReaction(message.reactions, existingReaction, userId);
   } else {
-    addNewReaction(message, emojiName, userId);
+    newReactions = addUserToReaction(message.reactions, existingReaction, userId);
   }
+
+  return { ...message, reactions: newReactions };
 }
 
 function processReaction(
@@ -52,34 +54,45 @@ function processReaction(
 }
 
 function removeUserFromReaction(
-  reaction: Reaction,
-  message: Message,
+  reactions: Reaction[],
+  target: Reaction,
   userId: string
-): void {
-  reaction.userIds = reaction.userIds.filter((id) => id !== userId);
+): Reaction[] {
+  const updatedUserIds = target.userIds.filter(id => id !== userId);
 
-  if (reaction.userIds.length === 0) {
-    removeReactionAltogether(message, reaction);
+  if (updatedUserIds.length === 0) {
+    return reactions.filter(r => r !== target);
   }
+
+  return reactions.map(r =>
+    r === target ? { ...r, userIds: updatedUserIds } : r
+  );
 }
 
-function addUserToReaction(reaction: Reaction, userId: string): void {
-  reaction.userIds.push(userId);
+function addUserToReaction(
+  reactions: Reaction[],
+  target: Reaction,
+  userId: string
+): Reaction[] {
+  return reactions.map(r =>
+    r === target ? { ...r, userIds: [...r.userIds, userId] } : r
+  );
 }
+
 
 function removeReactionAltogether(message: Message, reaction: Reaction): void {
   message.reactions = message.reactions.filter((r) => r !== reaction);
 }
 
 function addNewReaction(
-  message: Message,
+  reactions: Reaction[],
   emojiName: string,
   userId: string
-): void {
-  message.reactions.push({
-    emojiName,
-    userIds: [userId],
-  });
+): Reaction[] {
+  return [
+    ...reactions,
+    { emojiName, userIds: [userId] }
+  ];
 }
 
 export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
@@ -144,34 +157,27 @@ function getFrequentEmojis(
     .filter((e): e is Emoji => !!e);
 }
 
-export function updateEmojiDataForUser(user: User, emojiName: string): void {
-  ensureEmojiFieldsExist(user);
-  updateRecentEmojis(user, emojiName);
-  updateEmojiUsageCount(user, emojiName);
+export function updateEmojiDataForUser(user: User, emojiName: string): User {
+  const recentEmojis = updateRecentEmojis(user.recentEmojis ?? [], emojiName);
+  const emojiUsage = updateEmojiUsageCount(user.emojiUsage ?? {}, emojiName);
+
+  return {
+    ...user,
+    recentEmojis,
+    emojiUsage
+  };
 }
 
-function ensureEmojiFieldsExist(user: User): void {
-  if (!user.recentEmojis) {
-    user.recentEmojis = [];
-  }
-  if (!user.emojiUsage) {
-    user.emojiUsage = {};
-  }
+function updateRecentEmojis(recent: string[], emojiName: string): string[] {
+  const filtered = recent.filter(e => e !== emojiName);
+  return [emojiName, ...filtered].slice(0, 2);
 }
 
-function updateRecentEmojis(user: User, emojiName: string): void {
-  const recent = user.recentEmojis ?? [];
-  user.recentEmojis = [
-    emojiName,
-    ...recent.filter((e) => e !== emojiName),
-  ].slice(0, 2);
-}
-
-function updateEmojiUsageCount(user: User, emojiName: string): void {
-  if (!user.emojiUsage) {
-    user.emojiUsage = {};
-  }
-  user.emojiUsage[emojiName] = (user.emojiUsage[emojiName] ?? 0) + 1;
+function updateEmojiUsageCount(usage: { [key: string]: number }, emojiName: string): { [key: string]: number } {
+  return {
+    ...usage,
+    [emojiName]: (usage[emojiName] ?? 0) + 1
+  };
 }
 
 export function getUserById(users: User[], userId: string): User | undefined {

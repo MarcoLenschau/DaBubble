@@ -16,16 +16,33 @@ export function formatDate(timestamp: number): string {
     const date = new Date(timestamp);
     const today = new Date();
 
-    const isToday = date.toDateString() === today.toDateString();
-    if (isToday) return 'Heute';
+    const diffDays = getDayDifference(today, date);
+
+    if (diffDays === 0) return 'Heute';
+    if (diffDays === 1) return 'Gestern';
 
     const sameYear = date.getFullYear() === today.getFullYear();
 
+    return formatDateGerman(date, !sameYear);
+}
+
+function getDayDifference(date1: Date, date2: Date): number {
+    const d1 = toDateOnly(date1).getTime();
+    const d2 = toDateOnly(date2).getTime();
+    const diff = d1 - d2;
+    return diff / (1000 * 60 * 60 * 24);
+}
+
+function toDateOnly(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function formatDateGerman(date: Date, includeYear: boolean): string {
     return date.toLocaleDateString('de-DE', {
         weekday: 'long',
-        day: 'numeric',
+        day: includeYear ? 'numeric' : undefined,
         month: 'long',
-        ...(sameYear ? {} : { year: 'numeric' }),
+        ...(includeYear ? { year: 'numeric' } : {}),
     });
 }
 

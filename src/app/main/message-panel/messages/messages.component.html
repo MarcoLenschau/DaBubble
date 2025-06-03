@@ -50,7 +50,7 @@
               <div class="replies-info-container">
                 <button class="show-replies-button"
                   [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
-                  (click)="showData(msg); openThread(msg); setReplyToMessage(msg)">{{
+                  (click)="showData(msg); openThread(msg)">{{
                   msg.replies }} {{ msg.replies
                   === 1 ? 'Antwort'
                   : 'Antworten'

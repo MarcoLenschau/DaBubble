@@ -140,6 +140,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.starterMessage &&
       this.starterMessage.id !== this.lastThreadId
     ) {
+      console.log("this.starterMessage: ", this.starterMessage);
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
     }
@@ -242,18 +243,20 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.currentUser.id
     );
 
-    addEmojiToMessage(emojiName, msg, this.currentUser.id);
+    const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
 
     const isReactedNow = this.userHasReactedToEmoji(
-      msg,
+      updatedMsg,
       emojiName,
       this.currentUser.id
     );
 
     if (!wasAlreadyReacted && isReactedNow) {
-      updateEmojiDataForUser(this.currentUser, emojiName);
+      const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
+      this.userDataService.setCurrentUser(updatedUser); // neue Methode im Service
+      this.currentUser = updatedUser;
     }
-    this.saveMessage(msg);
+    this.saveMessage(updatedMsg);
   }
 
   onEmojiRowMouseLeave(index: number): void {
