@@ -13,18 +13,26 @@ import {
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+
+import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { UserDataService } from '../../../services/user-data.service';
 import { MessageDataService } from '../../../services/message-data.service';
+
 import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
+import { Channel } from '../../../models/channel.model';
+import { MessageContext } from '../../../interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
+
 import {
   formatTime,
-  formatDate, isNewDay, formatRelativeTimeSimple
+  formatDate,
+  isNewDay,
+  formatRelativeTimeSimple
 } from '../../../utils/date-utils';
+
 import {
   getEmojiByName,
   getEmojiByUnicode,
@@ -36,14 +44,12 @@ import {
   isOwnMessage,
   trackByMessageId,
   getSortedEmojisForUser,
-  updateEmojiDataForUser,
+  updateEmojiDataForUser
 } from '../../../utils/messages-utils';
-import { firstValueFrom } from 'rxjs';
-import { Channel } from '../../../models/channel.model';
-import { MessageContext } from '../../../interfaces/message-context.interface';
 
 @Component({
   selector: 'app-messages',
+  standalone: true,
   imports: [CommonModule, FormsModule, NgClass],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.scss',
@@ -56,10 +62,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() activeChannel: string | null = null;
   @Input() messageContext?: MessageContext;
   @Output() showThreadChange = new EventEmitter<boolean>();
-  @Output() threadStart = new EventEmitter<{
-    starterMessage: Message;
-    userId: string;
-  }>();
+  @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
 
   users: User[] = [];
@@ -81,6 +84,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   threadId: string = '';
   channelId: string = '';
 
+  editingMessageId: string | null = null;
+  editedText: string = '';
+
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
@@ -99,10 +105,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return this.mode === 'message';
   }
 
-  showData(msg: Message) { // DELETE 
-    console.log("Show Message-Data: ", msg);
-  }
-
   async ngOnInit(): Promise<void> {
     this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -115,17 +117,36 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
+  handleEditClick(msg: Message, index: number): void {
+  this.startEditing(msg);        // Beginne mit dem Bearbeiten
+  this.editMenuOpenIndex = null; // Schließe das Dropdown sofort
+}
+
+
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
     this.currentUserSubscription?.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.isMessage && changes['messageContext']) {
+      this.subscribeToMessages();
+    }
+
+    if (this.isThread &&
+        changes['starterMessage'] &&
+        this.starterMessage &&
+        this.starterMessage.id !== this.lastThreadId) {
+      this.setReplyToMessage(this.starterMessage);
+      this.lastThreadId = this.starterMessage.id;
+    }
   }
 
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
 
-    const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id)
-
+    const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       this.messages = loadedMessages;
     });
@@ -133,22 +154,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   reloadMessages(): void {
     this.subscribeToMessages();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (this.isMessage && (changes['messageContext'])) {
-      this.subscribeToMessages();
-    }
-
-    if (this.isThread &&
-      changes['starterMessage'] &&
-      this.starterMessage &&
-      this.starterMessage.id !== this.lastThreadId
-    ) {
-      console.log("this.starterMessage: ", this.starterMessage);
-      this.setReplyToMessage(this.starterMessage);
-      this.lastThreadId = this.starterMessage.id;
-    }
   }
 
   setReplyToMessage(msg: Message) {
@@ -164,16 +169,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
       this.messages = loadedMessages;
-      this.filteredMessages = [
-        msg,
-        ...this.messages.filter((m) => m.id !== msg.id
-        ),
-      ];
+      this.filteredMessages = [msg, ...this.messages.filter((m) => m.id !== msg.id)];
 
       this.threadSymbol = msg.channelId ? '#' : '@';
       this.threadTitle = msg.channelId
-        ? this.channels.find((c) => c.id === msg.channelId)?.name ??
-        'Unbekannter Kanal'
+        ? this.channels.find((c) => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
         : msg.name;
     });
   }
@@ -187,20 +187,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   openUserDialog(userId?: string): void {
-
     if (!userId) return;
     const user = this.getUserById(userId);
     if (user) {
-      this.dialog.open(DialogUserDetailsComponent, {
-        data: user,
-      });
+      this.dialog.open(DialogUserDetailsComponent, { data: user });
     }
   }
 
   closeThread() {
     this.showThreadChange.emit(false);
   }
-
 
   cancelReply() {
     this.replyToMessage = null;
@@ -213,7 +209,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   setHoverState(index: number | null) {
     this.hoveredIndex = index;
-
     if (index === null) {
       this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
     }
@@ -221,7 +216,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   setTooltipHoveredState(index: number | null, userIds: string[] | null): void {
     this.tooltipHoveredIndex = index;
-
     if (index !== null && userIds !== null) {
       const result = formatUserNames(this.users, userIds, this.currentUser);
       this.formattedUserNames = result.text;
@@ -238,26 +232,21 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   handleEmojiClick(emojiName: string, msg: Message): void {
-    const wasAlreadyReacted = this.userHasReactedToEmoji(
-      msg,
-      emojiName,
-      this.currentUser.id
-    );
-
+    const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
-
-    const isReactedNow = this.userHasReactedToEmoji(
-      updatedMsg,
-      emojiName,
-      this.currentUser.id
-    );
+    const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
 
     if (!wasAlreadyReacted && isReactedNow) {
       const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
       this.userDataService.setCurrentUser(updatedUser);
       this.currentUser = updatedUser;
     }
+
     this.saveMessage(updatedMsg);
+  }
+
+  userHasReactedToEmoji(msg: Message, emojiName: string, userId: string): boolean {
+    return msg.reactions.some((r) => r.emojiName === emojiName && r.userIds.includes(userId));
   }
 
   onEmojiRowMouseLeave(index: number): void {
@@ -265,35 +254,18 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  userHasReactedToEmoji(
-    msg: Message,
-    emojiName: string,
-    userId: string
-  ): boolean {
-    return msg.reactions.some(
-      (r) => r.emojiName === emojiName && r.userIds.includes(userId)
-    );
-  }
-
   onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) {
     const wrapper = event.currentTarget as HTMLElement;
     setTimeout(() => {
       const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
       const threadMessages = wrapper.closest('.thread-messages');
-
       if (tooltip && threadMessages) {
-        this.adjustTooltipPosition(
-          tooltip as HTMLElement,
-          threadMessages as HTMLElement
-        );
+        this.adjustTooltipPosition(tooltip as HTMLElement, threadMessages as HTMLElement);
       }
     }, 60);
   }
 
-  adjustTooltipPosition(
-    tooltipElement: HTMLElement,
-    threadMessages: HTMLElement
-  ) {
+  adjustTooltipPosition(tooltipElement: HTMLElement, threadMessages: HTMLElement) {
     if (!tooltipElement) return;
 
     const rect = tooltipElement.getBoundingClientRect();
@@ -305,30 +277,64 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       tooltipElement.classList.remove('overflowing-right');
     }
   }
+  
+  editMenuOpenIndex: number | null = null;
+
+toggleEditMenu(index: number): void {
+  this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
+}
+
+
+  // 🆕 Nachricht bearbeiten starten
+  startEditing(msg: Message): void {
+    this.editingMessageId = msg.id;
+    this.editedText = msg.text;
+  }
+
+  // 🆕 Bearbeitung abbrechen
+  cancelEditing(): void {
+    this.editingMessageId = null;
+    this.editedText = '';
+  }
+
+  // 🆕 Bearbeitung speichern
+  saveEditedMessage(msg: Message): void {
+    const trimmed = this.editedText.trim();
+    if (!trimmed || trimmed === msg.text) {
+      this.cancelEditing();
+      return;
+    }
+
+
+
+    const updatedMessage = { ...msg, text: trimmed };
+    this.messageDataService.updateMessage(updatedMessage).then(() => {
+      this.cancelEditing();
+    });
+  }
 
   formatTime = formatTime;
   formatDate = formatDate;
   isNewDay = isNewDay;
   formatRelativeTimeSimple = formatRelativeTimeSimple;
-  getUserNames = (userIds: string[]) =>
-    getUserNames(this.users, userIds, this.currentUser);
+  getUserNames = (userIds: string[]) => getUserNames(this.users, userIds, this.currentUser);
   getUserById = (userId: string) => getUserById(this.users, userId);
-  formatUserNames = (userIds: string[]) =>
-    formatUserNames(this.users, userIds, this.currentUser);
+  formatUserNames = (userIds: string[]) => formatUserNames(this.users, userIds, this.currentUser);
   getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
-  getEmojiByUnicode = (unicode: string) =>
-    getEmojiByUnicode(this.emojis, unicode);
+  getEmojiByUnicode = (unicode: string) => getEmojiByUnicode(this.emojis, unicode);
   addEmojiToTextarea = (unicodeEmoji: string) => {
-    this.textareaContent = addEmojiToTextarea(
-      this.textareaContent,
-      unicodeEmoji
-    );
+    this.textareaContent = addEmojiToTextarea(this.textareaContent, unicodeEmoji);
     this.updateSortedEmojis();
   };
 
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
   }
+
+  showData(msg: Message): void {
+  console.log('Nachricht zur Analyse:', msg);
+}
+
 
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
