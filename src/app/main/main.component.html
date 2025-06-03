@@ -1,6 +1,6 @@
 <div class="main-component">
-  <app-devspace (channelSelected)="onChannelSelected($event)"
-    (contextSelected)="onContextSelected($event)"></app-devspace>
+  <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
+    (closeThreadWindow)="onThreadClose()" S></app-devspace>
   <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
     (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
     (contextSelected)="onContextSelected($event)"></app-message-window>

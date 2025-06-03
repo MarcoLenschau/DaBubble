@@ -20,6 +20,7 @@ import { emitChannelContext, emitDirectUserContext } from '../../utils/messages-
 export class DevspaceComponent {
   @Output() channelSelected = new EventEmitter<string>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
+  @Output() closeThreadWindow = new EventEmitter<void>();
 
   isChannelOpen: boolean = true;
   isMessageOpen: boolean = true;
@@ -99,12 +100,18 @@ export class DevspaceComponent {
   setActiveUser(name: string, id: string) {
     this.activeUser = name;
     emitDirectUserContext(this.contextSelected, this.currentUser.id, id);
+    this.closeThread();
   }
 
   selectChannel(id: string) {
     this.activeChannel = id;
     this.channelSelected.emit(id);
     emitChannelContext(this.contextSelected, id);
+    this.closeThread();
+  }
+
+  closeThread() {
+    this.closeThreadWindow.emit();
   }
 
 

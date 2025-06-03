@@ -22,6 +22,7 @@ import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
+  formatTime,
   formatDate, isNewDay, formatRelativeTimeSimple
 } from '../../../utils/date-utils';
 import {
@@ -305,6 +306,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  formatTime = formatTime;
   formatDate = formatDate;
   isNewDay = isNewDay;
   formatRelativeTimeSimple = formatRelativeTimeSimple;
