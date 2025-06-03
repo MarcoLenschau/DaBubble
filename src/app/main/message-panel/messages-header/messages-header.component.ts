@@ -9,7 +9,7 @@ import { UserDataService } from '../../../services/user-data.service';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { Channel } from '../../../models/channel.model';
 import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-messages-header',
@@ -26,12 +26,13 @@ export class MessagesHeaderComponent {
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
 
+  private currentUserSubscription?: Subscription;
+
   constructor(private firebaseService: FirebaseService, private userDataService: UserDataService, private channelDataService: ChannelDataService) {
-    this.currentUser = this.userDataService.currentUser;
   }
 
   textInput = '';
-  currentUser: User;
+  currentUser!: User;
   selectedRecipients: { id: string; displayName: string }[] = [];
 
   searchResultsUser: any[] = [];
@@ -69,6 +70,13 @@ export class MessagesHeaderComponent {
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
     });
+    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.currentUserSubscription?.unsubscribe();
   }
 
   async onSearch(event: Event) {

@@ -82,6 +82,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
+  private currentUserSubscription?: Subscription;
 
   constructor(
     private userDataService: UserDataService,
@@ -97,20 +98,25 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return this.mode === 'message';
   }
 
-  showData(msg: Message) {
+  showData(msg: Message) { // DELETE 
     console.log("Show Message-Data: ", msg);
-
   }
 
   async ngOnInit(): Promise<void> {
-    this.currentUser = this.userDataService.currentUser;
-    this.users = await firstValueFrom(this.userDataService.getUsers());
-    this.subscribeToMessages();
-    this.updateSortedEmojis();
+    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.subscribeToMessages();
+      this.updateSortedEmojis();
+    });
+
+    firstValueFrom(this.userDataService.getUsers()).then(users => {
+      this.users = users;
+    });
   }
 
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
+    this.currentUserSubscription?.unsubscribe();
   }
 
   private subscribeToMessages(): void {
@@ -121,8 +127,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       this.messages = loadedMessages;
-
-      // console.log("Messages: ", this.messages);
     });
   }
 
@@ -131,7 +135,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.isMessage && (changes['messageContext'] || changes['currentUser.id'])) {
+    if (this.isMessage && (changes['messageContext'])) {
       this.subscribeToMessages();
     }
 
@@ -159,7 +163,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
       this.messages = loadedMessages;
-      // console.log("Messages setReplyToMessage: ", this.messages);
       this.filteredMessages = [
         msg,
         ...this.messages.filter((m) => m.id !== msg.id
@@ -171,9 +174,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         ? this.channels.find((c) => c.id === msg.channelId)?.name ??
         'Unbekannter Kanal'
         : msg.name;
-
-      // console.log("Filtered Messages setReplyToMessage: ", this.filteredMessages);
-
     });
   }
 
@@ -253,7 +253,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     if (!wasAlreadyReacted && isReactedNow) {
       const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
-      this.userDataService.setCurrentUser(updatedUser); // neue Methode im Service
+      this.userDataService.setCurrentUser(updatedUser);
       this.currentUser = updatedUser;
     }
     this.saveMessage(updatedMsg);
@@ -305,11 +305,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  // formatTime = formatTime;
   formatDate = formatDate;
-  // formatDateSimple = formatDateSimple;
   isNewDay = isNewDay;
-  // formatRelativeTime = formatRelativeTime;
   formatRelativeTimeSimple = formatRelativeTimeSimple;
   getUserNames = (userIds: string[]) =>
     getUserNames(this.users, userIds, this.currentUser);

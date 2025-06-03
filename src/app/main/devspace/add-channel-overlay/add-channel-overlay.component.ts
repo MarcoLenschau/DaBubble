@@ -4,6 +4,7 @@ import { InputComponent } from '../../../../app/shared/input/input.component';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { UserDataService } from '../../../services/user-data.service';
 import { Channel } from '../../../models/channel.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-add-channel-overlay',
@@ -22,7 +23,7 @@ export class AddChannelOverlayComponent {
     if (!this.channelName.trim()) {
       return;
     }
-    const currentUser = this.userDataService.currentUser;
+    const currentUser = await firstValueFrom(this.userDataService.currentUser$);
     if (!currentUser) return;
 
     const newChannel = new Channel({

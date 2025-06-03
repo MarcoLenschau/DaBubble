@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { MessageDataService } from '../../../services/message-data.service';
 import { UserDataService } from '../../../services/user-data.service';
 import { EMOJIS, Emoji } from '../../../interfaces/emojis-interface';
@@ -49,7 +50,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
-  currentUser: User;
+  currentUser!: User;
 
   // User & Mention-Funktion
   allUsers: User[] = [];
@@ -59,12 +60,12 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   mentionQuery = '';
   mentionBoxPosition = { top: 0, left: 0 };
 
+  private currentUserSubscription?: Subscription;
+
   constructor(
     private messageDataService: MessageDataService,
     private userDataService: UserDataService
-  ) {
-    this.currentUser = this.userDataService.currentUser;
-  }
+  ) { }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -81,10 +82,14 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;
     });
+    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   ngOnDestroy(): void {
     document.removeEventListener('click', this.handleClickOutside);
+    this.currentUserSubscription?.unsubscribe();
   }
 
   onInput(event: Event): void {

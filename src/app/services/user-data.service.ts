@@ -1,8 +1,8 @@
 import { Injectable, Injector } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { User } from '../models/user.model';
-import { Observable, map } from 'rxjs';
-import { doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import { Observable, map, BehaviorSubject } from 'rxjs';
+import { deleteDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -10,8 +10,8 @@ import { AuthService } from './auth.service';
 })
 export class UserDataService {
   private readonly collectionPath = 'users';
-
-  currentUser: User = this.createGuestUser();
+  private currentUserSubject = new BehaviorSubject<User>(this.createGuestUser());
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private firebaseService: FirebaseService, private injector: Injector) { }
 
@@ -19,11 +19,21 @@ export class UserDataService {
     return this.injector.get(AuthService);
   }
 
+  public setCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+  }
+
+  public async initCurrentUser(): Promise<void> {
+    const userDoc = await this.getCurrentUserDoc();
+    const user = userDoc ? this.mapToUser(userDoc) : this.createGuestUser();
+    this.setCurrentUser(user); // setzt intern das Subject
+  }
+
   /**
-   * Get user data from all user
-   * 
-   * @returns {Observable<User[]>} Observable from array of all user in the database 
-   */
+ * Get user data from all user
+ * 
+ * @returns {Observable<User[]>} 
+ */
   getUsers(): Observable<User[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
       map((firestoreDocs) =>
@@ -33,7 +43,7 @@ export class UserDataService {
               id: docData['id'],
               displayName: docData['displayName'],
               email: docData['email'],
-              photoURL: docData['imgUrl'] ?? './assets/img/profilepic/frederik.png',
+              photoURL: docData['photoURL'] ?? './assets/img/profilepic/frederik.png',
               state: docData['state'] ?? false,
               recentEmojis: docData['recentEmojis'] ?? [],
               emojiUsage: docData['emojiUsage'] ?? {},
@@ -42,29 +52,6 @@ export class UserDataService {
       )
     );
   }
-
-  public async initCurrentUser(): Promise<void> {
-    const userDoc = await this.getCurrentUserDoc();
-    if (userDoc) {
-      this.currentUser = this.mapToUser(userDoc);
-    } else {
-      this.currentUser = this.createGuestUser();
-    }
-  }
-
-  /**
-   * Update user data for firebase
-   * 
-   * @param user - User object from database
-   */
-  // async updateUser(user: User): Promise<void> {
-  //   const docRef = this.firebaseService.getSingleDocRef(
-  //     this.collectionPath,
-  //     user.id
-  //   );
-  // This line has a fail what the profile picture updates
-  // await updateDoc(docRef, this.getCleanJson(user));
-  // }
 
   /**
    * Delete user from firebase
@@ -78,42 +65,6 @@ export class UserDataService {
     );
     await deleteDoc(docRef);
   }
-
-  /**
-   * Get clean JSON from a user
-   * 
-   * @param user - User object from database
-   * 
-   * @returns {} - Clean JSON with user data
-   */
-  private getCleanJson(user: any): any {
-    return {
-      id: user.id,
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL,
-      state: user.state,
-      recentEmojis: user.recentEmojis,
-      emojiUsage: user.emojiUsage,
-    };
-  }
-
-  /**
-   * Gets the current user data.
-   *
-   * @returns {User} The current user.
-   */
-  async getCurrentUser(): Promise<User | null> {
-    const userDoc = await this.getCurrentUserDoc();
-    if (!userDoc) return null;
-
-    return this.mapToUser(userDoc);
-  }
-
-  setCurrentUser(user: User): void {
-    this.currentUser = user;
-  }
-
 
   /**
   * Retrieves the current user's Firestore document based on the authenticated user's email.

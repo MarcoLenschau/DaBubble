@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FirebaseService } from '../../services/firebase.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
 import { ChannelDataService } from '../../services/channel-data.service';
 import { UserDataService } from '../../services/user-data.service';
@@ -38,8 +38,9 @@ export class DevspaceComponent {
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users: any;
-  currentUser: User;
+  currentUser!: User
 
+  private currentUserSubscription?: Subscription;
   constructor(
     private firebase: FirebaseService,
     private channelDataService: ChannelDataService, public auth: AuthService, private userDataService: UserDataService,) {
@@ -50,7 +51,15 @@ export class DevspaceComponent {
       }
     })
     this.channels$ = this.channelDataService.getChannels();
-    this.currentUser = this.userDataService.currentUser;
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+  ngOnDestroy() {
+    this.currentUserSubscription?.unsubscribe();
   }
 
   toggleChannels() {
