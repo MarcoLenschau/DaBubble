@@ -22,10 +22,9 @@ import { User } from '../../../models/user.model';
 import { Message } from '../../../models/message.model';
 import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
 import {
-  formatTime,
-  formatDate,
-  isNewDay,
-  formatRelativeTime,
+  formatDate, isNewDay, formatRelativeTimeSimple
+} from '../../../utils/date-utils';
+import {
   getEmojiByName,
   getEmojiByUnicode,
   addEmojiToTextarea,
@@ -303,10 +302,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  formatTime = formatTime;
+  // formatTime = formatTime;
   formatDate = formatDate;
+  // formatDateSimple = formatDateSimple;
   isNewDay = isNewDay;
-  formatRelativeTime = formatRelativeTime;
+  // formatRelativeTime = formatRelativeTime;
+  formatRelativeTimeSimple = formatRelativeTimeSimple;
   getUserNames = (userIds: string[]) =>
     getUserNames(this.users, userIds, this.currentUser);
   getUserById = (userId: string) => getUserById(this.users, userId);

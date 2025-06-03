@@ -40,25 +40,29 @@
           <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
             <div class="message-body-header" [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }">
               <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
-              <p>{{ formatTime(msg.timestamp) }}</p>
+              <p>{{ formatRelativeTimeSimple(msg.timestamp) }}</p>
             </div>
             <p class="thread-message-text" [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
               {{ msg.text }}
             </p>
+
+            <ng-container *ngIf="isMessage && msg.replies > 0">
+              <div class="replies-info-container">
+                <button class="show-replies-button"
+                  [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
+                  (click)="showData(msg); openThread(msg); setReplyToMessage(msg)">{{
+                  msg.replies }} {{ msg.replies
+                  === 1 ? 'Antwort'
+                  : 'Antworten'
+                  }}</button>
+
+                <span *ngIf="msg.lastReplyTimestamp" class="last-answer-time">Letzte Antwort {{
+                  formatRelativeTimeSimple(msg.lastReplyTimestamp)
+                  }}</span>
+              </div>
+            </ng-container>
+
           </div>
-
-
-          <!-- <ng-container> -->
-          <ng-container *ngIf="isMessage && msg.replies > 0">
-            <div class="thread-info-line">
-              <button (click)="showData(msg)">{{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten'
-                }}</button>
-              <span>•</span>
-              <span *ngIf="msg.lastReplyTimestamp">Letzte Antwort {{ formatRelativeTime(msg.lastReplyTimestamp)
-                }}</span>
-            </div>
-          </ng-container>
-
 
           <ng-container>
             <div class="emoji-row" [ngClass]="{
