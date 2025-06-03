@@ -118,8 +118,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   handleEditClick(msg: Message, index: number): void {
-  this.startEditing(msg);        // Beginne mit dem Bearbeiten
-  this.editMenuOpenIndex = null; // Schließe das Dropdown sofort
+  this.startEditing(msg);        
+  this.editMenuOpenIndex = null; 
 }
 
 
@@ -285,19 +285,16 @@ toggleEditMenu(index: number): void {
 }
 
 
-  // 🆕 Nachricht bearbeiten starten
   startEditing(msg: Message): void {
     this.editingMessageId = msg.id;
     this.editedText = msg.text;
   }
 
-  // 🆕 Bearbeitung abbrechen
   cancelEditing(): void {
     this.editingMessageId = null;
     this.editedText = '';
   }
 
-  // 🆕 Bearbeitung speichern
   saveEditedMessage(msg: Message): void {
     const trimmed = this.editedText.trim();
     if (!trimmed || trimmed === msg.text) {
