@@ -23,13 +23,13 @@ export function formatDate(timestamp: number): string {
 
     const sameYear = date.getFullYear() === today.getFullYear();
 
-    return formatDateGerman(date, !sameYear);
+    return formatDateGerman(date, sameYear);
 }
 
-function getDayDifference(date1: Date, date2: Date): number {
-    const d1 = toDateOnly(date1).getTime();
-    const d2 = toDateOnly(date2).getTime();
-    const diff = d1 - d2;
+function getDayDifference(today: Date, date: Date): number {
+    const t = toDateOnly(today).getTime();
+    const d = toDateOnly(date).getTime();
+    const diff = t - d;
     return diff / (1000 * 60 * 60 * 24);
 }
 
@@ -37,12 +37,19 @@ function toDateOnly(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-function formatDateGerman(date: Date, includeYear: boolean): string {
+function formatDateGerman(date: Date, isSameYear: boolean): string {
     return date.toLocaleDateString('de-DE', {
-        weekday: 'long',
-        day: includeYear ? 'numeric' : undefined,
-        month: 'long',
-        ...(includeYear ? { year: 'numeric' } : {}),
+
+        ...(isSameYear ? {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+        }
+            : {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }),
     });
 }
 
