@@ -105,19 +105,12 @@
                     [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
                     <div class="profile-icon">
                         <img class="profile-pic" [src]="user.photoURL" alt="user">
-                        <img class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
+                        <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
                     <p>{{user.displayName}}</p>
                     <span *ngIf="user.email === auth.user.email">(Du)</span>
                 </div>
-
-
             </div>
-
-
-
         </div>
     </div>
-
-
 </nav>
