@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Input } from '@angular/core';
 
 
@@ -11,7 +11,7 @@ import { Input } from '@angular/core';
 })
 export class ChannelDetailsOverlayComponent {
   @Input() channel: any;
-  
-  close: any;
+
+  @Output() close = new EventEmitter<void>;
 
 }
