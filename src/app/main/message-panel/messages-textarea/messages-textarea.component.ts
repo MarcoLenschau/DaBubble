@@ -45,7 +45,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
-
+  @ViewChild('chatDiv') chatDiv!: ElementRef;
+  
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
@@ -316,6 +317,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   private resetInputField(): void {
     this.textInput = '';
     this.editableDiv.nativeElement.innerHTML = '';
+  }
+
+  ngAfterViewInit() {
+    this.chatDiv.nativeElement.focus();
   }
 }
 
