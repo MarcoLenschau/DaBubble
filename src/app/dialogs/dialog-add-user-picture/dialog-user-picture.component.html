@@ -1,0 +1,25 @@
+<div class="background">
+    <div class="flex main">
+        <div class="avatar-container">
+            <img src="./assets/img/arrows/arrow-back.svg" alt="">
+            <h2>Wähle deinen Avatar</h2>
+        </div>
+
+        <div class="flex">
+            <img src="./assets/img/profile.svg" alt="profile-picture">
+            <span>{{username}}</span>
+        </div>
+
+        <div class="flex">
+            <div class="list-container">
+                <span>Aus der Liste wählen</span>
+            </div>
+            <div class="picture-list">
+                <img *ngFor="let picture of profilePicture" src="./assets/img/profilepic/{{picture}}.png" alt="{{picture}}">
+            </div>
+        </div>
+        <div class="button-container">
+            <app-button [text]="'Weiter'"></app-button>
+        </div>
+    </div>
+</div>

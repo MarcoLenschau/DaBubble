@@ -1,0 +1,56 @@
+@import "../../shared/styles/color.scss";
+@import "../../shared/styles/mix-in.scss";
+@import "../../shared/styles/flexbox.scss";
+
+div {
+    @include dFlex($jc: none, $ai: none);
+}
+
+.picture-list {
+    @include dFlex($jc: none, $ai: none, $g: 8px);
+    >img {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+}
+
+.flex {
+    @include dFlex($f: column, $g: 28px);
+}
+
+.background {
+    @include dFlex($ai: none);
+}
+
+.main {
+    width: 355px;
+    padding: 50px;
+    border-radius: 24px;
+    background-color: $white;
+}
+
+.avatar-container {
+    @include dFlex();
+    position: relative;
+    top: -50px;
+    width: 100%;
+    >img {
+        height: 25px;
+        position: relative;
+        left: -20px;
+    }
+}
+
+.list-container {
+    @include dFlex($jc: flex-start, $ai: none);
+    width: 100%;
+}
+
+.button-container {
+    @include dFlex($jc: flex-end, $ai: none);
+    position: relative;
+    bottom: -30px;
+    right: -30px;
+    width: 100%;
+}
