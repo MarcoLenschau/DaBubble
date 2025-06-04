@@ -1,23 +1,2 @@
-<div  class="main-container">
-    <div  class="main-container">
-        <div class="back-button-container">
-            <img (click)="router.switchRoute('/')" src="assets/img/arrow_back.svg" alt="back">
-            <h2 class="color-blue">Konto erstellen</h2>
-        </div>
-        <span>Mit deinem Namen und deiner E-Mail Adresse hast du dein neues DABubble-Konto.</span>
-        <app-input (valueChange)="setValue($event, 'name')" [placeholder]="'Name und Nachnahme'" [img]="'name.svg'"></app-input>
-        <app-input (valueChange)="setValue($event, 'email')" [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'"></app-input>
-        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'"></app-input>
-        <div class="checkbox-container">
-            <div id="checkbox" (click)="acceptPrivacy()" class="checkbox"></div>
-            <div>
-                <span>Ich stimme der </span>
-                <a (click)="router.switchRoute('/privacy')">Datenschutzerklärung</a>
-                <span> zu.</span>
-            </div>
-        </div>
-        <div class="button-container">
-            <button (click)="registerUser()">Weiter</button>
-        </div>
-    </div>
-</div>
+<app-register *ngIf="!dataReady" (userData)="loadUserData($event)" (dataReady)="loadData($event)"></app-register>
+<app-user-picture *ngIf="dataReady" (dataReady)="loadData($event)" [user]="user"></app-user-picture>

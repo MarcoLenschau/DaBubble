@@ -39,6 +39,7 @@ export class AuthService {
   async login(email: string, password: string): Promise<UserCredential | null> {
     try {
       const result = await signInWithEmailAndPassword(this.auth, email, password);
+      console.log(result)
       this.saveCurrentUser(result);
       return result;
     }
@@ -51,7 +52,7 @@ export class AuthService {
   logout() {
     this.users.forEach(async(user) => {
       if (user.email === this.user.email) {
-        this.firebase.updateUserState(user);
+        await this.firebase.updateUserState(user, false);
         this.auth.signOut()
           .then(() => {
             this.router.switchRoute('/');
@@ -109,10 +110,12 @@ export class AuthService {
   isUserExists(result: any, userCreated: boolean): void {
     this.users.forEach((user) => {
       if (user.email === result.user.email) {
+        this.firebase.updateUserState(user, true);
         userCreated = true;
       }
     });
     if (!userCreated) {
+      result.user.state = true;
       this.firebase.addUser(result.user);
     }
   }
@@ -128,6 +131,7 @@ export class AuthService {
       email: user.email,
       photoURL: user.photoURL,
       displayName: name,
+      state: true,
       stsTokenManager: user.stsTokenManager ?? null,
     };
   }

@@ -1,43 +1,23 @@
-import { Component, Input } from '@angular/core';
-import { InputComponent } from '../shared/input/input.component';
-import { RouterService } from '../services/router.service';
-import { AuthService } from '../services/auth.service';
-import { FormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
+import { RegisterComponent } from "./register/register.component";
+import { UserPictureComponent } from "./user-picture/user-picture.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sign-up',
-  imports: [InputComponent, FormsModule],
+  imports: [CommonModule, RegisterComponent, UserPictureComponent],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss'
 })
 export class SignUpComponent {
-  user = {
-    displayName: '',
-    email: '',
-    password: ''
+  dataReady = false;
+  user: any = {};
+
+  loadData(data: boolean) {
+    this.dataReady = data;
   }
 
-  constructor(public router: RouterService, private auth: AuthService) {}
-
-  acceptPrivacy() {
-    document.getElementById("checkbox")?.classList.toggle("checked");
-  }
-
-  registerUser() {
-    this.auth.register(this.user.displayName, this.user.email, this.user.password).then(user => {
-      if (user) {
-        this.router.switchRoute("message");
-      } 
-    })  
-  }
-
-  setValue(eventValue: string, type: string){
-    if (type === 'email') {
-      this.user.email = eventValue;  
-    } else if (type === 'password') {
-      this.user.password = eventValue;  
-    } else if (type === 'name') {
-      this.user.displayName = eventValue;  
-    }
+  loadUserData(user: any) {
+    this.user = user;
   }
 }

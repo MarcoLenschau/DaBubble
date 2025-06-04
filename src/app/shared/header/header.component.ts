@@ -6,6 +6,8 @@ import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/di
 import {MatDialog} from '@angular/material/dialog'
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
+import { FirebaseService } from '../../services/firebase.service';
+import { onSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-header',
@@ -21,7 +23,7 @@ export class HeaderComponent {
 
   users: Subscription
   
-  constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService) {
+  constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService, private firebase: FirebaseService) {
     this.users = this.auth.user$.subscribe(user => {
       this.user = user;
     });

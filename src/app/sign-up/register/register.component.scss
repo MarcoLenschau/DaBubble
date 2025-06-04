@@ -1,0 +1,57 @@
+@import "../../shared/styles/mix-in.scss";
+@import "../../shared/styles/color.scss";
+
+.main-container {
+    >span {
+        width: 400px;
+    }
+}
+
+.checkbox-container {
+    @include dFlex($jc: none, $g: 6px);
+    >.checkbox {
+        background-image: url("/assets/img/checkbox/checkbox.svg");
+        background-size: cover;
+        background-position: center;
+        height: 20px;
+        width: 20px;
+        &:hover {
+            background-image: url("/assets/img/checkbox/checkbox-hover.svg");
+        }
+    }
+
+    .checked {
+        background-image: url("/assets/img/checkbox/checkbox-checked.svg");
+        &:hover {
+            background-image: url("/assets/img/checkbox/checkbox-checked-hover.svg");
+        }
+    }
+}
+
+.button-container {
+    @include dFlex($jc: flex-end, $ai: none);
+    width: 100%;
+    >button {
+        background-color: $blue;
+        color: $white;
+        width: 75px;
+        height: 45px;
+        border: 0;
+        border-radius: 24px;
+        cursor: pointer;
+    }
+}
+
+.back-button-container {
+  @include dFlex($jc: flex-start, $g: 48px);
+  width: 400px;
+  >img {
+    height: 40px;
+    margin-left: 12px;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+        border-radius: 24px;
+    }
+  }
+}

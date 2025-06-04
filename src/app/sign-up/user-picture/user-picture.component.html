@@ -7,7 +7,7 @@
 
         <div class="flex">
             <img src="./assets/img/profile.svg" alt="profile-picture">
-            <span>{{username}}</span>
+            <span>{{user.displayName}}</span>
         </div>
 
         <div class="flex">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="button-container">
-            <app-button [text]="'Weiter'"></app-button>
+            <app-button [text]="'Weiter'" (clicked)="registerUser();"></app-button>
         </div>
     </div>
 </div>
