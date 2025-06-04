@@ -1,9 +1,30 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
 
+
+:host {
+  display: block;
+  @include transition();
+}
+
+:host(.visible) {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  width: 366px;
+}
+
+:host(.hidden) {
+  opacity: 0;
+  transform: translateX(-300px);
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+}
+
 nav {
   background-color: #ffffff;
-  width: 366px;
+  // width: 366px;
   height: 940px;
   // margin: 16px;
   border-radius: 30px;

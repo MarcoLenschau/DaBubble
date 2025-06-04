@@ -11,3 +11,44 @@ app-message-window {
   flex: 1;
   min-width: 0;
 }
+
+// .container {
+//   display: flex;
+//   width: 100vw;
+//   height: 100vh;
+//   overflow: hidden;
+
+//   .devspace,
+//   .message-window,
+//   .thread-window {
+//     transition: all 0.3s ease-in-out;
+//     min-width: 0;
+//     overflow: hidden;
+//   }
+
+//   .devspace {
+//     width: 300px;
+//     flex-shrink: 0;
+
+//     &.hidden {
+//       width: 0;
+//       opacity: 0;
+//       pointer-events: none;
+//     }
+//   }
+
+//   .message-window {
+//     flex: 1;
+//   }
+
+//   .thread-window {
+//     width: 320px;
+//     flex-shrink: 0;
+
+//     &.hidden {
+//       width: 0;
+//       opacity: 0;
+//       pointer-events: none;
+//     }
+//   }
+// }
