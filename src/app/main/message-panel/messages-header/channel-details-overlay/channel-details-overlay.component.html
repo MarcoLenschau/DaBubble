@@ -11,20 +11,32 @@
     <div class="overlay-section">
       <div class="section-header">
         <span>Channel-Name</span>
-        <button class="edit-btn">Bearbeiten</button>
+        <button class="edit-btn" *ngIf="!editName" (click)="startEditName()">Bearbeiten</button>
       </div>
       <div class="section-content">
+        <ng-container *ngIf="!editName; else editNameTpl">
         # {{ channel?.name }}
+        </ng-container>
+        <ng-template #editNameTpl>
+            <input type="text" [(ngModel)]="newName">
+            <button (click)="saveName()">Speichern</button>
+        </ng-template>
       </div>
     </div>
 
     <div class="overlay-section">
       <div class="section-header">
         <span>Beschreibung</span>
-        <button class="edit-btn">Bearbeiten</button>
+        <button class="edit-btn" *ngIf="!editDescription" (click)="startsEditDescription()">Bearbeiten</button>
       </div>
       <div class="section-content">
+        <ng-container *ngIf="!editDescription; else editDescriptionTpl">
         {{ channel?.description }}
+        </ng-container>
+        <ng-template #editDescriptionTpl>
+            <input type="text" [(ngModel)]="newDescription">
+            <button (click)="saveDescription()">Speichern</button>
+        </ng-template>
         <div class="section-underline"></div>
       </div>
       <div class="section-sub">
