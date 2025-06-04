@@ -8,23 +8,28 @@ import { User } from '../../../models/user.model';
 import { UserDataService } from '../../../services/user-data.service';
 import { ChannelDataService } from '../../../services/channel-data.service';
 import { Channel } from '../../../models/channel.model';
+import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
 import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
 import { Observable, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [NgIf, CommonModule, NgFor, FormsModule],
+  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelDetailsOverlayComponent],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
-  @Input() activeChannel: any = {};
+  @Input() activeChannel: any = {}; 
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
+
+  arrowHover = false;
+  showChannelOverlay = false;
 
   private currentUserSubscription?: Subscription;
 
@@ -169,5 +174,13 @@ export class MessagesHeaderComponent {
   loadMember() {
     const members = JSON.parse(this.activeChannel.members);
     return members.photoURL;
+  }
+
+  openChannelOverlay() {
+    this.showChannelOverlay = true;
+  }
+
+  closeChannelOverlay(){
+    this.showChannelOverlay = false;
   }
 }
