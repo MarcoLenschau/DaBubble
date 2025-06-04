@@ -23,7 +23,7 @@ export function formatDate(timestamp: number): string {
 
     const sameYear = date.getFullYear() === today.getFullYear();
 
-    return formatDateGerman(date, sameYear);
+    return formatDateWithWeekdayOrYear(date, sameYear);
 }
 
 function getDayDifference(today: Date, date: Date): number {
@@ -37,7 +37,7 @@ function toDateOnly(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-function formatDateGerman(date: Date, isSameYear: boolean): string {
+function formatDateWithWeekdayOrYear(date: Date, isSameYear: boolean): string {
     return date.toLocaleDateString('de-DE', {
 
         ...(isSameYear ? {
