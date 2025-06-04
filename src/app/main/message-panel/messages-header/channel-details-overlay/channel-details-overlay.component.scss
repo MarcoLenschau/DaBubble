@@ -1,0 +1,136 @@
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  font-family: 'Nunito';
+}
+
+.overlay-card {
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 4px 24px rgba(80,80,200,0.10);
+  padding: 40px 36px 32px 36px;
+  min-width: 540px;
+  max-width: 95vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.overlay-header {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .channel-hash {
+    color: #5a5be7;
+    font-size: 2.2rem;
+  }
+  .channel-title {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .close-btn {
+    margin-left: auto;
+    background: #f5f6fa;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.overlay-section {
+  background: #fff;
+  border: 1.5px solid #bfc6e0;
+  border-radius: 20px;
+  padding: 24px 28px 18px 28px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+
+    .edit-btn {
+      background: none;
+      border: none;
+      color: #5a5be7;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0;
+    }
+  }
+
+  .section-content {
+    font-size: 1.1rem;
+    color: #222;
+    margin-bottom: 8px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-underline {
+    border-bottom: 1.5px solid #bfc6e0;
+    margin-top: 12px;
+    width: 100%;
+  }
+
+  .section-sub {
+    margin-top: 12px;
+    font-size: 1rem;
+    color: #222;
+    font-weight: 700;
+
+    .creator-link {
+      color: #5a5be7;
+      font-weight: 500;
+      text-decoration: none;
+      font-size: 1.1rem;
+      margin-top: 4px;
+      display: inline-block;
+    }
+  }
+}
+
+.leave-btn {
+  margin-top: 24px;
+  align-self: flex-end;
+  background: #5a5be7;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover {
+    background: #3d3ee6;
+  }
+}
