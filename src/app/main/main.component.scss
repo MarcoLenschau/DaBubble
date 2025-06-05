@@ -3,7 +3,7 @@
 
 .main-component {
   box-sizing: border-box;
-  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+  @include dFlex($jc: flex-start, $ai: center, $g: 0, $f: row);
   padding: 20px 28px; //margin -8px miteingerechnet
 }
 
@@ -12,3 +12,9 @@
   // height: 40px;
   width: 100%;
 }
+
+.spacer {
+  width: 20px; 
+  flex-shrink: 0;
+}
+

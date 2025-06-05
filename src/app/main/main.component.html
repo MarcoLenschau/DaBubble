@@ -10,10 +10,14 @@
     (closeThreadWindow)="onThreadClose()"
     [ngClass]="{ visible: showDevSpaceWindow, hidden: !showDevSpaceWindow }">></app-devspace>
 
+  <div class="spacer" *ngIf="showDevSpaceWindow && showMessageWindow"></div>
+
   <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
     (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
     (contextSelected)="onContextSelected($event)"
     [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }">></app-message-window>
+
+  <div class="spacer" *ngIf="showMessageWindow && showThreadWindow"></div>
 
   <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
     [ngClass]="{ visible: showThreadWindow, hidden: !showThreadWindow }"
