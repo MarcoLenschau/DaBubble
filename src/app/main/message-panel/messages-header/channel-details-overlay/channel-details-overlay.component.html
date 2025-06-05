@@ -1,40 +1,66 @@
 <div class="overlay-backdrop">
-  <div class="overlay-card">
-    <div class="overlay-header">
-      <span class="channel-hash">#</span>
-      <span class="channel-title">{{ channel?.name }}</span>
-      <button class="close-btn" (click)="close.emit()">
-        <img src="assets/img/close/close.svg" alt="Schließen" />
-      </button>
-    </div>
-
-    <div class="overlay-section">
-      <div class="section-header">
-        <span>Channel-Name</span>
-        <button class="edit-btn">Bearbeiten</button>
-      </div>
-      <div class="section-content">
-        # {{ channel?.name }}
-      </div>
-    </div>
-
-    <div class="overlay-section">
-      <div class="section-header">
-        <span>Beschreibung</span>
-        <button class="edit-btn">Bearbeiten</button>
-      </div>
-      <div class="section-content">
-        {{ channel?.description }}
-        <div class="section-underline"></div>
-      </div>
-      <div class="section-sub">
-        <span>Erstellt von</span>
-        <div class="creator">
-          <a href="#" class="creator-link">{{ channel?.creatorName }}</a>
+    <div class="overlay-card">
+        <div class="overlay-header">
+            <img src="/assets/img/channel/tag.svg" alt="tag">
+            <span class="channel-title">{{ channel?.name }}</span>
+            <button class="close-btn" (click)="close.emit()">
+                <img src="assets/img/close/close.svg" alt="Schließen" />
+            </button>
         </div>
-      </div>
-    </div>
 
-    <button class="leave-btn">Channel verlassen</button>
-  </div>
+        <div class="overlay-section" [ngClass]="{ 'no-outline' : editName}">
+            <div class="section-header">
+                <span>Channel-Name</span>
+                <button 
+                    class="edit-btn" 
+                    *ngIf="!editName" 
+                    (click)="startEditName()"
+                >Bearbeiten</button>
+                <button class="edit-btn" 
+                    *ngIf="editName" 
+                    (click)="saveName()"
+                >Speichern</button>
+            </div>
+            <div class="section-content">
+                <ng-container *ngIf="!editName; else editNameTpl">
+                    <img src="/assets/img/devspace/tag-default.png" alt="tag"> {{ channel?.name }}
+                </ng-container>
+                <ng-template #editNameTpl>
+                    <div class="input-with-icon">
+                        <img src="/assets/img/devspace/tag-default.png" alt="tag" class="input-icon">
+                        <input type="text" [(ngModel)]="newName">
+                    </div>
+                    
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="overlay-section"  [ngClass]="{ 'no-outline' : editDescription}">
+            <div class="section-header">
+                <span>Beschreibung</span>
+                <button class="edit-btn" *ngIf="!editDescription" (click)="startsEditDescription()">Bearbeiten</button>
+                <button class="edit-btn" *ngIf="editDescription" (click)="saveDescription()">Speichern</button>
+            </div>
+            <div class="section-content">
+                <ng-container *ngIf="!editDescription; else editDescriptionTpl">
+                    {{ channel?.description }}
+                </ng-container>
+                <ng-template #editDescriptionTpl>
+                    <div class="input-no-icon">
+                        <input type="text" [(ngModel)]="newDescription">
+                    </div>
+                </ng-template>
+            </div>
+
+            <div class="section-underline"></div>
+            <div class="section-sub">
+                <span>Erstellt von</span>
+                <div class="creator">
+                    <a href="#" class="creator-link">{{ channel?.creatorName }}</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="leave-btn">Channel verlassen</button>
+    </div>
 </div>

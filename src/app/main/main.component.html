@@ -1,38 +1,25 @@
-<ng-container *ngIf="viewMode === 'desktop'">
-  <div class="main-component">
-    <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
-      (closeThreadWindow)="onThreadClose()"></app-devspace>
-    <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
-      (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
-      (contextSelected)="onContextSelected($event)"></app-message-window>
-    <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
-      [ngClass]="{ visible: showThread, hidden: !showThread }"
-      (showThreadClosing)="onThreadClose()"></app-thread-window>
-  </div>
-</ng-container>
+<div class="mobile-header" *ngIf="viewMode === 'mobile'">
+  <br><button (click)="openDevSpace()">DevSpace öffnen</button><br><br>
+  <button (click)="closeDevSpace()">Close button zum Testen</button>
+</div>
+<div class="main-component">
 
-<ng-container *ngIf="viewMode === 'tablet'">
-  <div class="main-component">
-    <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
-      [ngClass]="{ visible: !showThread, hidden: showThread }"></app-devspace>
-    <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
-      (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
-      (contextSelected)="onContextSelected($event)"></app-message-window>
-    <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
-      [ngClass]="{ visible: showThread, hidden: !showThread }"
-      (showThreadClosing)="onThreadClose()"></app-thread-window>
-  </div>
-</ng-container>
 
-<ng-container *ngIf="viewMode === 'mobile'">
-  <div class="main-component">
-    <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
-      (closeThreadWindow)="onThreadClose()"></app-devspace>
-    <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
-      (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
-      (contextSelected)="onContextSelected($event)"></app-message-window>
-    <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
-      [ngClass]="{ visible: showThread, hidden: !showThread }"
-      (showThreadClosing)="onThreadClose()"></app-thread-window>
-  </div>
-</ng-container>
+
+  <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
+    (closeThreadWindow)="onThreadClose()"
+    [ngClass]="{ visible: showDevSpaceWindow, hidden: !showDevSpaceWindow }">></app-devspace>
+
+  <div class="spacer" *ngIf="showDevSpaceWindow && showMessageWindow"></div>
+
+  <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
+    (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
+    (contextSelected)="onContextSelected($event)"
+    [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }">></app-message-window>
+
+  <div class="spacer" *ngIf="showMessageWindow && showThreadWindow"></div>
+
+  <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
+    [ngClass]="{ visible: showThreadWindow, hidden: !showThreadWindow }"
+    (showThreadClosing)="onThreadClose()"></app-thread-window>
+</div>

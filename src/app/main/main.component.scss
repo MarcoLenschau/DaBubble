@@ -3,52 +3,18 @@
 
 .main-component {
   box-sizing: border-box;
-  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+  @include dFlex($jc: flex-start, $ai: center, $g: 0, $f: row);
   padding: 20px 28px; //margin -8px miteingerechnet
 }
 
-app-message-window {
-  flex: 1;
-  min-width: 0;
+.mobile-header {
+  height: 80px; // zum Testen
+  // height: 40px;
+  width: 100%;
 }
 
-// .container {
-//   display: flex;
-//   width: 100vw;
-//   height: 100vh;
-//   overflow: hidden;
+.spacer {
+  width: 20px; 
+  flex-shrink: 0;
+}
 
-//   .devspace,
-//   .message-window,
-//   .thread-window {
-//     transition: all 0.3s ease-in-out;
-//     min-width: 0;
-//     overflow: hidden;
-//   }
-
-//   .devspace {
-//     width: 300px;
-//     flex-shrink: 0;
-
-//     &.hidden {
-//       width: 0;
-//       opacity: 0;
-//       pointer-events: none;
-//     }
-//   }
-
-//   .message-window {
-//     flex: 1;
-//   }
-
-//   .thread-window {
-//     width: 320px;
-//     flex-shrink: 0;
-
-//     &.hidden {
-//       width: 0;
-//       opacity: 0;
-//       pointer-events: none;
-//     }
-//   }
-// }

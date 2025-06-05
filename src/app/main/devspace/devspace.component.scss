@@ -1,7 +1,6 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
 
-
 :host {
   display: block;
   @include transition();
@@ -192,7 +191,7 @@ nav {
   height: 445px;
   width: 315px;
   position: absolute;
-  top: 420px;
+  top: 510px;
 }
 
 .active {

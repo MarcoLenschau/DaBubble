@@ -61,4 +61,20 @@ export class ChannelDataService {
       createdBy: channel.createdBy,
     };
   }
+
+  async updateChannelName(channelId: string, newName: string): Promise<void> {
+    if (!channelId) return;
+    const docRef = this.firebaseService.getSingleDocRef(this.collectionPath, channelId);
+    await updateDoc(docRef, { name: newName });
+  }
+
+  async updateChannelDescription(channelId: string, newDescription: string): Promise<void> {
+    if (!channelId) return;
+    const docRef = this.firebaseService.getSingleDocRef(this.collectionPath, channelId);
+    await updateDoc(docRef, { description: newDescription });
+  }
 }
+
+
+
+

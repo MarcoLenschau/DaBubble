@@ -33,7 +33,7 @@ export class DevspaceComponent {
   showAddChannel = false;
 
   isWorkspaceOpen: boolean = true;
-  isWorkspaceHovered: boolean = true;
+  isWorkspaceHovered: boolean = false;
 
   channels$!: Observable<Channel[]>;
   activeUser: string | null = null;
