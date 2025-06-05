@@ -25,7 +25,8 @@ import { ViewMode } from '../core/enums/view-mode.enum';
 })
 export class MainComponent implements OnInit {
   viewMode: ViewMode = ViewMode.Desktop;
-
+  showDevSpace = true;
+  showMessage = true;
   showThread = false;
   activeChannel: string | null = null;
   starterMessage?: Message;
@@ -43,19 +44,48 @@ export class MainComponent implements OnInit {
     })
   }
 
+  get showDevSpaceWindow(): boolean {
+    return this.viewMode === ViewMode.Desktop
+      || (this.viewMode === ViewMode.Tablet && !this.showThread)
+      || (this.viewMode === ViewMode.Mobile && this.showDevSpace);
+  }
+
+  get showMessageWindow(): boolean {
+    return this.viewMode === ViewMode.Desktop
+      || this.viewMode === ViewMode.Tablet
+      || (this.viewMode === ViewMode.Mobile && this.showMessage);
+  }
+
+  get showThreadWindow(): boolean {
+    return this.showThread;
+  }
+
+
   ngOnInit(): void {
     const mobileQuery = `(max-width: ${this.mobileMaxWidth}px)`;
-    const tabletQuery = `(max-width: ${this.tabletMaxWidth}px)`;
+    const tabletQuery = `(min-width: ${this.mobileMaxWidth + 1}px) and (max-width: ${this.tabletMaxWidth}px)`;
+
 
     this.breakpointObserver
       .observe([mobileQuery, tabletQuery])
       .subscribe(result => {
         if (result.breakpoints[mobileQuery]) {
           this.viewMode = ViewMode.Mobile;
+          this.showMessage = false;
+          this.showDevSpace = true;
+          this.showThread = false;
         } else if (result.breakpoints[tabletQuery]) {
           this.viewMode = ViewMode.Tablet;
+          this.showMessage = true;
+          if (this.showThread) {
+            this.showDevSpace = false;
+          } else {
+            this.showDevSpace = true;
+          }
         } else {
           this.viewMode = ViewMode.Desktop;
+          this.showMessage = true;
+          this.showDevSpace = true;
         }
       });
   }
@@ -64,13 +94,37 @@ export class MainComponent implements OnInit {
     this.starterMessage = { ...event.starterMessage };
     this.userId = event.userId;
     this.showThread = true;
+    if (this.viewMode === 'mobile') {
+      this.showMessage = false;
+      this.showDevSpace = false;
+    }
   }
 
   onThreadClose() {
     this.showThread = false;
     console.log("Close Output has reached MainComponent");
+    if (this.viewMode === 'mobile') {
+      this.showMessage = true;
+    }
+  }
+
+  openDevSpace(): void {
+    if (this.viewMode === 'mobile') {
+      this.showDevSpace = true;
+      this.showMessage = false;
+      this.showThread = false;
+    }
+  }
+
+  closeDevSpace(): void {
+    if (this.viewMode === 'mobile') {
+      this.showDevSpace = false;
+      this.showMessage = true;
+      this.showThread = false;
+    }
 
   }
+
 
   onChannelSelected(channel: string) {
     this.channels.forEach((channelFromBackend: any) => {
@@ -83,6 +137,11 @@ export class MainComponent implements OnInit {
   onContextSelected(context: MessageContext): void {
     this.messageContext = context;
     console.log("MainComponent: Logging MessageContext: ", context);
+    if (this.viewMode === 'mobile') {
+      this.showMessage = true;
+      this.showDevSpace = false;
+      this.showThread = false;
+    }
 
   }
 }

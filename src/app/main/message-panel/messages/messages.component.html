@@ -1,4 +1,4 @@
-<div class="thread-messages scrollable" #chatDiv tabindex="0">
+<div class="thread-messages scrollable">
   <ng-container *ngIf="(isThread ? filteredMessages : messages).length > 0; else noMessages">
     <ng-container *ngFor="let msg of isThread ? filteredMessages : messages; let i = index; trackBy: trackByMessageId">
 
