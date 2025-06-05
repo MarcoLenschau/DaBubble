@@ -46,7 +46,7 @@
             </div>
 
             <div *ngIf="isChannelOpen">
-                <div class="devspace-channel-content" (mouseenter)="hoveredChannel = 'Entwicklerteam'"
+                <!-- <div class="devspace-channel-content" (mouseenter)="hoveredChannel = 'Entwicklerteam'"
                     (mouseleave)="hoveredChannel = null" (click)="selectChannel('Entwicklerteam')" [ngClass]="{
                         'hovered': hoveredChannel === 'Entwicklerteam',
                         'active': activeChannel === 'Entwicklerteam'
@@ -59,7 +59,7 @@
                             : './assets/img/devspace/tag-default.png'
                         " alt="#">
                     <span>Entwicklerteam</span>
-                </div>
+                </div> -->
 
                 <ng-container *ngFor="let channel of channels$ | async">
                     <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
