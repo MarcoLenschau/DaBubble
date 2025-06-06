@@ -72,8 +72,12 @@ export class MainComponent implements OnInit {
         if (result.breakpoints[mobileQuery]) {
           this.viewMode = ViewMode.Mobile;
           this.showMessage = false;
-          this.showDevSpace = true;
-          this.showThread = false;
+          if (this.showThread) {
+            this.showDevSpace = false;
+          } else {
+            this.showDevSpace = true;
+          }
+          // this.showThread = false;
         } else if (result.breakpoints[tabletQuery]) {
           this.viewMode = ViewMode.Tablet;
           this.showMessage = true;

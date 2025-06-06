@@ -1,4 +1,6 @@
 @import "../styles/mix-in.scss";
+@import "../styles/mix-in.scss";
+@import "../styles/breakpoint.scss";
 
 header {
     @include dFlex($jc: space-between);
@@ -22,4 +24,10 @@ a {
 .user-image {
     height: 64px;
     border-radius: 100%;
+}
+
+@media (max-width: $mobile) {
+    header {
+        display: none; // zum Testen
+    }
 }

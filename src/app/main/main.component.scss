@@ -1,5 +1,6 @@
 @import "./../shared/styles/mix-in.scss";
 @import "./../shared/styles/color.scss";
+@import "./../shared/styles/breakpoint.scss";
 
 .main-component {
   box-sizing: border-box;
@@ -8,9 +9,15 @@
 }
 
 .mobile-header {
-  height: 80px; // zum Testen
-  // height: 40px;
+  height: 80px;
   width: 100%;
+  padding: 0 24px;
+  @include dFlex($jc: space-between, $ai: center, $g: 0, $f: row); // zum Testen
+  
+  button {
+    cursor: pointer;
+  }
+  
 }
 
 .spacer {
@@ -18,3 +25,9 @@
   flex-shrink: 0;
 }
 
+@media (max-width: $mobile) {
+  .main-component {
+      height: calc(100vh - 80px);
+      padding: 0;
+  }
+}

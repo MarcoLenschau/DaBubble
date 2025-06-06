@@ -1,5 +1,6 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
+@import "./../../shared/styles/breakpoint.scss";
 
 :host {
   display: block;
@@ -198,3 +199,22 @@ nav {
   top: 110px;
   left: 20px;
 }
+
+
+// Responsiveness
+@media (max-width: $mobile) {
+
+  :host(.visible) {
+    flex: 1;
+  }
+  
+  :host(.hidden) {
+    flex: 0;
+  }
+
+  nav {
+    height: calc(100vh - 80px);
+    border-radius: 0;
+  }
+}
+

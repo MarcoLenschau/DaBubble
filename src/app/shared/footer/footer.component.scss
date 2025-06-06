@@ -1,8 +1,15 @@
 @import "../styles/mix-in.scss";
 @import "../styles/color.scss";
+@import "../styles/breakpoint.scss";
 
 footer {
     @include dFlex($g: 48px);
     height: 100px;
     background-color: $grey;
 }
+
+@media (max-width: $mobile) {
+    footer {
+         display: none; 
+       }
+  }

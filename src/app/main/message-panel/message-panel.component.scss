@@ -1,5 +1,6 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
+@import "./../../shared/styles/breakpoint.scss";
 
 * {
   margin: 0;
@@ -27,4 +28,15 @@
 .message-textarea {
   width: 100%;
   padding: 24px 40px;
+}
+
+@media (max-width: $mobile) {
+  .message-container, .thread-container {
+    height: calc(100vh - 80px);
+    border-radius: 0;
+  }
+
+  .thread-container {
+    width: 100%;
+  }
 }

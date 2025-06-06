@@ -1,5 +1,6 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
+@import "./../../shared/styles/breakpoint.scss";
 
 :host {
   display: block;
@@ -20,3 +21,16 @@
   width: 0;
   overflow: hidden;
 }
+
+
+// Responsiveness
+@media (max-width: $mobile) {
+  :host(.visible) {
+    flex: 1;
+  }
+
+:host(.hidden) {
+     flex: 0;
+   }
+}
+
