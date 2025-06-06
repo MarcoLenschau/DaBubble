@@ -1,5 +1,6 @@
 @import "./../../../shared/styles/mix-in.scss";
 @import "./../../../shared/styles/color.scss";
+@import "./../../../shared/styles/breakpoint.scss";
 
 * {
   margin: 0;
@@ -325,9 +326,9 @@
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
       @include transition();
 
-      &.overflowing-right {
-        transform: translateX(-35%);
-      }
+      // &.overflowing-right {
+      //   transform: translateX(-35%);
+      // }
 
       .tooltip-emoji {
         display: inline-flex; // TODO block oder flex?
@@ -469,4 +470,13 @@
 
 .save-btn:hover {
   background-color: #3d4be0;
+}
+
+
+@media (max-width: $mobile) {
+
+  .thread-message-text,
+  .thread-message-text.own-message-text {
+    font-size: 17px;
+  }
 }

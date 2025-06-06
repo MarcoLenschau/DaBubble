@@ -16,18 +16,14 @@
             'hover-thread-message not-own-message': !isOwnMessage(msg),
             'hover-own-message': isOwnMessage(msg),
             'hover-message-wrapper': hoveredIndex === i
-          }"
-        (mouseenter)="setHoverState(i)"
-        (mouseleave)="setHoverState(null)"
-        (click)="closeEmojiRow($event)">
+          }" (mouseenter)="setHoverState(i)" (mouseleave)="setHoverState(null)" (click)="closeEmojiRow($event)">
 
         <div class="message-flex-box" [ngClass]="{
               'thread-message': !isOwnMessage(msg),
               'own-message': isOwnMessage(msg)
             }">
 
-          <img class="message-img"
-            [src]="getUserById(msg.userId)?.photoURL ?? './assets/img/profilepic/frederik.png'"
+          <img class="message-img" [src]="getUserById(msg.userId)?.photoURL ?? './assets/img/profilepic/frederik.png'"
             alt="Profilbild {{ msg.name }}" />
 
           <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
@@ -43,29 +39,25 @@
             </p>
 
             <div *ngIf="editingMessageId === msg.id" class="edit-container">
-  <div class="edit-box">
-    <textarea [(ngModel)]="editedText"
-              class="edit-textarea"
-              rows="2"
-              placeholder="Nachricht bearbeiten..."
-              (keydown.enter)="saveEditedMessage(msg)"
-              (keydown.escape)="cancelEditing()"></textarea>
+              <div class="edit-box">
+                <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
+                  (keydown.enter)="saveEditedMessage(msg)" (keydown.escape)="cancelEditing()"></textarea>
 
-    <div class="edit-actions">
-      <span class="emoji-icon">😊</span>
-      <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
-      <button class="save-btn" (click)="saveEditedMessage(msg)">Speichern</button>
-    </div>
-  </div>
-</div>
+                <div class="edit-actions">
+                  <span class="emoji-icon">😊</span>
+                  <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
+                  <button class="save-btn" (click)="saveEditedMessage(msg)">Speichern</button>
+                </div>
+              </div>
+            </div>
 
 
             <!-- Antworten-Anzeige -->
             <ng-container *ngIf="isMessage && msg.replies > 0">
               <div class="replies-info-container">
                 <button class="show-replies-button"
-                        [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
-                        (click)="openThread(msg)">
+                  [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
+                  (click)="openThread(msg)">
                   {{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten' }}
                 </button>
                 <span *ngIf="msg.lastReplyTimestamp" class="last-answer-time">
@@ -82,21 +74,25 @@
               'make-visible': hoveredIndex === i,
               'emoji-row-open scrollable': emojiMenuOpen[i],
               'emoji-row-closed': !emojiMenuOpen[i]
-            }"
-            (click)="$event.stopPropagation()" (mouseleave)="onEmojiRowMouseLeave(i)">
+            }" (click)="$event.stopPropagation()" (mouseleave)="onEmojiRowMouseLeave(i)">
+
+            <!-- Bitte nicht löschen! -->
+            <ng-container *ngIf="isThread && emojiMenuOpen[i]">
+              <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
+                (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+                {{ emoji.unicode }}
+              </span>
+            </ng-container>
+
 
             <ng-container *ngIf="isMessage">
-              <span *ngFor="let emoji of sortedEmojis.slice(0, 2)"
-                    class="emoji-icon top-emojis"
-                    (click)="handleEmojiClick(emoji.name, msg)"
-                    title="{{ emoji.name }}">
+              <span *ngFor="let emoji of sortedEmojis.slice(0, 2)" class="emoji-icon top-emojis"
+                (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
                 {{ emoji.unicode }}
               </span>
               <ng-container *ngIf="emojiMenuOpen[i]">
-                <span *ngFor="let emoji of sortedEmojis.slice(2)"
-                      class="emoji-icon top-emojis"
-                      (click)="handleEmojiClick(emoji.name, msg)"
-                      title="{{ emoji.name }}">
+                <span *ngFor="let emoji of sortedEmojis.slice(2)" class="emoji-icon top-emojis"
+                  (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
                   {{ emoji.unicode }}
                 </span>
               </ng-container>
@@ -124,9 +120,8 @@
                   <img src="assets/img/message-icons/option-hover.svg" class="hover" />
                 </div>
 
-                <div class="edit-menu"
-                     *ngIf="editMenuOpenIndex === i"
-                     (click)="handleEditClick(msg, i); $event.stopPropagation()">
+                <div class="edit-menu" *ngIf="editMenuOpenIndex === i"
+                  (click)="handleEditClick(msg, i); $event.stopPropagation()">
                   Nachricht bearbeiten
                 </div>
               </div>
@@ -136,22 +131,19 @@
         </div>
 
         <!-- Reaktionen -->
-        <div class="reactions" *ngIf="msg.reactions?.length"
-             [ngClass]="{
+        <div class="reactions" *ngIf="msg.reactions?.length" [ngClass]="{
                'thread-reactions': isThread,
                'message-reactions': isMessage,
                'reactions-right-aligned': isOwnMessage(msg),
                'reactions-left-aligned': !isOwnMessage(msg)
              }">
-          <div *ngFor="let reaction of msg.reactions; let j = index"
-               class="bottom-emoji-wrapper"
-               (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
-               (mouseleave)="setTooltipHoveredState(null, null)">
+          <div *ngFor="let reaction of msg.reactions; let j = index" class="bottom-emoji-wrapper"
+            (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
+            (mouseleave)="setTooltipHoveredState(null, null)">
             <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
             <span class="count">{{ reaction.userIds.length }}</span>
 
-            <div *ngIf="hoveredIndex === i && tooltipHoveredIndex == j"
-                 #emojiTooltip class="bottom-emoji-tooltip">
+            <div *ngIf="hoveredIndex === i && tooltipHoveredIndex == j" #emojiTooltip class="bottom-emoji-tooltip">
               <span class="tooltip-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
               <div>
                 <p class="tooltip-names">{{ formattedUserNames }}</p>

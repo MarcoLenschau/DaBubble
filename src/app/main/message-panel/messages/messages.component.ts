@@ -109,7 +109,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.subscribeToMessages();
-      this.updateSortedEmojis();
+      // this.updateSortedEmojis();
     });
 
     firstValueFrom(this.userDataService.getUsers()).then(users => {
@@ -118,9 +118,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   handleEditClick(msg: Message, index: number): void {
-  this.startEditing(msg);        
-  this.editMenuOpenIndex = null; 
-}
+    this.startEditing(msg);
+    this.editMenuOpenIndex = null;
+  }
 
 
   ngOnDestroy() {
@@ -134,9 +134,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     if (this.isThread &&
-        changes['starterMessage'] &&
-        this.starterMessage &&
-        this.starterMessage.id !== this.lastThreadId) {
+      changes['starterMessage'] &&
+      this.starterMessage &&
+      this.starterMessage.id !== this.lastThreadId) {
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
     }
@@ -271,18 +271,21 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const rect = tooltipElement.getBoundingClientRect();
     const threadRect = threadMessages.getBoundingClientRect();
 
-    if (rect.right > threadRect.right) {
-      tooltipElement.classList.add('overflowing-right');
+    const overflowRight = rect.right - threadRect.right;
+
+    if (overflowRight > 0) {
+      tooltipElement.style.transform = `translateX(-${overflowRight + 4}px)`;
+
     } else {
-      tooltipElement.classList.remove('overflowing-right');
+      tooltipElement.style.transform = '';
     }
   }
-  
+
   editMenuOpenIndex: number | null = null;
 
-toggleEditMenu(index: number): void {
-  this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
-}
+  toggleEditMenu(index: number): void {
+    this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
+  }
 
 
   startEditing(msg: Message): void {
@@ -301,8 +304,6 @@ toggleEditMenu(index: number): void {
       this.cancelEditing();
       return;
     }
-
-
 
     const updatedMessage = { ...msg, text: trimmed };
     this.messageDataService.updateMessage(updatedMessage).then(() => {
@@ -329,8 +330,8 @@ toggleEditMenu(index: number): void {
   }
 
   showData(msg: Message): void {
-  console.log('Nachricht zur Analyse:', msg);
-}
+    console.log('Nachricht zur Analyse:', msg);
+  }
 
 
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
