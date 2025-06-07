@@ -8,14 +8,14 @@
 }
 
 :host(.visible) {
-  opacity: 1;
+  // opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
   width: 485px;
 }
 
 :host(.hidden) {
-  opacity: 0;
+  // opacity: 0;
   transform: translateX(300px);
   pointer-events: none;
   width: 0;
@@ -24,13 +24,32 @@
 
 
 // Responsiveness
-@media (max-width: $mobile) {
+
+@media (max-width: $tablet-md) {
+
+  
+}
+
+@media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
+  :host(.visible) {
+    width: 424px;
+  }
+}
+
+
+
+
+@media (max-width: $mobile-xl) {
+  :host {
+    @include slow-transition();
+  }
+
   :host(.visible) {
     flex: 1;
   }
 
-:host(.hidden) {
+  :host(.hidden) {
      flex: 0;
-   }
+  }
 }
 

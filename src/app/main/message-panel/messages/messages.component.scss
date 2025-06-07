@@ -60,6 +60,18 @@
 
       h4 {
         @include text-style(18px, 700, $black);
+        flex-shrink: 1;
+        min-width: 0;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2; 
+        line-clamp: 2;           
+        overflow: hidden;
+        word-break: break-word;           
+        overflow-wrap: break-word;        
+        text-overflow: ellipsis;          
+        max-width: 100%;
+        line-height: 1.2;
 
         &:hover {
           cursor: pointer;
@@ -69,6 +81,7 @@
 
       p {
         @include text-style(14px, 400, $text-gray);
+        width: 64px;
         cursor: default;
       }
     }
@@ -473,10 +486,72 @@
 }
 
 
-@media (max-width: $mobile) {
+@media (max-width: $tablet-md) {
+
+  .thread-reactions,  
+  .message-reactions {
+    max-width: 75%;
+  }
+}
+
+@media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
+  .thread-messages .message-wrapper, .date-divider {
+    padding-left: 3vw;
+    padding-right: 3vw;
+  }
+}
+
+@media (max-width: $mobile-xl) {
 
   .thread-message-text,
   .thread-message-text.own-message-text {
     font-size: 17px;
   }
+}
+
+@media (max-width: $mobile-md) {
+  .thread-messages .message-wrapper, .date-divider {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  .thread-messages .message-img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: $mobile-sm) {
+  .show-replies-button {
+    font-size: 16px;
+  }
+
+  .thread-messages .message-img {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: $mobile-xs) {
+  .thread-messages .thread-message, .own-message {
+    gap: 16px
+  }
+
+  .thread-messages .message-body .message-body-header, .thread-messages .message-body .own-message-body-header {
+    gap: 8px
+  }
+
+  .replies-info-container {
+    @include dFlex($jc: flex-start, $ai: flex-start, $g: 6px, $f: column);
+  }
+}
+
+@media (max-width: $mobile-xxs) {
+  .thread-messages .message-body .message-body-header  {
+        @include dFlex($jc: flex-start, $ai: flex-start, $g: 2px, $f: column);
+  }
+   
+  .thread-messages.own-message-body .own-message-body-header {
+        @include dFlex($jc: flex-start, $ai: flex-start, $g: 2px, $f: column-reverse);
+  }  
 }

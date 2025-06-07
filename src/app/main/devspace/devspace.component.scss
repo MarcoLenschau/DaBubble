@@ -202,8 +202,11 @@ nav {
 
 
 // Responsiveness
-@media (max-width: $mobile) {
-
+@media (max-width: $mobile-xl) {
+  :host {
+    @include slow-transition();
+  }
+  
   :host(.visible) {
     flex: 1;
   }
@@ -216,7 +219,5 @@ nav {
     height: calc(100vh - 80px);
     border-radius: 0;
   }
-
-  
 }
 

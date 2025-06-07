@@ -34,7 +34,7 @@ export class MainComponent implements OnInit {
   channels$: Observable<any>;
   channels = [];
   messageContext?: MessageContext;
-  mobileMaxWidth = 920;
+  mobileMaxWidth = 896;
   tabletMaxWidth = 1440;
 
   constructor(private firebase: FirebaseService, private breakpointObserver: BreakpointObserver) {

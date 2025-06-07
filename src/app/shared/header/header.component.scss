@@ -26,7 +26,7 @@ a {
     border-radius: 100%;
 }
 
-@media (max-width: $mobile) {
+@media (max-width: $mobile-xl) {
     header {
         display: none; // zum Testen
     }

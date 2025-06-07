@@ -1,5 +1,6 @@
 @import "./../../shared/styles/mix-in.scss";
 @import "./../../shared/styles/color.scss";
+@import "./../../shared/styles/breakpoint.scss";
 
 :host {
   flex: 1;
@@ -21,4 +22,10 @@
   flex: 0 !important;
   width: 0 !important;
   overflow: hidden;
+}
+
+@media (max-width: $mobile-xl) {
+  :host {
+    @include slow-transition();
+  }
 }

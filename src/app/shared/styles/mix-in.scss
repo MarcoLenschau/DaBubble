@@ -17,7 +17,7 @@
 }
 
 @mixin slow-transition() {
-  transition: all 2200ms ease-in-out;
+  transition: all 150ms ease-in-out;
 }
 
 @mixin hover-image-swap($width, $height) {

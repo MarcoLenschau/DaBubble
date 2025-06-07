@@ -17,7 +17,6 @@
   button {
     cursor: pointer;
   }
-  
 }
 
 .spacer {
@@ -25,7 +24,7 @@
   flex-shrink: 0;
 }
 
-@media (max-width: $mobile) {
+@media (max-width: $mobile-xl) {
   .main-component {
       height: calc(100vh - 80px);
       padding: 0;
