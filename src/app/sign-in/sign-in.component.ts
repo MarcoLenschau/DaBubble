@@ -5,7 +5,7 @@ import { ButtonComponent } from '../shared/button/button.component';
 import { AuthService } from '../services/auth.service';
 import { FirebaseService } from '../services/firebase.service';
 import { UserDataService } from '../services/user-data.service';
-import { User } from '../models/user.model';
+import { deleteLocalStorage } from '../utils/auth-utils'; 
 
 @Component({
   selector: 'app-sign-in',
@@ -20,9 +20,12 @@ export class SignInComponent {
   public router = inject(RouterService);
   email = "";
   password = "";
-  
+
   constructor() { 
-    this.deleteLocalStorage();
+    deleteLocalStorage();
+    if (this.authService.user) {
+      this.authService.logout();
+    }
   }
 
   async loginWithEmail() {
@@ -64,9 +67,5 @@ export class SignInComponent {
     } else if (type === 'password') {
       this.password = eventValue;
     }
-  }
-
-  deleteLocalStorage() {
-    localStorage.setItem("loggedIn", "false");
   }
 }
