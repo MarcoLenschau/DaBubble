@@ -1,5 +1,6 @@
 @import "./../../../shared/styles/mix-in.scss";
 @import "./../../../shared/styles/color.scss";
+@import "./../../../shared/styles/breakpoint.scss";
 
 * {
   margin: 0;
@@ -117,4 +118,11 @@
   border-radius: 50%;
   height: 100px;
   width: 100px;
+}
+
+@media (max-width: $mobile) {
+
+  .message-header .message-header-content .message-header-content-text h2 {
+    font-size: 20px;
+  }
 }
