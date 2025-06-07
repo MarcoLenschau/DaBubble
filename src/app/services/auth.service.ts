@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, User, user, GithubAuthProvider, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
+import { inject, Injectable } from '@angular/core';
+import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { Observable, Subscription, firstValueFrom, BehaviorSubject } from 'rxjs';
+import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { RouterService } from './router.service';
 import { UserDataService } from './user-data.service';
@@ -10,13 +10,17 @@ import { UserDataService } from './user-data.service';
   providedIn: 'root',
 })
 export class AuthService {
+  private auth = inject(Auth);
+  private firebase = inject(FirebaseService);
+  private userDataService = inject(UserDataService)
+  private router = inject(RouterService);
   userSubject = new BehaviorSubject<any>({});
   user$ = this.userSubject.asObservable();
   users$: Observable<any>;
   users: any[] = [];
   user: any = {};
 
-  constructor(private auth: Auth, private firebase: FirebaseService, private router: RouterService, private userDataService: UserDataService) {
+  constructor() {
     this.users$ = this.firebase.getColRef('users');
     this.users$.forEach((users: any) => {
       this.users = users;

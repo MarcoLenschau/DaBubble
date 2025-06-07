@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { InputComponent } from '../shared/input/input.component';
 import { RouterService } from '../services/router.service';
 import { ButtonComponent } from '../shared/button/button.component';
@@ -14,10 +14,16 @@ import { User } from '../models/user.model';
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
+  private authService = inject(AuthService);
+  private firebase = inject(FirebaseService);
+  private userDataService = inject(UserDataService)
+  public router = inject(RouterService);
   email = "";
   password = "";
-
-  constructor(public router: RouterService, private authService: AuthService, private firebase: FirebaseService, private userDataService: UserDataService) { }
+  
+  constructor() { 
+    this.deleteLocalStorage();
+  }
 
   async loginWithEmail() {
     const user = await this.authService.login(this.email, this.password);;
@@ -58,5 +64,9 @@ export class SignInComponent {
     } else if (type === 'password') {
       this.password = eventValue;
     }
+  }
+
+  deleteLocalStorage() {
+    localStorage.setItem("loggedIn", "false");
   }
 }
