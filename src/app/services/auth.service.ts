@@ -11,6 +11,8 @@ import { UserDataService } from './user-data.service';
 })
 export class AuthService {
   userSubject = new BehaviorSubject<any>({});
+  loggedIn = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedIn.asObservable();
   user$ = this.userSubject.asObservable();
   users$: Observable<any>;
   users: any[] = [];
@@ -93,6 +95,7 @@ export class AuthService {
     this.user = result.user;
     if (photoURL) { this.user.photoURL = photoURL }
     this.userSubject.next(this.user);
+    this.setLoggedIn(true);
     await this.userDataService.initCurrentUser();
   }
 
@@ -153,5 +156,13 @@ export class AuthService {
     if (!firestoreUser) {
       throw new Error('User wurde in Firestore nicht gefunden.');
     }
+  }
+
+  setLoggedIn(status: boolean) {
+    this.loggedIn.next(status);
+  }
+
+  isLoggedIn(): boolean {
+    return this.loggedIn.getValue();
   }
 }
