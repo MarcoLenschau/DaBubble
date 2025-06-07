@@ -17,21 +17,21 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
-import { UserDataService } from '../../../services/user-data.service';
-import { MessageDataService } from '../../../services/message-data.service';
+import { UserDataService } from '../../../core/services/user-data.service';
+import { MessageDataService } from '../../../core/services/message-data.service';
 
-import { User } from '../../../models/user.model';
-import { Message } from '../../../models/message.model';
-import { Channel } from '../../../models/channel.model';
-import { MessageContext } from '../../../interfaces/message-context.interface';
-import { Emoji, EMOJIS } from '../../../interfaces/emojis-interface';
+import { User } from '../../../core/models/user.model';
+import { Message } from '../../../core/models/message.model';
+import { Channel } from '../../../core/models/channel.model';
+import { MessageContext } from '../../../core/interfaces/message-context.interface';
+import { Emoji, EMOJIS } from '../../../core/interfaces/emojis-interface';
 
 import {
   formatTime,
   formatDate,
   isNewDay,
   formatRelativeTimeSimple
-} from '../../../utils/date-utils';
+} from '../../../core/utils/date-utils';
 
 import {
   getEmojiByName,
@@ -45,7 +45,7 @@ import {
   trackByMessageId,
   getSortedEmojisForUser,
   updateEmojiDataForUser
-} from '../../../utils/messages-utils';
+} from '../../../core/utils/messages-utils';
 
 @Component({
   selector: 'app-messages',

@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterService } from '../../services/router.service';
+import { RouterService } from '../../core/services/router.service';
 import { InputComponent } from '../input/input.component';
 import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/dialog-user-options.component';
-import {MatDialog} from '@angular/material/dialog'
-import { AuthService } from '../../services/auth.service';
+import { MatDialog } from '@angular/material/dialog'
+import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
-import { FirebaseService } from '../../services/firebase.service';
+import { FirebaseService } from '../../core/services/firebase.service';
 import { onSnapshot } from '@angular/fire/firestore';
 
 @Component({
@@ -22,7 +22,7 @@ export class HeaderComponent {
   };
 
   users: Subscription
-  
+
   constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService, private firebase: FirebaseService) {
     this.users = this.auth.user$.subscribe(user => {
       this.user = user;
@@ -35,6 +35,6 @@ export class HeaderComponent {
 
   openDialog() {
     let dialogRef = this.dialog.open(DialogUserOptionsComponent);
-    dialogRef.componentInstance.user = this.user; 
+    dialogRef.componentInstance.user = this.user;
   }
 }

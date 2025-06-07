@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Input } from '@angular/core';
-import { ChannelDataService } from '../../../../services/channel-data.service';
+import { ChannelDataService } from '../../../../core/services/channel-data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -22,31 +22,31 @@ export class ChannelDetailsOverlayComponent {
   newName = '';
   newDescription = '';
 
-  constructor(private channelDataService: ChannelDataService) {}
+  constructor(private channelDataService: ChannelDataService) { }
 
-  startEditName(){
+  startEditName() {
     this.editName = true;
     this.newName = this.channel?.name || '';
   }
 
-  saveName(){
+  saveName() {
     if (this.newName) {
       this.channelDataService.updateChannelName(this.channel.id, this.newName).then(() => {
         this.channel.name = this.newName;
-         console.log(this.channel.name);
+        console.log(this.channel.name);
         this.editName = false;
       })
       console.log(this.newName);
-      
+
     }
   }
 
-  startsEditDescription(){
+  startsEditDescription() {
     this.editDescription = true;
     this.newDescription = this.channel?.description || '';
   }
 
-  saveDescription(){
+  saveDescription() {
     if (this.newDescription) {
       this.channelDataService.updateChannelDescription(this.channel.id, this.newDescription).then(() => {
         this.channel.description = this.newDescription;

@@ -11,18 +11,18 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { MessageDataService } from '../../../services/message-data.service';
-import { UserDataService } from '../../../services/user-data.service';
-import { EMOJIS, Emoji } from '../../../interfaces/emojis-interface';
-import { Message } from '../../../models/message.model';
-import { Channel } from '../../../models/channel.model';
-import { User } from '../../../models/user.model';
-import { Reaction } from '../../../interfaces/reaction.interface';
-import { MessageContext } from '../../../interfaces/message-context.interface';
+import { MessageDataService } from '../../../core/services/message-data.service';
+import { UserDataService } from '../../../core/services/user-data.service';
+import { EMOJIS, Emoji } from '../../../core/interfaces/emojis-interface';
+import { Message } from '../../../core/models/message.model';
+import { Channel } from '../../../core/models/channel.model';
+import { User } from '../../../core/models/user.model';
+import { Reaction } from '../../../core/interfaces/reaction.interface';
+import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import {
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-} from '../../../utils/messages-utils';
+} from '../../../core/utils/messages-utils';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -46,7 +46,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
-  
+
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];

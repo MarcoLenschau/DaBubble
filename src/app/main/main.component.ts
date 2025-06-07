@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DevspaceComponent } from './devspace/devspace.component';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Message } from '../models/message.model';
+import { Message } from '../core/models/message.model';
 import { MessageWindowComponent } from './message-window/message-window.component';
 import { ThreadWindowComponent } from './thread-window/thread-window.component';
-import { FirebaseService } from '../services/firebase.service';
+import { FirebaseService } from '../core/services/firebase.service';
 import { Observable } from 'rxjs';
-import { MessageContext } from '../interfaces/message-context.interface';
+import { MessageContext } from '../core/interfaces/message-context.interface';
 import { ViewMode } from '../core/enums/view-mode.enum';
 
 @Component({

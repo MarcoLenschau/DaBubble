@@ -1,15 +1,15 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Message } from '../../../models/message.model';
-import { FirebaseService } from '../../../services/firebase.service';
-import { MessageContext } from '../../../interfaces/message-context.interface';
-import { User } from '../../../models/user.model';
-import { UserDataService } from '../../../services/user-data.service';
-import { ChannelDataService } from '../../../services/channel-data.service';
-import { Channel } from '../../../models/channel.model';
+import { Message } from '../../../core/models/message.model';
+import { FirebaseService } from '../../../core/services/firebase.service';
+import { MessageContext } from '../../../core/interfaces/message-context.interface';
+import { User } from '../../../core/models/user.model';
+import { UserDataService } from '../../../core/services/user-data.service';
+import { ChannelDataService } from '../../../core/services/channel-data.service';
+import { Channel } from '../../../core/models/channel.model';
 import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
-import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../utils/messages-utils';
+import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages-utils';
 import { Observable, Subscription } from 'rxjs';
 
 
@@ -23,7 +23,7 @@ import { Observable, Subscription } from 'rxjs';
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
-  @Input() activeChannel: any = {}; 
+  @Input() activeChannel: any = {};
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
@@ -180,7 +180,7 @@ export class MessagesHeaderComponent {
     this.showChannelOverlay = true;
   }
 
-  closeChannelOverlay(){
+  closeChannelOverlay() {
     this.showChannelOverlay = false;
   }
 }

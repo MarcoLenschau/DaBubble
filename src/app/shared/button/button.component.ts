@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RouterService } from '../../services/router.service';
+import { RouterService } from '../../core/services/router.service';
 
 @Component({
   selector: 'app-button',
@@ -13,7 +13,7 @@ export class ButtonComponent {
   @Input() switchTo: string = "";
   @Output() clicked = new EventEmitter<void>();
 
-  constructor(public router: RouterService) {}
+  constructor(public router: RouterService) { }
 
   onClick() {
     this.clicked.emit();

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { AuthService } from '../../services/auth.service';
-import { RouterService } from '../../services/router.service';
+import { AuthService } from '../../core/services/auth.service';
+import { RouterService } from '../../core/services/router.service';
 
 @Component({
   selector: 'app-user-picture',
@@ -15,16 +15,16 @@ export class UserPictureComponent {
   @Output() dataReady = new EventEmitter<boolean>();
 
   profilePicture = [
-    "elias", 
-    "elise", 
-    "frederik", 
-    "noah", 
-    "sofia", 
+    "elias",
+    "elise",
+    "frederik",
+    "noah",
+    "sofia",
     "steffen"
   ];
 
-  constructor(private auth: AuthService, private router: RouterService) {}
-  
+  constructor(private auth: AuthService, private router: RouterService) { }
+
   registerUser() {
     console.log(this.user)
     this.auth.register(this.user.displayName, this.user.email, this.user.password).then(user => {
@@ -33,7 +33,7 @@ export class UserPictureComponent {
       } else {
         this.sendData();
       }
-    }) 
+    })
   }
 
 

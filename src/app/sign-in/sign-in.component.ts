@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { InputComponent } from '../shared/input/input.component';
-import { RouterService } from '../services/router.service';
+import { RouterService } from '../core/services/router.service';
 import { ButtonComponent } from '../shared/button/button.component';
-import { AuthService } from '../services/auth.service';
-import { FirebaseService } from '../services/firebase.service';
-import { UserDataService } from '../services/user-data.service';
-import { deleteLocalStorage } from '../utils/auth-utils'; 
+import { AuthService } from '../core/services/auth.service';
+import { FirebaseService } from '../core/services/firebase.service';
+import { UserDataService } from '../core/services/user-data.service';
+import { deleteLocalStorage } from '../core/utils/auth-utils';
 
 @Component({
   selector: 'app-sign-in',
@@ -21,7 +21,7 @@ export class SignInComponent {
   email = "";
   password = "";
 
-  constructor() { 
+  constructor() {
     deleteLocalStorage();
     if (this.authService.user) {
       this.authService.logout();

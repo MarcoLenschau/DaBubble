@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { RegisterComponent } from "./register/register.component";
 import { UserPictureComponent } from "./user-picture/user-picture.component";
 import { CommonModule } from '@angular/common';
-import { deleteLocalStorage } from '../utils/auth-utils';
-import { AuthService } from '../services/auth.service';
+import { deleteLocalStorage } from '../core/utils/auth-utils';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -16,7 +16,7 @@ export class SignUpComponent {
   dataReady = false;
   user: any = {};
 
-  constructor() { 
+  constructor() {
     deleteLocalStorage();
     if (this.authService.user) {
       this.authService.logout();

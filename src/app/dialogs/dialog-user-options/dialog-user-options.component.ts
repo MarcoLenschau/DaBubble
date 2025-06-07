@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { RouterService } from '../../services/router.service';
+import { RouterService } from '../../core/services/router.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../dialog-user-details/dialog-user-details.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dialog-user-options',
@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class DialogUserOptionsComponent {
   @Input() user: any = {};
 
-  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>, private auth: AuthService) {}
+  constructor(public router: RouterService, private dialog: MatDialog, private dialogRef: MatDialogRef<DialogUserOptionsComponent>, private auth: AuthService) { }
 
   logOut() {
     this.auth.logout();

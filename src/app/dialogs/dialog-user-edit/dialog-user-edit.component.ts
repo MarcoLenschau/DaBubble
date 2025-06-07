@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FirebaseService } from '../../services/firebase.service';
+import { FirebaseService } from '../../core/services/firebase.service';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -22,5 +22,5 @@ export class DialogUserEditComponent {
     this.dialogRef.close();
   }
 
-  userSave() {}
+  userSave() { }
 }

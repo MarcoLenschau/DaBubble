@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { Message } from '../../models/message.model';
+import { Message } from '../../core/models/message.model';
 import { MessagesComponent } from './messages/messages.component';
 import { MessagesHeaderComponent } from './messages-header/messages-header.component';
 import { MessagesTextareaComponent } from './messages-textarea/messages-textarea.component';
-import { MessageContext } from '../../interfaces/message-context.interface';
+import { MessageContext } from '../../core/interfaces/message-context.interface';
 import { NgClass } from '@angular/common';
 
 @Component({

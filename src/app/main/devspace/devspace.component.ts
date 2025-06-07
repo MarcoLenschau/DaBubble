@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FirebaseService } from '../../services/firebase.service';
+import { FirebaseService } from '../../core/services/firebase.service';
 import { Observable, Subscription } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
-import { ChannelDataService } from '../../services/channel-data.service';
-import { UserDataService } from '../../services/user-data.service';
-import { Channel } from '../../models/channel.model';
-import { User } from '../../models/user.model';
-import { AuthService } from '../../services/auth.service';
-import { MessageContext } from '../../interfaces/message-context.interface';
-import { emitChannelContext, emitDirectUserContext } from '../../utils/messages-utils';
+import { ChannelDataService } from '../../core/services/channel-data.service';
+import { UserDataService } from '../../core/services/user-data.service';
+import { Channel } from '../../core/models/channel.model';
+import { User } from '../../core/models/user.model';
+import { AuthService } from '../../core/services/auth.service';
+import { MessageContext } from '../../core/interfaces/message-context.interface';
+import { emitChannelContext, emitDirectUserContext } from '../../core/utils/messages-utils';
 
 @Component({
   selector: 'app-devspace',

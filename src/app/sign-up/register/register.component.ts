@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
-import { RouterService } from '../../services/router.service';
-import { AuthService } from '../../services/auth.service';
+import { RouterService } from '../../core/services/router.service';
+import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -12,14 +12,14 @@ import { FormsModule } from '@angular/forms';
 })
 export class RegisterComponent {
   @Output() dataReady = new EventEmitter<boolean>();
-  @Output() userData = new EventEmitter<any>();  
+  @Output() userData = new EventEmitter<any>();
   user = {
     displayName: '',
     email: '',
     password: ''
   }
 
-  constructor(public router: RouterService, private auth: AuthService) {}
+  constructor(public router: RouterService, private auth: AuthService) { }
 
   acceptPrivacy() {
     document.getElementById("checkbox")?.classList.toggle("checked");
@@ -29,13 +29,13 @@ export class RegisterComponent {
     this.sendData();
   }
 
-  setValue(eventValue: string, type: string){
+  setValue(eventValue: string, type: string) {
     if (type === 'email') {
-      this.user.email = eventValue;  
+      this.user.email = eventValue;
     } else if (type === 'password') {
-      this.user.password = eventValue;  
+      this.user.password = eventValue;
     } else if (type === 'name') {
-      this.user.displayName = eventValue;  
+      this.user.displayName = eventValue;
     }
   }
 
