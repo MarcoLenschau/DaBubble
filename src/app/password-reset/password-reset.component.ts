@@ -15,11 +15,11 @@ export class PasswordResetComponent {
   emailSend = false;
   emailMessage = "";
 
-  constructor(private auth: AuthService) { }
-
+  constructor(private auth: AuthService) {}
+  
   async resetPassword() {
     await this.auth.resetPassword(this.email)
-      .then(() => {
+      .then(() =>{
         this.emailMessageShow();
         this.emailMessage = "Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner."
       })
@@ -36,7 +36,7 @@ export class PasswordResetComponent {
     }, 10000)
   }
 
-  setValue(eventValue: string) {
+  setValue(eventValue: string){
     this.email = eventValue;
   }
 }
