@@ -238,20 +238,24 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   };
 
   async sendMessage(): Promise<void> {
+    console.log('[resetInputField] In sendMessage:', this.textInput, this.editableDiv.nativeElement.innerHTML);
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
 
     const message = this.createMessage(text);
 
     try {
+      console.log('[resetInputField] In try1:', this.textInput, this.editableDiv.nativeElement.innerHTML);
       await this.messageDataService.addMessage(message);
-      this.resetInputField();
+      console.log('[resetInputField] In try2:', this.textInput, this.editableDiv.nativeElement.innerHTML);
+      // this.resetInputField();
       this.messageSent.emit();
+      await this.updateStarterMessage();
+      this.resetInputField();
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
+      this.resetInputField();
     }
-
-    this.updateStarterMessage();
   }
 
 
@@ -263,6 +267,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   private findThreadId() {
     if (this.mode === 'thread' && this.starterMessage) {
+      console.log("this.starterMessage.id: this.starterMessage.replies", this.starterMessage.id, this.starterMessage.replies, "????????????????????????????????????????");
+
       return this.starterMessage.threadId || this.starterMessage.id;
     }
     return '';
@@ -303,9 +309,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   async updateStarterMessage() {
 
     if (this.mode === 'thread' && this.starterMessage) {
-      this.starterMessage.replies++;
-      console.log("Updating StarterMessage-Replies: Adding 1: ", this.starterMessage);
-
 
       await this.messageDataService.updateMessageFields(this.starterMessage.id, {
         replies: this.starterMessage.replies,
@@ -315,8 +318,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   private resetInputField(): void {
+    console.log('[resetInputField] Vorher:', this.textInput, this.editableDiv.nativeElement.innerHTML);
     this.textInput = '';
     this.editableDiv.nativeElement.innerHTML = '';
+    console.log('[resetInputField] Nachher:', this.textInput, this.editableDiv.nativeElement.innerHTML);
   }
 
   ngAfterViewInit() {

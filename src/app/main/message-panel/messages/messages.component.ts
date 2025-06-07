@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription, firstValueFrom, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
@@ -75,6 +75,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   filteredMessages: Message[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
+  replies = 0;
   formattedUserNames: string = '';
   tooltipText: string = '';
   textareaContent: string = '';
@@ -106,12 +107,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-      this.subscribeToMessages();
-      // this.updateSortedEmojis();
-    });
-
+    this.userDataService.currentUser$
+      .pipe(take(1))
+      .subscribe(user => {
+        this.currentUser = user;
+        this.subscribeToMessages();
+        this.updateSortedEmojis();
+        console.log("ngOnInit ******************************");
+      });
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
     });
@@ -131,6 +134,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (this.isMessage && changes['messageContext']) {
       this.subscribeToMessages();
+      console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCSngOnChanges ****************************** message");
+
     }
 
     if (this.isThread &&
@@ -139,6 +144,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.starterMessage.id !== this.lastThreadId) {
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
+      console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC ngOnChanges ****************************** thread");
     }
   }
 
@@ -156,19 +162,23 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.subscribeToMessages();
   }
 
-  setReplyToMessage(msg: Message) {
+  async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
 
     if (!msg.threadId) {
       msg.threadId = msg.id;
-      this.saveMessage(msg);
+      await this.saveMessage(msg);
     }
+    console.log("setReplyToMessage ---------------------------------------------- setReplyToMessage");
 
     this.threadId = msg.threadId;
     this.messagesSubscription?.unsubscribe();
 
     this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
       this.messages = loadedMessages;
+
+      this.updateReplies(this.messages.length, msg);
+
       this.filteredMessages = [msg, ...this.messages.filter((m) => m.id !== msg.id)];
 
       this.threadSymbol = msg.channelId ? '#' : '@';
@@ -178,8 +188,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  saveMessage(msg: Message) {
-    this.messageDataService.updateMessage(msg);
+  async updateReplies(threadMessages: number, msg: Message) {
+    this.replies = Math.max(threadMessages - 1, 0);
+    if (msg.replies !== this.replies) {
+      await this.messageDataService.updateMessageFields(msg.id, {
+        replies: this.replies
+      });
+    }
+  }
+
+  async saveMessage(msg: Message) {
+    await this.messageDataService.updateMessage(msg);
   }
 
   openThread(msg: Message) {
@@ -231,7 +250,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  handleEmojiClick(emojiName: string, msg: Message): void {
+  async handleEmojiClick(emojiName: string, msg: Message): Promise<void> {
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
@@ -242,7 +261,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.currentUser = updatedUser;
     }
 
-    this.saveMessage(updatedMsg);
+    await this.saveMessage(updatedMsg);
   }
 
   userHasReactedToEmoji(msg: Message, emojiName: string, userId: string): boolean {

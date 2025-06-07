@@ -26,7 +26,7 @@ export class UserDataService {
   public async initCurrentUser(): Promise<void> {
     const userDoc = await this.getCurrentUserDoc();
     const user = userDoc ? this.mapToUser(userDoc) : this.createGuestUser();
-    this.setCurrentUser(user); // setzt intern das Subject
+    this.setCurrentUser(user);
   }
 
   /**

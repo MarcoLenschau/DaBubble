@@ -33,11 +33,14 @@ export class MessageDataService {
   ) { }
 
   async addMessage(message: Message): Promise<void> {
-    const messageRef = doc(collection(this.firestore, 'messages'));
-
-    message.id = messageRef.id;
-
-    await setDoc(messageRef, this.getCleanJson(message));
+    try {
+      const messageRef = doc(collection(this.firestore, 'messages'));
+      message.id = messageRef.id;
+      await setDoc(messageRef, this.getCleanJson(message));
+    } catch (error) {
+      console.error('[addMessage] Fehler beim Speichern der Nachricht:', error);
+      throw error;
+    }
   }
 
   async updateMessage(message: Message) {
