@@ -49,7 +49,7 @@ export class SignInComponent {
     const guestUser = this.userDataService.createGuestUser();
     guestUser.state = true;
     this.authService.userSubject.next(guestUser);
-    this.authService.setLoggedIn(true);
+    localStorage.setItem("loggedIn", "true");
   }
 
   setValue(eventValue: string, type: string) {
