@@ -9,7 +9,6 @@ import { NgClass } from '@angular/common';
 @Component({
   selector: 'app-message-panel',
   imports: [
-    MessagesComponent,
     MessagesHeaderComponent,
     MessagesComponent,
     MessagesTextareaComponent,
@@ -31,7 +30,7 @@ export class MessagePanelComponent {
   }>();
   @Output() closeThreadPanelWindow = new EventEmitter<void>();
 
-  @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
+  // @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
   textInput = '';
 
@@ -51,9 +50,9 @@ export class MessagePanelComponent {
     this.closeThreadPanelWindow.emit();
   }
 
-  onMessageSent() {
-    this.messagesComponent.reloadMessages();
-  }
+  // onMessageSent() {
+  //   this.messagesComponent.reloadMessages();
+  // }
 
   onContextSelectedFromHeader(context: MessageContext): void {
     this.contextSelected.emit(context);

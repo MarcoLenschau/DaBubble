@@ -8,8 +8,9 @@
       [activeChannel]="activeChannel"></app-messages>
     <div class="message-textarea">
       <app-messages-textarea [mode]="mode" [starterMessage]="starterMessage" [textInput]="textInput"
-        (messageSent)="onMessageSent()" placeholder="Nachricht schreiben..."
-        [messageContext]="messageContext"></app-messages-textarea>
+        placeholder="Nachricht schreiben..." [messageContext]="messageContext"></app-messages-textarea>
     </div>
   </div>
 </div>
+
+<!-- (messageSent)="onMessageSent()" -->

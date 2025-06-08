@@ -180,9 +180,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  reloadMessages(): void {
-    this.subscribeToMessages();
-  }
+  // reloadMessages(): void {
+  //   this.subscribeToMessages();
+  // }
 
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;

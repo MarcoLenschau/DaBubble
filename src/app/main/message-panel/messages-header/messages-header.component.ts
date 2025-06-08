@@ -36,7 +36,7 @@ export class MessagesHeaderComponent {
     private firebaseService: FirebaseService,
     private userDataService: UserDataService,
     private channelDataService: ChannelDataService
-  ) {}
+  ) { }
 
   textInput = '';
   currentUser!: User;
@@ -107,52 +107,52 @@ export class MessagesHeaderComponent {
     this.currentUserSubscription?.unsubscribe();
   }
 
- onSearch(event: Event) {
-  const inputElement = event.target as HTMLInputElement;
-  const term = inputElement.value.trim();
-  this.textInput = term;
+  onSearch(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    const term = inputElement.value.trim();
+    this.textInput = term;
 
-  this.calculateMentionBoxPosition(inputElement);
+    this.calculateMentionBoxPosition(inputElement);
 
-  clearTimeout(this.searchDebounceTimer);
-  this.searchDebounceTimer = setTimeout(async () => {
-    if (!term) {
-      this.clearResults();
-      return;
-    }
-
-    if (term.startsWith('@')) {
-      const query = term.slice(1).toLowerCase();
-
-      if (this.validateEmail(query)) {
-        this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
-        this.searchResultsUser = [];
-        this.searchResultsChannels = [];
-      } else if (query.length >= 1) {
-        this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
-        this.searchResultsEmail = [];
-        this.searchResultsChannels = [];
-      }
-
-    } else if (term.startsWith('#')) {
-      if (this.allChannels.length === 0) {
+    clearTimeout(this.searchDebounceTimer);
+    this.searchDebounceTimer = setTimeout(async () => {
+      if (!term) {
+        this.clearResults();
         return;
       }
 
-      const query = term.slice(1).toLowerCase();
-      this.searchResultsChannels = this.allChannels.filter((channel) =>
-        channel.name.toLowerCase().includes(query)
-      );
-      this.searchResultsUser = [];
-      this.searchResultsEmail = [];
+      if (term.startsWith('@')) {
+        const query = term.slice(1).toLowerCase();
 
-    } else if (this.validateEmail(term)) {
-      this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
-      this.searchResultsUser = [];
-      this.searchResultsChannels = [];
-    }
-  }, 100); 
-}
+        if (this.validateEmail(query)) {
+          this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+          this.searchResultsUser = [];
+          this.searchResultsChannels = [];
+        } else if (query.length >= 1) {
+          this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
+          this.searchResultsEmail = [];
+          this.searchResultsChannels = [];
+        }
+
+      } else if (term.startsWith('#')) {
+        if (this.allChannels.length === 0) {
+          return;
+        }
+
+        const query = term.slice(1).toLowerCase();
+        this.searchResultsChannels = this.allChannels.filter((channel) =>
+          channel.name.toLowerCase().includes(query)
+        );
+        this.searchResultsUser = [];
+        this.searchResultsEmail = [];
+
+      } else if (this.validateEmail(term)) {
+        this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
+        this.searchResultsUser = [];
+        this.searchResultsChannels = [];
+      }
+    }, 100);
+  }
 
 
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
@@ -168,11 +168,7 @@ export class MessagesHeaderComponent {
     return re.test(email.toLowerCase());
   }
 
-<<<<<<< Updated upstream
   selectUser(user: any) {
-=======
-  selectUser(user: any, input: HTMLInputElement) {
->>>>>>> Stashed changes
     const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
     if (match) {
       this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
@@ -191,12 +187,8 @@ export class MessagesHeaderComponent {
     }, 1);
   }
 
-<<<<<<< Updated upstream
   selectChannel(channel: Channel) {
-=======
 
-  selectChannel(channel: Channel, input: HTMLInputElement) {
->>>>>>> Stashed changes
     this.textInput += `#${channel.name} `;
 
     emitChannelContext(this.contextSelected, channel.id);

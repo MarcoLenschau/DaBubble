@@ -41,7 +41,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() messageContext?: MessageContext;
 
-  @Output() messageSent = new EventEmitter<void>();
+  // @Output() messageSent = new EventEmitter<void>();
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
@@ -246,7 +246,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     try {
       await this.messageDataService.addMessage(message);
       // this.resetInputField();
-      this.messageSent.emit();
+      // this.messageSent.emit();
       await this.updateStarterMessage();
       this.resetInputField();
     } catch (error) {
