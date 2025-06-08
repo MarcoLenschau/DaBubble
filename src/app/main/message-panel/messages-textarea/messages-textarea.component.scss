@@ -56,7 +56,7 @@
 }
 .emoji-picker {
   position: absolute;
-  bottom: 70px; // leicht oberhalb des Eingabefeldes
+  bottom: 70px; 
   left: 16px;
   display: flex;
   flex-wrap: wrap;
@@ -70,15 +70,29 @@
   max-width: 300px;
   max-height: 150px;
   overflow-y: auto;
-
-  // scrollbar optional entfernen
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow-x: hidden; 
+  scrollbar-width: thin; 
+  scrollbar-color: #535af1 transparent; 
 
   &::-webkit-scrollbar {
-    display: none;
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 }
+
 
 .emoji-icon {
   display: inline-flex;
@@ -132,3 +146,4 @@
     }
   }
 }
+
