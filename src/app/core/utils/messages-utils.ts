@@ -161,6 +161,13 @@ export function updateEmojiDataForUser(user: User, emojiName: string): User {
   const recentEmojis = updateRecentEmojis(user.recentEmojis ?? [], emojiName);
   const emojiUsage = updateEmojiUsageCount(user.emojiUsage ?? {}, emojiName);
 
+  const recentChanged = user.recentEmojis !== recentEmojis;
+  const usageChanged = user.emojiUsage !== emojiUsage;
+
+  if (!recentChanged && !usageChanged) {
+    return user;
+  }
+
   return {
     ...user,
     recentEmojis,
@@ -168,17 +175,47 @@ export function updateEmojiDataForUser(user: User, emojiName: string): User {
   };
 }
 
+// function updateRecentEmojis(recent: string[], emojiName: string): string[] {
+//   const filtered = recent.filter(e => e !== emojiName);
+//   return [emojiName, ...filtered].slice(0, 2);
+// }
+
 function updateRecentEmojis(recent: string[], emojiName: string): string[] {
   const filtered = recent.filter(e => e !== emojiName);
-  return [emojiName, ...filtered].slice(0, 2);
+  const newRecent = [emojiName, ...filtered].slice(0, 2);
+
+  // Vergleich, ob sich recent und newRecent inhaltlich unterscheiden
+  const isEqual = recent.length === newRecent.length &&
+    recent.every((val, index) => val === newRecent[index]);
+
+  if (isEqual) {
+    return recent;  // kein neues Objekt erzeugen
+  }
+
+  return newRecent;
 }
 
+
+// function updateEmojiUsageCount(usage: { [key: string]: number }, emojiName: string): { [key: string]: number } {
+//   return {
+//     ...usage,
+//     [emojiName]: (usage[emojiName] ?? 0) + 1
+//   };
+// }
 function updateEmojiUsageCount(usage: { [key: string]: number }, emojiName: string): { [key: string]: number } {
+  const oldCount = usage[emojiName] ?? 0;
+  const newCount = oldCount + 1;
+
+  if (oldCount === newCount) {
+    return usage; // kein neues Objekt erzeugen, keine Änderung
+  }
+
   return {
     ...usage,
-    [emojiName]: (usage[emojiName] ?? 0) + 1
+    [emojiName]: newCount
   };
 }
+
 
 export function getUserById(users: User[], userId: string): User | undefined {
   return users.find((user) => user.id === userId);

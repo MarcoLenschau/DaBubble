@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, firstValueFrom, take } from 'rxjs';
+import { Subscription, firstValueFrom, take, distinctUntilChanged } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
@@ -44,7 +44,7 @@ import {
   isOwnMessage,
   trackByMessageId,
   getSortedEmojisForUser,
-  updateEmojiDataForUser
+  updateEmojiDataForUser,
 } from '../../../core/utils/messages-utils';
 
 @Component({
@@ -113,7 +113,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         this.currentUser = user;
         this.subscribeToMessages();
         this.updateSortedEmojis();
-        console.log("ngOnInit ******************************");
       });
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
@@ -132,10 +131,20 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.isMessage && changes['messageContext']) {
-      this.subscribeToMessages();
-      console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCSngOnChanges ****************************** message");
+    if (
+      this.isMessage &&
+      changes['messageContext'] &&
+      !changes['messageContext'].firstChange
+    ) {
+      const prev: MessageContext | undefined = changes['messageContext'].previousValue;
+      const curr: MessageContext | undefined = changes['messageContext'].currentValue;
 
+      // Nur wenn sich der Kontext *inhaltlich* ändert, neu abonnieren
+      if (!this.isEqualMessageContext(prev, curr)) {
+
+        this.subscribeToMessages();
+      } else {
+      }
     }
 
     if (this.isThread &&
@@ -144,16 +153,29 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.starterMessage.id !== this.lastThreadId) {
       this.setReplyToMessage(this.starterMessage);
       this.lastThreadId = this.starterMessage.id;
-      console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC ngOnChanges ****************************** thread");
     }
   }
 
+  private isEqualMessageContext(a?: MessageContext, b?: MessageContext): boolean {
+    if (a === b) return true;
+
+    if (!a || !b) {
+      return false;
+    }
+
+    return a.id === b.id && a.type === b.type && a.receiverId !== b.receiverId
+  }
+
+
   private subscribeToMessages(): void {
+    console.log("111111111111111111111111111111111111111111111111111111111🔥 subscribeToMessages aufgerufen");
+
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
 
     const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
-    this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
+    this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
+      console.log("222222222222222222222222222222222222222222222222222222222222📥 Neue Nachrichten empfangen:", loadedMessages.length);
       this.messages = loadedMessages;
     });
   }
@@ -169,15 +191,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       msg.threadId = msg.id;
       await this.saveMessage(msg);
     }
-    console.log("setReplyToMessage ---------------------------------------------- setReplyToMessage");
 
     this.threadId = msg.threadId;
     this.messagesSubscription?.unsubscribe();
 
-    this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe((loadedMessages) => {
+    this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(async (loadedMessages) => {
       this.messages = loadedMessages;
 
-      this.updateReplies(this.messages.length, msg);
+      await this.updateReplies(this.messages.length, msg);
 
       this.filteredMessages = [msg, ...this.messages.filter((m) => m.id !== msg.id)];
 
@@ -347,11 +368,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
   }
-
-  showData(msg: Message): void {
-    console.log('Nachricht zur Analyse:', msg);
-  }
-
 
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;

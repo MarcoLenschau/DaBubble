@@ -20,6 +20,10 @@ export class UserDataService {
   }
 
   public setCurrentUser(user: User): void {
+    const current = this.currentUserSubject.value;
+    if (this.isUserEqual(current, user)) {
+      return;
+    }
     this.currentUserSubject.next(user);
   }
 
@@ -109,4 +113,42 @@ export class UserDataService {
       emojiUsage: {},
     });
   }
+
+  private isUserEqual(u1: User, u2: User): boolean {
+    if (u1 === u2) return true;
+    if (!u1 || !u2) return false;
+
+    if (u1.id !== u2.id) return false;
+    if (u1.displayName !== u2.displayName) return false;
+
+    if (!this.areStringArraysEqual(u1.recentEmojis ?? [], u2.recentEmojis ?? [])) {
+      return false;
+    }
+
+    if (!this.areNumberMapsEqual(u1.emojiUsage ?? {}, u2.emojiUsage ?? {})) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private areStringArraysEqual(arr1: string[], arr2: string[]): boolean {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+  }
+
+  private areNumberMapsEqual(map1: { [key: string]: number }, map2: { [key: string]: number }): boolean {
+    const keys1 = Object.keys(map1);
+    const keys2 = Object.keys(map2);
+    if (keys1.length !== keys2.length) return false;
+
+    for (const key of keys1) {
+      if (map1[key] !== map2[key]) return false;
+    }
+    return true;
+  }
+
 }

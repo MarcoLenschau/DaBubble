@@ -139,8 +139,17 @@ export class MainComponent implements OnInit {
   }
 
   onContextSelected(context: MessageContext): void {
-    this.messageContext = context;
-    console.log("MainComponent: Logging MessageContext: ", context);
+    const same =
+      this.messageContext?.type === context.type &&
+      this.messageContext?.id === context.id &&
+      this.messageContext?.receiverId === context.receiverId;
+
+    if (!same) {
+      console.log("MainComponent: messageContext wurde wirklich geändert:", context);
+      this.messageContext = context;
+    } else {
+      console.log("MainComponent: Kein Update notwendig (messageContext gleich)");
+    }
     if (this.viewMode === 'mobile') {
       this.showMessage = true;
       this.showDevSpace = false;
