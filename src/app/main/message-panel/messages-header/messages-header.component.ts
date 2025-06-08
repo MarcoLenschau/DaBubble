@@ -168,7 +168,11 @@ export class MessagesHeaderComponent {
     return re.test(email.toLowerCase());
   }
 
+<<<<<<< Updated upstream
   selectUser(user: any) {
+=======
+  selectUser(user: any, input: HTMLInputElement) {
+>>>>>>> Stashed changes
     const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
     if (match) {
       this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
@@ -187,7 +191,12 @@ export class MessagesHeaderComponent {
     }, 1);
   }
 
+<<<<<<< Updated upstream
   selectChannel(channel: Channel) {
+=======
+
+  selectChannel(channel: Channel, input: HTMLInputElement) {
+>>>>>>> Stashed changes
     this.textInput += `#${channel.name} `;
 
     emitChannelContext(this.contextSelected, channel.id);

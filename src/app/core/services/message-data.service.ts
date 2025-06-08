@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
-import { Observable, map, OperatorFunction, combineLatest } from 'rxjs';
+import { Observable, map, OperatorFunction, combineLatest, tap, distinctUntilChanged } from 'rxjs';
 import {
   doc,
   updateDoc,
@@ -105,7 +105,12 @@ export class MessageDataService {
 
       orderBy('timestamp', 'asc')
     );
-    return collectionData(q).pipe(this.mapToMessages());
+    return collectionData(q).pipe(
+      this.mapToMessages(),
+      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
+      tap(data => console.log('getChannelMessages, gefilterte Daten:', data))
+    );
+    // return collectionData(q).pipe(tap(data => console.log('getChannelmessages-Rohdaten aus Firestore:', data)), this.mapToMessages());
   }
 
   private getDirectMessages(currentUser: string, directContact: string): Observable<Message[]> {
@@ -125,13 +130,18 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
+
     const messages1$ = collectionData(q1).pipe(this.mapToMessages());
     const messages2$ = collectionData(q2).pipe(this.mapToMessages());
-    console.log('Getting direct messages between', currentUser, 'and', directContact);
 
     return combineLatest([messages1$, messages2$]).pipe(
-      map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp))
+      map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp)),
+      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
+      tap(data => console.log('getDirectMessages, gefilterte Daten:', data))
     );
+    // return combineLatest([messages1$, messages2$]).pipe(tap(data => console.log('Rohdaten aus Firestore:', data)),
+    //   map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp))
+    // );
   }
 
   private getSelfMessages(userId: string): Observable<Message[]> {
@@ -142,7 +152,12 @@ export class MessageDataService {
       where('receiverId', '==', userId),
       orderBy('timestamp', 'asc')
     );
-    return collectionData(q).pipe(this.mapToMessages());
+    return collectionData(q).pipe(
+      this.mapToMessages(),
+      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
+      tap(data => console.log('getSelfMessages, gefilterte Daten:', data))
+    );
+    // return collectionData(q).pipe(this.mapToMessages());
   }
 
   private getCleanJson(message: Message): any {
@@ -184,7 +199,7 @@ export class MessageDataService {
     );
   }
 
-
-
-
+  deepEqual(a: any, b: any): boolean {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
 }
