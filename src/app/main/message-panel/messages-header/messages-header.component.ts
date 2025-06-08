@@ -80,16 +80,24 @@ export class MessagesHeaderComponent {
     });
   }
 
+
+
+
   ngOnDestroy(): void {
     this.currentUserSubscription?.unsubscribe();
   }
 
+mentionBoxPosition = { top: 0, left: 0 };
+
   async onSearch(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
     const term = (event.target as HTMLInputElement).value.trim();
     this.textInput = term;
     this.clearResults();
 
     if (!term) return;
+
+      this.calculateMentionBoxPosition(inputElement);
 
     if (term.startsWith('@')) {
       const query = term.slice(1).toLowerCase();
@@ -114,42 +122,47 @@ export class MessagesHeaderComponent {
     }
   }
 
+  private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
+  const rect = inputElement.getBoundingClientRect();
+  this.mentionBoxPosition = {
+    top: rect.bottom + window.scrollY + 5, 
+    left: rect.left + window.scrollX,
+  };
+}
+
   private validateEmail(email: string): boolean {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email.toLowerCase());
   }
 
-  selectUser(user: any, input: HTMLInputElement) {
-    console.log('👤 User selected:', user);
-    const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
-    if (match) {
-      this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
-    } else {
-      this.textInput += `@${user.displayName} `;
-    }
-
-    this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
-
-    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
-
-
-    input.value = '';
-    this.clearResults();
-    this.closeThread();
+  selectUser(user: any) {
+  const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
+  if (match) {
+    this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
+  } else {
+    this.textInput += `@${user.displayName} `;
   }
 
+  this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
 
-  selectChannel(channel: Channel, input: HTMLInputElement) {
-    console.log(channel.name);
-    console.log(channel.id);
-    this.textInput += `#${channel.name} `;
+  emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
 
-    emitChannelContext(this.contextSelected, channel.id);
+  this.textInput = ''; 
+  this.clearResults();
+  this.closeThread();
+}
 
-    input.value = '';
-    this.clearResults();
-    this.closeThread();
-  }
+
+
+  selectChannel(channel: Channel) {
+  this.textInput += `#${channel.name} `;
+
+  emitChannelContext(this.contextSelected, channel.id);
+
+  this.textInput = ''; 
+  this.clearResults();
+  this.closeThread();
+}
 
   selectSearchResult(msg: Message) {
     emitMessageContextFromMessage(this.contextSelected, msg, this.currentUser.id);
@@ -158,6 +171,8 @@ export class MessagesHeaderComponent {
     this.textInput = '';
     this.clearResults();
   }
+
+
 
 
   private clearResults() {

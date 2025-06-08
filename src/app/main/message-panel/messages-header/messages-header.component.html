@@ -1,56 +1,44 @@
-<div class="message-header" [ngClass]="{
+<div
+  class="message-header"
+  [ngClass]="{
     'thread-header-height': isThread,
     'message-header-height': isMessage
-  }">
+  }"
+>
   <ng-container *ngIf="isMessage">
     <div class="message-header-content">
-      <div class="message-header-content-text" (mouseenter)="arrowHover = true" (mouseleave)="arrowHover = false" (click)="openChannelOverlay()">
-        <h2 *ngIf="activeChannel; else defaultTitle"># {{ activeChannel.name }}</h2>
-        <img [src]= " arrowHover ? './assets/img/channel/arrow_down_hover.png' : './assets/img/channel/keyboard_arrow_down.png'"
-        >
+      <div
+        class="message-header-content-text"
+        (mouseenter)="arrowHover = true"
+        (mouseleave)="arrowHover = false"
+        (click)="openChannelOverlay()"
+      >
+        <h2 *ngIf="activeChannel; else defaultTitle">
+          # {{ activeChannel.name }}
+        </h2>
+        <img
+          [src]="arrowHover
+            ? './assets/img/channel/arrow_down_hover.png'
+            : './assets/img/channel/keyboard_arrow_down.png'"
+        />
         <ng-template #defaultTitle>
           <h2>Neue Nachricht</h2>
         </ng-template>
       </div>
       <div *ngIf="activeChannel">
-          <img class="member-picture" [src]="loadMember()">
+        <img class="member-picture" [src]="loadMember()" />
       </div>
-      <!--Im channel-view werden hier channel members angezeigt-->
     </div>
 
-    <!-- Empfänger-Eingabe + Suchergebnisse -->
+    <!-- Empfänger-Eingabe -->
     <div class="recipient-search">
-      <input #searchInput type="search" placeholder="An: #channel oder @jemand oder E-Mail Adresse"
-        [(ngModel)]="textInput" (input)="onSearch($event)" />
-
-      <div *ngIf="
-          searchResultsUser.length ||
-          searchResultsEmail.length ||
-          searchResultsChannels.length
-        " class="search-results">
-        <ul>
-
-          <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user, searchInput)">
-            <strong>{{ user.email }}</strong>
-          </li>
-
-
-          <li *ngFor="let user of searchResultsUser" (click)="selectUser(user, searchInput)">
-            <strong>&#64;{{ user.displayName }}</strong>
-          </li>
-
-
-          <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel, searchInput)">
-            <strong>#{{ channel.name }}</strong>
-          </li>
-
-          <li *ngFor="let msg of searchResultsMessages" (click)="selectSearchResult(msg)">
-            <div>{{ msg.text }}</div>
-            <div class="meta">{{ msg.name }} • {{ msg.timestamp }}</div>
-          </li>
-
-        </ul>
-      </div>
+      <input
+        #searchInput
+        type="search"
+        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        [(ngModel)]="textInput"
+        (input)="onSearch($event)"
+      />
     </div>
   </ng-container>
 
@@ -69,11 +57,39 @@
   </ng-container>
 </div>
 
+<!-- Search Results → JETZT außerhalb .message-header -->
+<div
+  *ngIf="
+    searchResultsUser.length ||
+    searchResultsEmail.length ||
+    searchResultsChannels.length
+  "
+  class="search-results"
+  [style.top.px]="mentionBoxPosition.top"
+  [style.left.px]="mentionBoxPosition.left"
+>
+  <ul>
+    <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
+      <strong>{{ user.email }}</strong>
+    </li>
+
+    <li *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
+      <strong>&#64;{{ user.displayName }}</strong>
+    </li>
+
+    <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel)">
+      <strong>#{{ channel.name }}</strong>
+    </li>
+
+    <li *ngFor="let msg of searchResultsMessages" (click)="selectSearchResult(msg)">
+      <div>{{ msg.text }}</div>
+      <div class="meta">{{ msg.name }} • {{ msg.timestamp }}</div>
+    </li>
+  </ul>
+</div>
+
 <app-channel-details-overlay
   *ngIf="showChannelOverlay"
   [channel]="activeChannel"
-  (close)="closeChannelOverlay()">
-</app-channel-details-overlay>
-
-
-
+  (close)="closeChannelOverlay()"
+></app-channel-details-overlay>
