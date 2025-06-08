@@ -12,7 +12,6 @@ import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channe
 import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages-utils';
 import { Observable, Subscription } from 'rxjs';
 
-
 @Component({
   selector: 'app-messages-header',
   standalone: true,
@@ -33,8 +32,11 @@ export class MessagesHeaderComponent {
 
   private currentUserSubscription?: Subscription;
 
-  constructor(private firebaseService: FirebaseService, private userDataService: UserDataService, private channelDataService: ChannelDataService) {
-  }
+  constructor(
+    private firebaseService: FirebaseService,
+    private userDataService: UserDataService,
+    private channelDataService: ChannelDataService
+  ) {}
 
   textInput = '';
   currentUser!: User;
@@ -46,6 +48,9 @@ export class MessagesHeaderComponent {
   searchResultsMessages: Message[] = [];
 
   allChannels: Channel[] = [];
+
+  mentionBoxPosition = { top: 0, left: 0 };
+  private searchDebounceTimer?: any;
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -70,65 +75,93 @@ export class MessagesHeaderComponent {
     return this.starterMessage.name;
   }
 
+  get hasSearchResults(): boolean {
+    return (
+      this.searchResultsUser.length > 0 ||
+      this.searchResultsEmail.length > 0 ||
+      this.searchResultsChannels.length > 0 ||
+      this.searchResultsMessages.length > 0
+    );
+  }
+
   ngOnInit() {
     this.firebaseService.updateAllUsersWithLowercaseField();
+
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
+
+      const dummy = this.allChannels.filter((channel) =>
+        channel.name.toLowerCase().includes('')
+      );
+      console.log('Dummy filter done, length:', dummy.length);
+
+      this.searchResultsChannels = [];
     });
-    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
+
+    this.currentUserSubscription = this.userDataService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
   }
-
-
-
 
   ngOnDestroy(): void {
     this.currentUserSubscription?.unsubscribe();
   }
 
-mentionBoxPosition = { top: 0, left: 0 };
+ onSearch(event: Event) {
+  const inputElement = event.target as HTMLInputElement;
+  const term = inputElement.value.trim();
+  this.textInput = term;
 
-  async onSearch(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    const term = (event.target as HTMLInputElement).value.trim();
-    this.textInput = term;
-    this.clearResults();
+  this.calculateMentionBoxPosition(inputElement);
 
-    if (!term) return;
-
-      this.calculateMentionBoxPosition(inputElement);
+  clearTimeout(this.searchDebounceTimer);
+  this.searchDebounceTimer = setTimeout(async () => {
+    if (!term) {
+      this.clearResults();
+      return;
+    }
 
     if (term.startsWith('@')) {
       const query = term.slice(1).toLowerCase();
 
       if (this.validateEmail(query)) {
-        // Suche nach E-Mail (z. B. @max@example.de)
         this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+        this.searchResultsUser = [];
+        this.searchResultsChannels = [];
       } else if (query.length >= 1) {
-        // Suche nach Namen
         this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
+        this.searchResultsEmail = [];
+        this.searchResultsChannels = [];
       }
 
     } else if (term.startsWith('#')) {
+      if (this.allChannels.length === 0) {
+        return;
+      }
+
       const query = term.slice(1).toLowerCase();
       this.searchResultsChannels = this.allChannels.filter((channel) =>
         channel.name.toLowerCase().includes(query)
       );
+      this.searchResultsUser = [];
+      this.searchResultsEmail = [];
 
     } else if (this.validateEmail(term)) {
-      // Direkte E-Mail-Suche (ohne @ am Anfang)
       this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
+      this.searchResultsUser = [];
+      this.searchResultsChannels = [];
     }
-  }
+  }, 100); 
+}
+
 
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
-  const rect = inputElement.getBoundingClientRect();
-  this.mentionBoxPosition = {
-    top: rect.bottom + window.scrollY + 5, 
-    left: rect.left + window.scrollX,
-  };
-}
+    const rect = inputElement.getBoundingClientRect();
+    this.mentionBoxPosition = {
+      top: rect.bottom + window.scrollY + 5,
+      left: rect.left + window.scrollX,
+    };
+  }
 
   private validateEmail(email: string): boolean {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -136,33 +169,35 @@ mentionBoxPosition = { top: 0, left: 0 };
   }
 
   selectUser(user: any) {
-  const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
-  if (match) {
-    this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
-  } else {
-    this.textInput += `@${user.displayName} `;
+    const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
+    if (match) {
+      this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
+    } else {
+      this.textInput += `@${user.displayName} `;
+    }
+
+    this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
+
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
+
+    setTimeout(() => {
+      this.textInput = '';
+      this.clearResults();
+      this.closeThread();
+    }, 1);
   }
 
-  this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
-
-  emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
-
-  this.textInput = ''; 
-  this.clearResults();
-  this.closeThread();
-}
-
-
-
   selectChannel(channel: Channel) {
-  this.textInput += `#${channel.name} `;
+    this.textInput += `#${channel.name} `;
 
-  emitChannelContext(this.contextSelected, channel.id);
+    emitChannelContext(this.contextSelected, channel.id);
 
-  this.textInput = ''; 
-  this.clearResults();
-  this.closeThread();
-}
+    setTimeout(() => {
+      this.textInput = '';
+      this.clearResults();
+      this.closeThread();
+    }, 1);
+  }
 
   selectSearchResult(msg: Message) {
     emitMessageContextFromMessage(this.contextSelected, msg, this.currentUser.id);
@@ -171,9 +206,6 @@ mentionBoxPosition = { top: 0, left: 0 };
     this.textInput = '';
     this.clearResults();
   }
-
-
-
 
   private clearResults() {
     this.searchResultsUser = [];

@@ -82,19 +82,30 @@
 }
 
 .search-results {
-  position: fixed; 
-  top: 130px; 
-  left: 40px; 
-  width: 400px; 
+  position: fixed;
+  top: 130px;
+  left: 40px;
+  width: 400px;
   background-color: $white;
   border-radius: 0 0 20px 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000; 
+  z-index: 1000;
   max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #535af1 transparent;
+
+
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  opacity: 1;
+  visibility: visible;
+
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -133,6 +144,8 @@
     }
   }
 }
+
+
 
 
 .member-picture {

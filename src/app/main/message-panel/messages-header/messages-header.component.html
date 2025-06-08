@@ -57,14 +57,10 @@
   </ng-container>
 </div>
 
-<!-- Search Results → JETZT außerhalb .message-header -->
+
 <div
-  *ngIf="
-    searchResultsUser.length ||
-    searchResultsEmail.length ||
-    searchResultsChannels.length
-  "
   class="search-results"
+  [class.hidden]="!hasSearchResults"
   [style.top.px]="mentionBoxPosition.top"
   [style.left.px]="mentionBoxPosition.left"
 >
