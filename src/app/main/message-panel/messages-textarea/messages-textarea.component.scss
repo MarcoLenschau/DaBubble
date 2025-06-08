@@ -114,6 +114,7 @@
     background-color: $grey;
   }
 }
+
 .search-results {
   position: absolute;
   top: 80px;
@@ -125,7 +126,27 @@
   z-index: 10;
   max-height: 200px;
   overflow-y: auto;
-  
+  overflow-x: hidden;
+  scrollbar-width: thin;                      
+  scrollbar-color: #535af1 transparent;       
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
 
   ul {
     margin: 0;
@@ -146,4 +167,3 @@
     }
   }
 }
-
