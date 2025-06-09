@@ -274,21 +274,44 @@ export class MessageDataService {
   }
 
   private mapToMessages(docs: any[]): Message[] {
-    return docs.map(doc => new Message({
-      id: doc.id,
-      name: doc.name,
-      text: doc.text,
-      timestamp: doc.timestamp ?? Date.now(),
-      userId: doc.userId,
-      receiverId: doc.receiverId ?? '',
-      isDirectMessage: doc.isDirectMessage ?? false,
-      channelId: doc.channelId ?? '',
-      threadId: doc.threadId ?? '',
-      reactions: doc.reactions ?? [],
-      lastReplyTimestamp: doc.lastReplyTimestamp,
-      replies: doc.replies ?? 0,
-    }));
+    return docs.map(doc => {
+      if (doc.replies === undefined) {
+        console.warn('⚠️ Dokument ohne replies-Feld:', doc.id, doc);
+      }
+      return new Message({
+
+        id: doc.id,
+        name: doc.name,
+        text: doc.text,
+        timestamp: doc.timestamp ?? Date.now(),
+        userId: doc.userId,
+        receiverId: doc.receiverId ?? '',
+        isDirectMessage: doc.isDirectMessage ?? false,
+        channelId: doc.channelId ?? '',
+        threadId: doc.threadId ?? '',
+        reactions: doc.reactions ?? [],
+        lastReplyTimestamp: doc.lastReplyTimestamp,
+        replies: doc.replies,
+      })
+    });
   }
+
+  // private mapToMessages(docs: any[]): Message[] {
+  //   return docs.map(doc => new Message({
+  //     id: doc.id,
+  //     name: doc.name,
+  //     text: doc.text,
+  //     timestamp: doc.timestamp ?? Date.now(),
+  //     userId: doc.userId,
+  //     receiverId: doc.receiverId ?? '',
+  //     isDirectMessage: doc.isDirectMessage ?? false,
+  //     channelId: doc.channelId ?? '',
+  //     threadId: doc.threadId ?? '',
+  //     reactions: doc.reactions ?? [],
+  //     lastReplyTimestamp: doc.lastReplyTimestamp,
+  //     replies: doc.replies ?? 0,
+  //   }));
+  // }
 
   private getMessageHash(messages: Message[]): string {
     return messages.map(m =>

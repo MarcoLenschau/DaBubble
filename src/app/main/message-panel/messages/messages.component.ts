@@ -68,6 +68,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   users: User[] = [];
   currentUser!: User;
   messages: Message[] = [];
+  threadMessages: Message[] = [];
   channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
@@ -89,6 +90,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
+  private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
   private repliesUpdateTimeout?: ReturnType<typeof setTimeout>;
 
@@ -126,6 +128,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
+    this.threadMessagesSubscription?.unsubscribe();
     this.currentUserSubscription?.unsubscribe();
   }
 
@@ -133,16 +136,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     if (
       this.isMessage &&
       changes['messageContext'] &&
-      !changes['messageContext'].firstChange
-    ) {
-      const prev: MessageContext | undefined = changes['messageContext'].previousValue;
-      const curr: MessageContext | undefined = changes['messageContext'].currentValue;
-
-      if (!this.isEqualMessageContext(prev, curr)) {
-
-        this.subscribeToMessages();
-      } else {
-      }
+      !changes['messageContext'].firstChange) {
+      this.subscribeToMessages();
     }
 
     if (this.isThread &&
@@ -153,17 +148,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.lastThreadId = this.starterMessage.id;
     }
   }
-
-  private isEqualMessageContext(a?: MessageContext, b?: MessageContext): boolean {
-    if (a === b) return true;
-
-    if (!a || !b) {
-      return false;
-    }
-
-    return a.id === b.id && a.type === b.type && a.receiverId !== b.receiverId
-  }
-
 
   private subscribeToMessages(): void {
 
@@ -181,7 +165,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     await this.ensureThreadId(msg);
 
-    this.messagesSubscription?.unsubscribe();
+    this.threadMessagesSubscription?.unsubscribe();
 
     this.subscribeToThreadMessages(msg);
   }
@@ -195,12 +179,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private subscribeToThreadMessages(msg: Message): void {
-    this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(async (loadedMessages) => {
-      this.messages = loadedMessages;
+    let isFirst = true;
+    this.threadMessagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(loadedMessages => {
+      this.threadMessages = loadedMessages;
 
-      this.filteredMessages = [msg, ...this.messages.filter(m => m.id !== msg.id)];
+      this.filteredMessages = [msg, ...this.threadMessages.filter(m => m.id !== msg.id)];
 
-      this.updateRepliesCountIfNeeded(msg);
+      if (!isFirst) {
+        this.updateRepliesCountIfNeeded(msg);
+      }
+      isFirst = false;
 
       this.threadSymbol = msg.channelId ? '#' : '@';
       this.threadTitle = msg.channelId
@@ -212,15 +200,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private updateRepliesCountIfNeeded(msg: Message): void {
     const newCount = this.filteredMessages.length - 1;
     if (newCount !== msg.replies) {
-      if (this.repliesUpdateTimeout) clearTimeout(this.repliesUpdateTimeout);
-      this.repliesUpdateTimeout = setTimeout(async () => {
-        try {
-          msg.replies = newCount;
-          await this.messageDataService.updateMessageFields(msg.id, { replies: newCount });
-        } catch (error) {
-          console.error('Error updating replies count:', error);
-        }
-      }, 500);
+      msg.replies = newCount;
+      this.messageDataService.updateMessageFields(msg.id, { replies: newCount })
+        .catch(error =>
+          console.error('Error updating replies count:', error));
     }
   }
 
@@ -242,6 +225,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   closeThread() {
     this.showThreadChange.emit(false);
+    this.threadMessagesSubscription?.unsubscribe();
   }
 
   cancelReply() {
