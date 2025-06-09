@@ -13,13 +13,16 @@ export class FirebaseService {
   }
 
   getColRef(col: string) {
+
+    // Wiederholtes, unkontrolliertes Subscriben auf collectionData-Observables? 
+
     return collectionData(this.getDocRef(col), { idField: 'id' });
   }
 
   getSingleDocRef(docRef: string, docId: any) {
     return doc(this.firebase, docRef, docId);
   }
-  
+
   /**
    * Add new user in firebase.
    */

@@ -23,6 +23,9 @@ export class AuthService {
   constructor() {
     this.users$ = this.firebase.getColRef('users');
     this.users$.forEach((users: any) => {
+
+      // Mehrfache Subscriptions auf denselben Stream?
+
       this.users = users;
     });
     this.restoreAuthState();
@@ -54,7 +57,7 @@ export class AuthService {
   }
 
   logout() {
-    this.users.forEach(async(user) => {
+    this.users.forEach(async (user) => {
       if (user.email === this.user.email) {
         await this.firebase.updateUserState(user, false);
         this.auth.signOut()

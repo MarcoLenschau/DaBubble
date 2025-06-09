@@ -162,10 +162,10 @@
 
       <!-- Trennlinie für Antworten im Thread -->
       <ng-container *ngIf="isThread">
-        <div *ngIf="i === 0 && replies > 0" class="thread-replies-divider">
+        <div *ngIf="i === 0 && filteredMessages.length > 1" class="thread-replies-divider">
           <p>
-            {{ replies }}
-            {{ replies === 1 ? 'Antwort' : 'Antworten' }}
+            {{ filteredMessages.length - 1 }}
+            {{ filteredMessages.length - 1 === 1 ? 'Antwort' : 'Antworten' }}
           </p>
           <div class="line"></div>
         </div>

@@ -245,8 +245,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
     try {
       await this.messageDataService.addMessage(message);
-      // this.resetInputField();
-      // this.messageSent.emit();
       await this.updateStarterMessage();
       this.resetInputField();
     } catch (error) {
@@ -301,7 +299,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     if (this.mode === 'thread' && this.starterMessage) {
 
       await this.messageDataService.updateMessageFields(this.starterMessage.id, {
-        replies: this.starterMessage.replies,
+        // replies: this.starterMessage.replies,
         lastReplyTimestamp: Date.now(),
       });
     }

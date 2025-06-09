@@ -75,7 +75,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   filteredMessages: Message[] = [];
   hoveredIndex: number | null = null;
   tooltipHoveredIndex: number | null = null;
-  replies = 0;
   formattedUserNames: string = '';
   tooltipText: string = '';
   textareaContent: string = '';
@@ -91,6 +90,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
+  private repliesUpdateTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private userDataService: UserDataService,
@@ -124,7 +124,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.editMenuOpenIndex = null;
   }
 
-
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
     this.currentUserSubscription?.unsubscribe();
@@ -139,7 +138,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       const prev: MessageContext | undefined = changes['messageContext'].previousValue;
       const curr: MessageContext | undefined = changes['messageContext'].currentValue;
 
-      // Nur wenn sich der Kontext *inhaltlich* ändert, neu abonnieren
       if (!this.isEqualMessageContext(prev, curr)) {
 
         this.subscribeToMessages();
@@ -168,53 +166,61 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
 
   private subscribeToMessages(): void {
-    console.log("111111111111111111111111111111111111111111111111111111111🔥 subscribeToMessages aufgerufen");
 
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
 
     const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
     this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
-      console.log("222222222222222222222222222222222222222222222222222222222222📥 Neue Nachrichten empfangen:", loadedMessages.length);
       this.messages = loadedMessages;
     });
   }
-
-  // reloadMessages(): void {
-  //   this.subscribeToMessages();
-  // }
 
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
 
+    await this.ensureThreadId(msg);
+
+    this.messagesSubscription?.unsubscribe();
+
+    this.subscribeToThreadMessages(msg);
+  }
+
+  private async ensureThreadId(msg: Message): Promise<void> {
     if (!msg.threadId) {
       msg.threadId = msg.id;
       await this.saveMessage(msg);
     }
-
     this.threadId = msg.threadId;
-    this.messagesSubscription?.unsubscribe();
+  }
 
+  private subscribeToThreadMessages(msg: Message): void {
     this.messagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(async (loadedMessages) => {
       this.messages = loadedMessages;
 
-      await this.updateReplies(this.messages.length, msg);
+      this.filteredMessages = [msg, ...this.messages.filter(m => m.id !== msg.id)];
 
-      this.filteredMessages = [msg, ...this.messages.filter((m) => m.id !== msg.id)];
+      this.updateRepliesCountIfNeeded(msg);
 
       this.threadSymbol = msg.channelId ? '#' : '@';
       this.threadTitle = msg.channelId
-        ? this.channels.find((c) => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
+        ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
         : msg.name;
     });
   }
 
-  async updateReplies(threadMessages: number, msg: Message) {
-    this.replies = Math.max(threadMessages - 1, 0);
-    if (msg.replies !== this.replies) {
-      await this.messageDataService.updateMessageFields(msg.id, {
-        replies: this.replies
-      });
+  private updateRepliesCountIfNeeded(msg: Message): void {
+    const newCount = this.filteredMessages.length - 1;
+    if (newCount !== msg.replies) {
+      if (this.repliesUpdateTimeout) clearTimeout(this.repliesUpdateTimeout);
+      this.repliesUpdateTimeout = setTimeout(async () => {
+        try {
+          msg.replies = newCount;
+          await this.messageDataService.updateMessageFields(msg.id, { replies: newCount });
+        } catch (error) {
+          console.error('Error updating replies count:', error);
+        }
+      }, 500);
     }
   }
 

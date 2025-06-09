@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
+import { Reaction } from '../interfaces/reaction.interface';
 import { Observable, map, OperatorFunction, combineLatest, tap, distinctUntilChanged } from 'rxjs';
 import {
   doc,
@@ -18,7 +19,8 @@ import {
   Query,
   where,
   orderBy,
-  collectionData
+  collectionData,
+  onSnapshot
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -26,6 +28,13 @@ import {
 })
 export class MessageDataService {
   private readonly collectionPath = 'messages';
+  private _lastChannelMessages: Message[] | null = null;
+  private _lastDirectMessages: Message[] | null = null;
+  private _lastSelfMessages: Message[] | null = null;
+  private _lastChannelMessageHash: string | null = null;
+  private _lastDirectMessageHash: string | null = null;
+  private _lastSelfMessageHash: string | null = null;
+
 
   constructor(
     private firebaseService: FirebaseService,
@@ -64,11 +73,11 @@ export class MessageDataService {
     await deleteDoc(docRef);
   }
 
-  getMessages(): Observable<Message[]> {
-    return this.firebaseService.getColRef(this.collectionPath).pipe(
-      this.mapToMessages()
-    );
-  }
+  // getMessages(): Observable<Message[]> {
+  //   return this.firebaseService.getColRef(this.collectionPath).pipe(
+  //     map(docs => this.mapToMessages(docs))
+  //   );
+  // }
 
   getMessagesForThread(threadId: string): Observable<Message[]> {
     const q = query(
@@ -77,7 +86,9 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
-    return collectionData(q).pipe(this.mapToMessages());
+    return collectionData(q).pipe(
+      map(docs => this.mapToMessages(docs))
+    );
   }
 
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
@@ -102,15 +113,47 @@ export class MessageDataService {
     const q = query(
       collection(this.firestore, 'messages'),
       where('channelId', '==', channelId),
-
       orderBy('timestamp', 'asc')
     );
-    return collectionData(q).pipe(
-      this.mapToMessages(),
-      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
-      tap(data => console.log('getChannelMessages, gefilterte Daten:', data))
-    );
-    // return collectionData(q).pipe(tap(data => console.log('getChannelmessages-Rohdaten aus Firestore:', data)), this.mapToMessages());
+
+    let snapshotCount = 0;
+
+    return new Observable<Message[]>(subscriber => {
+      const unsubscribe = onSnapshot(q, snapshot => {
+        snapshotCount++; // nur zum Loggen
+        console.groupCollapsed(`[onSnapshot] Channel: ${channelId} | Aufruf: #${snapshotCount}`);
+
+        const rawDocs = snapshot.docs.map(d => d.data()); // nur zum Loggen
+        console.log('📦 Dokumente erhalten:', rawDocs.length);
+        if (rawDocs.length > 100) {
+          console.warn('⚠️ Mehr als 100 Nachrichten empfangen – potenziell exzessiver Datenstrom!');
+        }
+
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const messages = this.mapToMessages(docs);
+        const currentHash = this.getMessageHash(messages);
+        const isChanged = this._lastChannelMessageHash !== currentHash;
+
+        console.log('🔍 Hash alt:', this._lastChannelMessageHash);
+        console.log('🔍 Hash neu:', currentHash);
+        console.log('💡 Änderung erkannt:', isChanged);
+
+        if (isChanged) {
+          this._lastChannelMessageHash = currentHash;
+          console.log('✅ Neue Nachrichten → weiterleiten:', messages.length);
+          subscriber.next(messages);
+        } else {
+          console.log('🚫 Keine inhaltliche Änderung → kein next()');
+        }
+
+        console.groupEnd();
+      }, error => {
+        console.error('[onSnapshot] Fehler:', error);
+        subscriber.error(error);
+      });
+
+      return () => unsubscribe();
+    });
   }
 
   private getDirectMessages(currentUser: string, directContact: string): Observable<Message[]> {
@@ -130,18 +173,61 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
+    let snapshotCount = 0; // nur zum Loggen
+    let lastM1: Message[] | null = null; // nur zum Loggen
+    let lastM2: Message[] | null = null; // nur zum Loggen
 
-    const messages1$ = collectionData(q1).pipe(this.mapToMessages());
-    const messages2$ = collectionData(q2).pipe(this.mapToMessages());
+    return new Observable<Message[]>(subscriber => {
+      let lastM1: Message[] | null = null;
+      let lastM2: Message[] | null = null;
 
-    return combineLatest([messages1$, messages2$]).pipe(
-      map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp)),
-      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
-      tap(data => console.log('getDirectMessages, gefilterte Daten:', data))
-    );
-    // return combineLatest([messages1$, messages2$]).pipe(tap(data => console.log('Rohdaten aus Firestore:', data)),
-    //   map(([m1, m2]) => [...m1, ...m2].sort((a, b) => a.timestamp - b.timestamp))
-    // );
+      const sub1 = onSnapshot(q1, snapshot => {
+        console.log('[onSnapshot raw] DOCS:', snapshot.docs.map(d => d.data()));
+
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        lastM1 = this.mapToMessages(docs);
+        emitCombined();
+      }, error => subscriber.error(error));
+
+      const sub2 = onSnapshot(q2, snapshot => {
+        console.log('[onSnapshot raw] DOCS:', snapshot.docs.map(d => d.data()));
+
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        lastM2 = this.mapToMessages(docs);
+        emitCombined();
+      }, error => subscriber.error(error));
+
+      const emitCombined = () => {
+        if (lastM1 === null || lastM2 === null) return;
+        snapshotCount++; // nur zum Loggen
+        const combined = [...lastM1, ...lastM2].sort((a, b) => a.timestamp - b.timestamp);
+        const currentHash = this.getMessageHash(combined);
+        const isChanged = this._lastDirectMessageHash !== currentHash;
+
+        console.groupCollapsed(`[onSnapshot] DirectMessages ${currentUser} ↔ ${directContact} | Aufruf: #${snapshotCount}`);
+        console.log('🧩 Kombinierte Nachrichten:', combined.length);
+        console.log('🔍 Hash alt:', this._lastDirectMessageHash);
+        console.log('🔍 Hash neu:', currentHash);
+        console.log('💡 Änderung erkannt:', isChanged);
+        if (combined.length > 100) {
+          console.warn('⚠️ Kombinierte Nachrichten > 100 → prüfen auf Datenflut!');
+        }
+
+        if (isChanged) {
+          this._lastDirectMessageHash = currentHash;
+          console.log('✅ Neue Nachrichten → weiterleiten');
+          subscriber.next(combined);
+        } else {
+          console.log('🚫 Keine Änderung → kein next()');
+        }
+        console.groupEnd();
+      };
+
+      return () => {
+        sub1();
+        sub2();
+      };
+    });
   }
 
   private getSelfMessages(userId: string): Observable<Message[]> {
@@ -152,12 +238,21 @@ export class MessageDataService {
       where('receiverId', '==', userId),
       orderBy('timestamp', 'asc')
     );
-    return collectionData(q).pipe(
-      this.mapToMessages(),
-      distinctUntilChanged((prev, curr) => this.deepEqual(prev, curr)),
-      tap(data => console.log('getSelfMessages, gefilterte Daten:', data))
-    );
-    // return collectionData(q).pipe(this.mapToMessages());
+
+    return new Observable<Message[]>(subscriber => {
+      const unsubscribe = onSnapshot(q, snapshot => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const messages = this.mapToMessages(docs);
+        const currentHash = this.getMessageHash(messages);
+        if (this._lastSelfMessageHash !== currentHash) {
+          this._lastSelfMessageHash = currentHash;
+          subscriber.next(messages);
+        }
+
+      }, error => subscriber.error(error));
+
+      return () => unsubscribe();
+    });
   }
 
   private getCleanJson(message: Message): any {
@@ -178,28 +273,33 @@ export class MessageDataService {
     };
   }
 
-  private mapToMessages(): OperatorFunction<DocumentData[], Message[]> {
-    return map((docs) =>
-      docs.map((doc) =>
-        new Message({
-          id: doc['id'],
-          name: doc['name'],
-          text: doc['text'],
-          timestamp: doc['timestamp'] ?? Date.now(),
-          userId: doc['userId'],
-          receiverId: doc['receiverId'] ?? '',
-          isDirectMessage: doc['isDirectMessage'] ?? false,
-          channelId: doc['channelId'] ?? '',
-          threadId: doc['threadId'] ?? '',
-          reactions: doc['reactions'] ?? [],
-          lastReplyTimestamp: doc['lastReplyTimestamp'],
-          replies: doc['replies'] ?? 0,
-        })
-      )
-    );
+  private mapToMessages(docs: any[]): Message[] {
+    return docs.map(doc => new Message({
+      id: doc.id,
+      name: doc.name,
+      text: doc.text,
+      timestamp: doc.timestamp ?? Date.now(),
+      userId: doc.userId,
+      receiverId: doc.receiverId ?? '',
+      isDirectMessage: doc.isDirectMessage ?? false,
+      channelId: doc.channelId ?? '',
+      threadId: doc.threadId ?? '',
+      reactions: doc.reactions ?? [],
+      lastReplyTimestamp: doc.lastReplyTimestamp,
+      replies: doc.replies ?? 0,
+    }));
   }
 
-  deepEqual(a: any, b: any): boolean {
-    return JSON.stringify(a) === JSON.stringify(b);
+  private getMessageHash(messages: Message[]): string {
+    return messages.map(m =>
+      `${m.id}:${m.text}:${m.threadId ?? ''}:${m.lastReplyTimestamp ?? 0}:${m.replies}:${this.reactionsToString(m.reactions)}`
+    ).join('|');
+  }
+
+  private reactionsToString(reactions: Reaction[]): string {
+    return reactions
+      .map(r => `${r.emojiName}:${r.userIds.sort().join(',')}`)
+      .sort()
+      .join(';');
   }
 }
