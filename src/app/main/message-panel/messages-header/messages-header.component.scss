@@ -24,7 +24,7 @@
   border-top-right-radius: 30px; //Bitte nicht löschen
   box-shadow: 0px 2px 10px 0px #00000014;
   clip-path: inset(0px 0px -10px 0px); //Bitte nicht löschen
-  
+
 
   .message-header-content {
     width: 100%;
@@ -145,13 +145,32 @@
   }
 }
 
+.channel-members-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0 0 0;
+}
 
 
+.members-overview {
+  display: flex;
+  align-items: center;
+  gap: -8px;
+  cursor: pointer;
 
-.member-picture {
-  border-radius: 50%;
-  height: 100px;
-  width: 100px;
+  .member-picture {
+    border-radius: 50%;
+    height: 36px;
+    width: 36px;
+  }
+}
+
+.add-member-btn {
+  background-color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: $mobile-xl) {

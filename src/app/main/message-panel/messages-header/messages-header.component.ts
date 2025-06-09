@@ -11,11 +11,13 @@ import { Channel } from '../../../core/models/channel.model';
 import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
 import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages-utils';
 import { Observable, Subscription } from 'rxjs';
+import { ChannelMembersOverlayComponent } from './channel-members-overlay/channel-members-overlay.component';
+import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overlay.component';
 
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelDetailsOverlayComponent],
+  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelDetailsOverlayComponent, ChannelMembersOverlayComponent, AddMemberOverlayComponent],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })
@@ -29,6 +31,8 @@ export class MessagesHeaderComponent {
 
   arrowHover = false;
   showChannelOverlay = false;
+  showMembersOverlay = false;
+  showAddMemberOverlay = false;
 
   private currentUserSubscription?: Subscription;
 
@@ -221,7 +225,7 @@ export class MessagesHeaderComponent {
 
   loadMember() {
     const members = JSON.parse(this.activeChannel.members);
-    return members.photoURL;
+    return members.photoURL || './assets/img/profilepic/frederik.png';
   }
 
   openChannelOverlay() {
@@ -230,5 +234,13 @@ export class MessagesHeaderComponent {
 
   closeChannelOverlay() {
     this.showChannelOverlay = false;
+  }
+
+  openMembersOverlay() {
+    this.showMembersOverlay = true;
+  }
+
+  openAddMemberOverlay() {
+    this.showAddMemberOverlay = true;
   }
 }

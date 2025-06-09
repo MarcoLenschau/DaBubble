@@ -25,8 +25,18 @@
           <h2>Neue Nachricht</h2>
         </ng-template>
       </div>
-      <div *ngIf="activeChannel">
-        <img class="member-picture" [src]="loadMember()" />
+      <div class= "channel-members-row" *ngIf="activeChannel">
+        <div class="members-overview" (click)="openMembersOverlay()">
+          <ng-container *ngFor="let member of activeChannel.members">
+            <img class="member-picture" 
+            [src]="loadMember()" />
+          </ng-container>
+        </div>
+
+        <button class="add-member-btn" (click)="openAddMemberOverlay()">
+          <img src="./assets/img/channel/members-add-button.png" alt="">
+        </button>
+        
       </div>
     </div>
 
@@ -89,3 +99,15 @@
   [channel]="activeChannel"
   (close)="closeChannelOverlay()"
 ></app-channel-details-overlay>
+
+<app-channel-members-overlay 
+*ngIf="showMembersOverlay"
+[members]="activeChannel.members"
+(close)="showMembersOverlay = false">
+</app-channel-members-overlay>
+
+<app-add-member-overlay
+*ngIf="showAddMemberOverlay"
+[channel]="activeChannel"
+(close)="showAddMemberOverlay = false">
+</app-add-member-overlay>

@@ -1,0 +1,97 @@
+.members-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  font-family: 'Nunito';
+}
+
+.members-overlay-card {
+  background: #fff;
+  border-radius: 32px;
+  padding: 40px 48px 32px 48px;
+  min-width: 350px;
+  min-height: 200px;
+  box-shadow: 0 4px 24px rgba(80, 80, 200, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+}
+
+.members-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .members-title {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .member-name {
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+}
+
+.add-members-btn {
+  margin-top: 24px;
+  background: #f5f6ff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e0e3ff;
+  }
+
+  .add-members-icon {
+    background: #ececff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}

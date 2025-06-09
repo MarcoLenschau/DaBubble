@@ -1,0 +1,109 @@
+.add-member-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.add-member-overlay-card {
+  background: #fff;
+  border-radius: 40px;
+  padding: 48px 56px 40px 56px;
+  min-width: 480px;
+  box-shadow: 0 4px 24px rgba(80, 80, 200, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+}
+
+.add-member-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .add-member-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.add-member-channel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #8e8efc;
+
+  .channel-hash {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .channel-name {
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+}
+
+.add-member-input {
+  width: 100%;
+  padding: 20px 24px;
+  border: 2px solid #d3d3fa;
+  border-radius: 32px;
+  font-size: 1.3rem;
+  outline: none;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  color: #222;
+
+  &::placeholder {
+    color: #b0b0c3;
+    font-size: 1.2rem;
+  }
+}
+
+.add-member-btn {
+  align-self: flex-end;
+  background: #888;
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:not(:disabled) {
+    background: #8e8efc;
+  }
+
+  &:disabled {
+    background: #888;
+    cursor: not-allowed;
+    color: #eee;
+  }
+}
