@@ -1,0 +1,27 @@
+<div class="add-member-overlay-backdrop">
+  <div class="add-member-overlay-card">
+    <div class="add-member-overlay-header">
+      <span class="add-member-title">Leute hinzufügen</span>
+      <button class="close-btn" (click)="close.emit()">
+        <img src="assets/img/close/close.svg" alt="Schließen" />
+      </button>
+    </div>
+    <div class="add-member-channel">
+      <span class="channel-hash">#</span>
+      <span class="channel-name">{{ channel?.name }}</span>
+    </div>
+    <input
+      class="add-member-input"
+      type="text"
+      placeholder="Name eingeben"
+      [(ngModel)]="username"
+    />
+    <button
+      class="add-member-btn"
+      [disabled]="!username"
+      (click)="addUser()"
+    >
+      Add User
+    </button>
+  </div>
+</div>
