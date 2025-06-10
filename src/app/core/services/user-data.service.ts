@@ -1,7 +1,8 @@
 import { Injectable, Injector } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { User } from '../models/user.model';
-import { Observable, map, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { deleteDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 

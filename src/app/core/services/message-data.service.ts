@@ -3,24 +3,21 @@ import { FirebaseService } from './firebase.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
 import { Reaction } from '../interfaces/reaction.interface';
-import { Observable, map, OperatorFunction, combineLatest, tap, distinctUntilChanged } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   doc,
   updateDoc,
   deleteDoc,
-  addDoc,
   setDoc,
-  CollectionReference,
   DocumentData,
   collection,
-  getFirestore,
   Firestore,
   query,
-  Query,
   where,
   orderBy,
   collectionData,
-  onSnapshot
+  onSnapshot, QueryDocumentSnapshot
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -28,13 +25,6 @@ import {
 })
 export class MessageDataService {
   private readonly collectionPath = 'messages';
-  private _lastChannelMessages: Message[] | null = null;
-  private _lastDirectMessages: Message[] | null = null;
-  private _lastSelfMessages: Message[] | null = null;
-  private _lastChannelMessageHash: string | null = null;
-  private _lastDirectMessageHash: string | null = null;
-  private _lastSelfMessageHash: string | null = null;
-
 
   constructor(
     private firebaseService: FirebaseService,
@@ -73,12 +63,6 @@ export class MessageDataService {
     await deleteDoc(docRef);
   }
 
-  // getMessages(): Observable<Message[]> {
-  //   return this.firebaseService.getColRef(this.collectionPath).pipe(
-  //     map(docs => this.mapToMessages(docs))
-  //   );
-  // }
-
   getMessagesForThread(threadId: string): Observable<Message[]> {
     const q = query(
       collection(this.firestore, 'messages'),
@@ -86,7 +70,7 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
-    return collectionData(q).pipe(
+    return collectionData(q, { idField: 'id' }).pipe(
       map(docs => this.mapToMessages(docs))
     );
   }
@@ -116,39 +100,38 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
-    let snapshotCount = 0;
-
     return new Observable<Message[]>(subscriber => {
+      const localCache = new Map<string, Message>();
+
       const unsubscribe = onSnapshot(q, snapshot => {
-        snapshotCount++; // nur zum Loggen
-        console.groupCollapsed(`[onSnapshot] Channel: ${channelId} | Aufruf: #${snapshotCount}`);
+        snapshot.docChanges().forEach(change => {
+          const msg = this.mapDocToMessage(change.doc);
 
-        const rawDocs = snapshot.docs.map(d => d.data()); // nur zum Loggen
-        console.log('📦 Dokumente erhalten:', rawDocs.length);
-        if (rawDocs.length > 100) {
-          console.warn('⚠️ Mehr als 100 Nachrichten empfangen – potenziell exzessiver Datenstrom!');
-        }
-
-        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const messages = this.mapToMessages(docs);
-        const currentHash = this.getMessageHash(messages);
-        const isChanged = this._lastChannelMessageHash !== currentHash;
-
-        console.log('🔍 Hash alt:', this._lastChannelMessageHash);
-        console.log('🔍 Hash neu:', currentHash);
-        console.log('💡 Änderung erkannt:', isChanged);
-
-        if (isChanged) {
-          this._lastChannelMessageHash = currentHash;
-          console.log('✅ Neue Nachrichten → weiterleiten:', messages.length);
-          subscriber.next(messages);
-        } else {
-          console.log('🚫 Keine inhaltliche Änderung → kein next()');
-        }
-
-        console.groupEnd();
+          switch (change.type) {
+            case 'added':
+              localCache.set(msg.id, msg);
+              this.handleNewMessage(subscriber, localCache, msg);
+              break;
+            case 'modified':
+              const old = localCache.get(msg.id);
+              if (old) {
+                const hasChanges = this.detectRelevantChanges(old, msg);
+                if (hasChanges) {
+                  localCache.set(msg.id, msg);
+                  this.handleModifiedMessage(subscriber, localCache, msg, old);
+                }
+              } else {
+                localCache.set(msg.id, msg);
+                this.handleNewMessage(subscriber, localCache, msg);
+              }
+              break;
+            case 'removed':
+              localCache.delete(msg.id);
+              this.handleRemovedMessage(subscriber, localCache, msg.id);
+              break;
+          }
+        });
       }, error => {
-        console.error('[onSnapshot] Fehler:', error);
         subscriber.error(error);
       });
 
@@ -173,59 +156,45 @@ export class MessageDataService {
       orderBy('timestamp', 'asc')
     );
 
-    let snapshotCount = 0; // nur zum Loggen
-    let lastM1: Message[] | null = null; // nur zum Loggen
-    let lastM2: Message[] | null = null; // nur zum Loggen
-
     return new Observable<Message[]>(subscriber => {
-      let lastM1: Message[] | null = null;
-      let lastM2: Message[] | null = null;
+      const cache = new Map<string, Message>();
 
-      const sub1 = onSnapshot(q1, snapshot => {
-        console.log('[onSnapshot raw] DOCS:', snapshot.docs.map(d => d.data()));
-
-        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        lastM1 = this.mapToMessages(docs);
-        emitCombined();
-      }, error => subscriber.error(error));
-
-      const sub2 = onSnapshot(q2, snapshot => {
-        console.log('[onSnapshot raw] DOCS:', snapshot.docs.map(d => d.data()));
-
-        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        lastM2 = this.mapToMessages(docs);
-        emitCombined();
-      }, error => subscriber.error(error));
-
-      const emitCombined = () => {
-        if (lastM1 === null || lastM2 === null) return;
-        snapshotCount++; // nur zum Loggen
-        const combined = [...lastM1, ...lastM2].sort((a, b) => a.timestamp - b.timestamp);
-        const currentHash = this.getMessageHash(combined);
-        const isChanged = this._lastDirectMessageHash !== currentHash;
-
-        console.groupCollapsed(`[onSnapshot] DirectMessages ${currentUser} ↔ ${directContact} | Aufruf: #${snapshotCount}`);
-        console.log('🧩 Kombinierte Nachrichten:', combined.length);
-        console.log('🔍 Hash alt:', this._lastDirectMessageHash);
-        console.log('🔍 Hash neu:', currentHash);
-        console.log('💡 Änderung erkannt:', isChanged);
-        if (combined.length > 100) {
-          console.warn('⚠️ Kombinierte Nachrichten > 100 → prüfen auf Datenflut!');
+      const processChange = (change: any) => {
+        const msg = this.mapDocToMessage(change.doc);
+        switch (change.type) {
+          case 'added':
+            cache.set(msg.id, msg);
+            break;
+          case 'modified': {
+            const old = cache.get(msg.id);
+            if (old && this.detectRelevantChanges(old, msg)) {
+              cache.set(msg.id, msg);
+            }
+            break;
+          }
+          case 'removed':
+            cache.delete(msg.id);
+            break;
         }
-
-        if (isChanged) {
-          this._lastDirectMessageHash = currentHash;
-          console.log('✅ Neue Nachrichten → weiterleiten');
-          subscriber.next(combined);
-        } else {
-          console.log('🚫 Keine Änderung → kein next()');
-        }
-        console.groupEnd();
       };
 
+      const emitAll = () => {
+        const all = Array.from(cache.values()).sort((a, b) => a.timestamp - b.timestamp);
+        subscriber.next(all);
+      };
+
+      const sub1 = onSnapshot(q1, snap => {
+        snap.docChanges().forEach(processChange);
+        emitAll();
+      }, err => subscriber.error(err));
+
+      const sub2 = onSnapshot(q2, snap => {
+        snap.docChanges().forEach(processChange);
+        emitAll();
+      }, err => subscriber.error(err));
+
       return () => {
-        sub1();
-        sub2();
+        sub1(); sub2();
       };
     });
   }
@@ -240,19 +209,71 @@ export class MessageDataService {
     );
 
     return new Observable<Message[]>(subscriber => {
-      const unsubscribe = onSnapshot(q, snapshot => {
-        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const messages = this.mapToMessages(docs);
-        const currentHash = this.getMessageHash(messages);
-        if (this._lastSelfMessageHash !== currentHash) {
-          this._lastSelfMessageHash = currentHash;
-          subscriber.next(messages);
-        }
+      const cache = new Map<string, Message>();
 
+      const unsubscribe = onSnapshot(q, snapshot => {
+        snapshot.docChanges().forEach(change => {
+          const msg = this.mapDocToMessage(change.doc);
+          switch (change.type) {
+            case 'added':
+              cache.set(msg.id, msg);
+              break;
+            case 'modified': {
+              const old = cache.get(msg.id);
+              if (old && this.detectRelevantChanges(old, msg)) {
+                cache.set(msg.id, msg);
+              }
+              break;
+            }
+            case 'removed':
+              cache.delete(msg.id);
+              break;
+          }
+        });
+        const all = Array.from(cache.values()).sort((a, b) => a.timestamp - b.timestamp);
+        subscriber.next(all);
       }, error => subscriber.error(error));
 
       return () => unsubscribe();
     });
+  }
+
+  private detectRelevantChanges(oldMsg: Message, newMsg: Message): boolean {
+    if (oldMsg.name !== newMsg.name) return true;
+    if (oldMsg.text !== newMsg.text) return true;
+    if (oldMsg.threadId !== newMsg.threadId) return true;
+    if (oldMsg.replies !== newMsg.replies) return true;
+    if (oldMsg.lastReplyTimestamp !== newMsg.lastReplyTimestamp) return true;
+    if (!this.areReactionsEqual(oldMsg.reactions, newMsg.reactions)) return true;
+    // if ((oldMsg.isEdited ?? false) !== (newMsg.isEdited ?? false)) return true;
+    return false;
+  }
+  private handleNewMessage(
+    subscriber: Subscriber<Message[]>,
+    cache: Map<string, Message>,
+    msg: Message
+  ) {
+    const all = Array.from(cache.values()).sort((a, b) => a.timestamp - b.timestamp);
+    subscriber.next(all);
+  }
+
+  private handleModifiedMessage(
+    subscriber: Subscriber<Message[]>,
+    cache: Map<string, Message>,
+    newMsg: Message,
+    oldMsg: Message
+  ) {
+    const all = Array.from(cache.values()).sort((a, b) => a.timestamp - b.timestamp);
+    subscriber.next(all);
+  }
+
+  private handleRemovedMessage(
+    subscriber: Subscriber<Message[]>,
+    cache: Map<string, Message>,
+    removedId: string
+  ) {
+    const all = Array.from(cache.values()).sort((a, b) => a.timestamp - b.timestamp);
+    subscriber.next(all);
   }
 
   private getCleanJson(message: Message): any {
@@ -269,60 +290,69 @@ export class MessageDataService {
       reactions: message.reactions,
       lastReplyTimestamp: message.lastReplyTimestamp ?? null,
       replies: message.replies ?? 0,
-
     };
   }
 
-  private mapToMessages(docs: any[]): Message[] {
-    return docs.map(doc => {
-      if (doc.replies === undefined) {
-        console.warn('⚠️ Dokument ohne replies-Feld:', doc.id, doc);
-      }
-      return new Message({
-
-        id: doc.id,
-        name: doc.name,
-        text: doc.text,
-        timestamp: doc.timestamp ?? Date.now(),
-        userId: doc.userId,
-        receiverId: doc.receiverId ?? '',
-        isDirectMessage: doc.isDirectMessage ?? false,
-        channelId: doc.channelId ?? '',
-        threadId: doc.threadId ?? '',
-        reactions: doc.reactions ?? [],
-        lastReplyTimestamp: doc.lastReplyTimestamp,
-        replies: doc.replies,
-      })
+  private mapDocToMessage(doc: QueryDocumentSnapshot<DocumentData>): Message {
+    const data = doc.data() as any;
+    return new Message({
+      id: doc.id,
+      name: data.name,
+      text: data.text,
+      timestamp: data.timestamp ?? Date.now(),
+      userId: data.userId,
+      receiverId: data.receiverId ?? '',
+      isDirectMessage: data.isDirectMessage ?? false,
+      channelId: data.channelId ?? '',
+      threadId: data.threadId ?? '',
+      reactions: data.reactions ?? [],
+      lastReplyTimestamp: data.lastReplyTimestamp,
+      replies: data.replies ?? 0,
+      // isEdited: data.isEdited ?? false,
     });
   }
 
-  // private mapToMessages(docs: any[]): Message[] {
-  //   return docs.map(doc => new Message({
-  //     id: doc.id,
-  //     name: doc.name,
-  //     text: doc.text,
-  //     timestamp: doc.timestamp ?? Date.now(),
-  //     userId: doc.userId,
-  //     receiverId: doc.receiverId ?? '',
-  //     isDirectMessage: doc.isDirectMessage ?? false,
-  //     channelId: doc.channelId ?? '',
-  //     threadId: doc.threadId ?? '',
-  //     reactions: doc.reactions ?? [],
-  //     lastReplyTimestamp: doc.lastReplyTimestamp,
-  //     replies: doc.replies ?? 0,
-  //   }));
-  // }
-
-  private getMessageHash(messages: Message[]): string {
-    return messages.map(m =>
-      `${m.id}:${m.text}:${m.threadId ?? ''}:${m.lastReplyTimestamp ?? 0}:${m.replies}:${this.reactionsToString(m.reactions)}`
-    ).join('|');
+  private mapToMessages(docs: any[]): Message[] {
+    return docs.map(doc => new Message({
+      id: doc.id,
+      name: doc.name,
+      text: doc.text,
+      timestamp: doc.timestamp ?? Date.now(),
+      userId: doc.userId,
+      receiverId: doc.receiverId ?? '',
+      isDirectMessage: doc.isDirectMessage ?? false,
+      channelId: doc.channelId ?? '',
+      threadId: doc.threadId ?? '',
+      reactions: doc.reactions ?? [],
+      lastReplyTimestamp: doc.lastReplyTimestamp,
+      replies: doc.replies ?? 0,
+    }));
   }
 
-  private reactionsToString(reactions: Reaction[]): string {
-    return reactions
-      .map(r => `${r.emojiName}:${r.userIds.sort().join(',')}`)
-      .sort()
-      .join(';');
+  private areReactionsEqual(a: Reaction[], b: Reaction[]): boolean {
+    if ((a?.length ?? 0) !== (b?.length ?? 0)) return false;
+
+    const copyA = a.map(r => ({
+      emojiName: r.emojiName,
+      userIds: [...r.userIds].sort(),
+    }));
+    const copyB = b.map(r => ({
+      emojiName: r.emojiName,
+      userIds: [...r.userIds].sort(),
+    }));
+
+    copyA.sort((r1, r2) => r1.emojiName.localeCompare(r2.emojiName));
+    copyB.sort((r1, r2) => r1.emojiName.localeCompare(r2.emojiName));
+
+    for (let i = 0; i < copyA.length; i++) {
+      const ra = copyA[i], rb = copyB[i];
+      if (ra.emojiName !== rb.emojiName) return false;
+      if (ra.userIds.length !== rb.userIds.length) return false;
+      for (let j = 0; j < ra.userIds.length; j++) {
+        if (ra.userIds[j] !== rb.userIds[j]) return false;
+      }
+    }
+    return true;
   }
+
 }
