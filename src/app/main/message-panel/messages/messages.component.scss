@@ -54,6 +54,8 @@
 
   .message-body {
     @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
+    min-width: 0;
+    flex: 1; 
 
     .message-body-header {
       @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
@@ -553,5 +555,5 @@
    
   .thread-messages.own-message-body .own-message-body-header {
         @include dFlex($jc: flex-start, $ai: flex-start, $g: 2px, $f: column-reverse);
-  }  
+  } 
 }

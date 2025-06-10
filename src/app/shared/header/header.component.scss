@@ -5,7 +5,7 @@
 header {
     @include dFlex($jc: space-between);
     background-color: #ECEEFE;
-    margin: -8px;
+    // margin: -8px;
     padding: 12px 24px;
     >.sign-in-page {
         @include dFlex($jc: none, $g: 12px, $f: column);

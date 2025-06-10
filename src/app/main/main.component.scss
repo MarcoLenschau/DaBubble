@@ -5,7 +5,8 @@
 .main-component {
   box-sizing: border-box;
   @include dFlex($jc: flex-start, $ai: center, $g: 0, $f: row);
-  padding: 20px 28px; //margin -8px miteingerechnet
+  padding: 20px;
+  // padding: 20px 28px; //margin -8px miteingerechnet
 }
 
 .mobile-header {
