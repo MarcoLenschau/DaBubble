@@ -19,6 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
+import { MessageCacheService } from '../../../core/services/message-cache.service';
 
 import { User } from '../../../core/models/user.model';
 import { Message } from '../../../core/models/message.model';
@@ -97,6 +98,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
+    private messageCacheService: MessageCacheService,
     private dialog: MatDialog,
   ) { }
 
@@ -119,7 +121,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
     });
+
+    // this.loadMessages();
   }
+
+  // async loadMessages() {
+  //   await this.messageCacheService.loadMessagesForContext(this.context, this.currentUserId);
+
+  //   this.messageCacheService.messages$.subscribe(messages => {
+  //     this.messages = messages;
+  //   });
+  // }
 
   handleEditClick(msg: Message, index: number): void {
     this.startEditing(msg);

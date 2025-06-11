@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
+import { MessageCacheService } from './core/services/message-cache.service';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,12 @@ import { FooterComponent } from './shared/footer/footer.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'dabubble';
+
+  constructor(private messageCacheService: MessageCacheService) { }
+
+  ngOnInit() {
+    this.messageCacheService.initInitialMessageCache();
+  }
 }
