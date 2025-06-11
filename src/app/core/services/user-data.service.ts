@@ -40,7 +40,6 @@ export class UserDataService {
  * @returns {Observable<User[]>} 
  */
   getUsers(): Observable<User[]> {
-    console.warn('**********************************[UserDataService] getUsers() aufgerufen', new Date().toISOString());
     return this.firebaseService.getColRef(this.collectionPath).pipe(
       map((firestoreDocs) =>
         firestoreDocs.map(

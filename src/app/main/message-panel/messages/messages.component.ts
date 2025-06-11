@@ -6,6 +6,7 @@ import {
   OnChanges,
   OnInit,
   ViewChildren,
+  ViewChild,
   ElementRef,
   QueryList,
   OnDestroy,
@@ -26,14 +27,12 @@ import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis-interface';
-
 import {
   formatTime,
   formatDate,
   isNewDay,
   formatRelativeTimeSimple
 } from '../../../core/utils/date-utils';
-
 import {
   getEmojiByName,
   getEmojiByUnicode,
@@ -47,6 +46,7 @@ import {
   getSortedEmojisForUser,
   updateEmojiDataForUser,
 } from '../../../core/utils/messages-utils';
+import { scrollToBottom, isUserScrolledToBottom } from '../../../core/utils/scroll-utils';
 
 @Component({
   selector: 'app-messages',
@@ -65,6 +65,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+  private autoScrollEnabled = true;
+
 
   users: User[] = [];
   currentUser!: User;
@@ -88,6 +91,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   editingMessageId: string | null = null;
   editedText: string = '';
+  messagesReady = false;
+
 
   private lastThreadId: string | null = null;
   private messagesSubscription?: Subscription;
@@ -121,17 +126,22 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
     });
-
-    // this.loadMessages();
   }
 
-  // async loadMessages() {
-  //   await this.messageCacheService.loadMessagesForContext(this.context, this.currentUserId);
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (this.scrollContainer && this.scrollContainer.nativeElement) {
+        scrollToBottom(this.scrollContainer.nativeElement);
+      }
+    });
+  }
 
-  //   this.messageCacheService.messages$.subscribe(messages => {
-  //     this.messages = messages;
-  //   });
-  // }
+  onScroll(): void {
+    console.log("Scroll ******************************************************************************************************");
+
+    const container = this.scrollContainer.nativeElement;
+    this.autoScrollEnabled = isUserScrolledToBottom(container);
+  }
 
   handleEditClick(msg: Message, index: number): void {
     this.startEditing(msg);
@@ -169,7 +179,19 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
     this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
       this.messages = loadedMessages;
+      setTimeout(() => {
+        console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
+        scrollToBottom(this.scrollContainer.nativeElement);
+        setTimeout(() => {
+          console.log('Height after scroll:', this.scrollContainer.nativeElement.scrollHeight);
+          console.log('Loaded', loadedMessages.length, 'messages at', Date.now());
+
+          this.messagesReady = true;
+        }, 200);
+      }, 300);
+
     });
+
   }
 
   async setReplyToMessage(msg: Message) {

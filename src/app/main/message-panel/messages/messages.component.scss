@@ -41,6 +41,12 @@
 
 .thread-messages {
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
+  height: 100%;
+  flex: 1 1 auto;
+  opacity: 1;
+  &.ready {
+    opacity: 1;
+  }
 
   .message-img {
     width: 70px;
