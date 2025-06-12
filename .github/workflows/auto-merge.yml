@@ -19,6 +19,9 @@ jobs:
           git config user.name "Auto-Merge[Bot]"
           git config user.email "noreply.github.com"
 
+      - name: Fetch main branch
+        run: git fetch origin main:main
+      
       - name: Merge current branch into main
         run: |
           git checkout main
