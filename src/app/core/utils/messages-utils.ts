@@ -1,5 +1,5 @@
 import { EventEmitter } from '@angular/core';
-import { Emoji } from '../interfaces/emojis-interface';
+import { Emoji } from '../interfaces/emojis.interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Reaction } from '../interfaces/reaction.interface';
@@ -337,4 +337,40 @@ export function emitMessageContextFromMessage(
   const receiverId = msg.channelId ? '' : currentUserId;
 
   emitContextSelected(emitter, { type, id, receiverId });
+}
+
+export function detectRelevantChanges(oldMsg: Message, newMsg: Message): boolean {
+  if (oldMsg.name !== newMsg.name) return true;
+  if (oldMsg.text !== newMsg.text) return true;
+  if (oldMsg.threadId !== newMsg.threadId) return true;
+  if (oldMsg.replies !== newMsg.replies) return true;
+  if (oldMsg.lastReplyTimestamp !== newMsg.lastReplyTimestamp) return true;
+  if (!areReactionsEqual(oldMsg.reactions, newMsg.reactions)) return true;
+  return false;
+}
+
+function areReactionsEqual(a: Reaction[], b: Reaction[]): boolean {
+  if ((a?.length ?? 0) !== (b?.length ?? 0)) return false;
+
+  const copyA = a.map(r => ({
+    emojiName: r.emojiName,
+    userIds: [...r.userIds].sort(),
+  }));
+  const copyB = b.map(r => ({
+    emojiName: r.emojiName,
+    userIds: [...r.userIds].sort(),
+  }));
+
+  copyA.sort((r1, r2) => r1.emojiName.localeCompare(r2.emojiName));
+  copyB.sort((r1, r2) => r1.emojiName.localeCompare(r2.emojiName));
+
+  for (let i = 0; i < copyA.length; i++) {
+    const ra = copyA[i], rb = copyB[i];
+    if (ra.emojiName !== rb.emojiName) return false;
+    if (ra.userIds.length !== rb.userIds.length) return false;
+    for (let j = 0; j < ra.userIds.length; j++) {
+      if (ra.userIds[j] !== rb.userIds[j]) return false;
+    }
+  }
+  return true;
 }

@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageDataService } from '../../../core/services/message-data.service';
 import { UserDataService } from '../../../core/services/user-data.service';
-import { EMOJIS, Emoji } from '../../../core/interfaces/emojis-interface';
+import { EMOJIS, Emoji } from '../../../core/interfaces/emojis.interface';
 import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
 import { User } from '../../../core/models/user.model';

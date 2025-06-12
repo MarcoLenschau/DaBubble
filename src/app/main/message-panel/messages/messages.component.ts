@@ -26,7 +26,7 @@ import { User } from '../../../core/models/user.model';
 import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
-import { Emoji, EMOJIS } from '../../../core/interfaces/emojis-interface';
+import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
 import {
   formatTime,
   formatDate,
@@ -137,8 +137,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   onScroll(): void {
-    console.log("Scroll ******************************************************************************************************");
-
     const container = this.scrollContainer.nativeElement;
     this.autoScrollEnabled = isUserScrolledToBottom(container);
   }
@@ -171,13 +169,28 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+
+  private lastLoadedMessageIds: string[] | null = null;
+
   private subscribeToMessages(): void {
 
     if (!this.messageContext || !this.currentUser?.id) return;
+    console.debug('subscribeToMessages aufgerufen für Context:', this.messageContext);
     this.messagesSubscription?.unsubscribe();
 
     const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
     this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
+      const ids = loadedMessages.map(m => m.id);
+      if (this.lastLoadedMessageIds) {
+        // prüfen, ob identische ID-Liste
+        const prev = this.lastLoadedMessageIds;
+        if (prev.length === ids.length && prev.every((id, idx) => id === ids[idx])) {
+          console.debug('Subscription: dieselben Nachrichten-IDs wie zuvor, überspringe Rendering');
+          return;
+        }
+      }
+      // sonst: neue oder längere Liste
+      this.lastLoadedMessageIds = ids;
       this.messages = loadedMessages;
       setTimeout(() => {
         console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
