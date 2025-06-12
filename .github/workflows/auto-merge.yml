@@ -1,4 +1,5 @@
 name: Auto Merge to Main
+
 on:
   push:
     branches:
