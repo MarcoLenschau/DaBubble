@@ -45,6 +45,7 @@ import {
   trackByMessageId,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
+  detectRelevantChanges,
 } from '../../../core/utils/messages-utils';
 import { scrollToBottom, isUserScrolledToBottom } from '../../../core/utils/scroll-utils';
 
@@ -99,6 +100,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
   private repliesUpdateTimeout?: ReturnType<typeof setTimeout>;
+  private lastLoadedMessageIds: string[] | null = null;
+  private isFirstEmission = true;
+
 
   constructor(
     private userDataService: UserDataService,
@@ -169,9 +173,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-
-  private lastLoadedMessageIds: string[] | null = null;
-
   private subscribeToMessages(): void {
 
     if (!this.messageContext || !this.currentUser?.id) return;
@@ -179,31 +180,92 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.messagesSubscription?.unsubscribe();
 
     const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
-    this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
-      const ids = loadedMessages.map(m => m.id);
-      if (this.lastLoadedMessageIds) {
-        // prüfen, ob identische ID-Liste
-        const prev = this.lastLoadedMessageIds;
-        if (prev.length === ids.length && prev.every((id, idx) => id === ids[idx])) {
-          console.debug('Subscription: dieselben Nachrichten-IDs wie zuvor, überspringe Rendering');
-          return;
-        }
+
+    this.isFirstEmission = true; // Kennzeichnung, dass beim nächsten emit initial ist
+    this.lastLoadedMessageIds = null; // reset für neuen Kontext
+
+    this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
+      if (!Array.isArray(loadedMessages)) {
+        this.messages = loadedMessages;
+        return;
       }
-      // sonst: neue oder längere Liste
-      this.lastLoadedMessageIds = ids;
+      // IDs extrahieren (nachdem Service garantiert asc-sorted liefert)
+      const currIds = loadedMessages.map(m => m.id);
+
+      if (this.lastLoadedMessageIds) {
+        debugger;
+        const prevIds = this.lastLoadedMessageIds;
+        if (prevIds.length === currIds.length && prevIds.every((id, idx) => id === currIds[idx])) {
+          // IDs-Liste identisch
+          if (!this.isFirstEmission) {
+            // Prüfen, ob Inhalte sich geändert haben
+            let contentChanged = false;
+            for (let i = 0; i < loadedMessages.length; i++) {
+              const oldMsg = this.messages[i];
+              const newMsg = loadedMessages[i];
+              if (detectRelevantChanges(oldMsg, newMsg)) {
+                contentChanged = true;
+                break;
+              }
+            }
+            if (!contentChanged) {
+              console.debug('subscribeToMessages: IDs gleich und keine relevanten Änderungen → überspringe Rendering');
+              // Keine Änderung an IDs und Inhalten → nichts tun
+              return;
+            }
+            console.debug('subscribeToMessages: IDs gleich, aber Inhalte geändert → update');
+          }
+          // Wenn isFirstEmission true, behandeln wir es wie neue Liste weiter unten
+        }
+        // andernfalls: IDs-Liste ungleich → neue/andere Nachrichten → übernehmen
+      }
+
+
+
+
+      // Erste Initial-Emission oder IDs unterschiedlich oder Inhalt geändert:
+      this.lastLoadedMessageIds = currIds;
       this.messages = loadedMessages;
+
+      // Scroll-Logik:
       setTimeout(() => {
         console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
         scrollToBottom(this.scrollContainer.nativeElement);
         setTimeout(() => {
           console.log('Height after scroll:', this.scrollContainer.nativeElement.scrollHeight);
           console.log('Loaded', loadedMessages.length, 'messages at', Date.now());
-
           this.messagesReady = true;
         }, 200);
       }, 300);
 
+      this.isFirstEmission = false;
     });
+
+    // this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
+    //   const ids = loadedMessages.map(m => m.id);
+    //   if (this.lastLoadedMessageIds) {
+    //     // prüfen, ob identische ID-Liste
+    //     const prev = this.lastLoadedMessageIds;
+    //     if (prev.length === ids.length && prev.every((id, idx) => id === ids[idx])) {
+    //       console.debug('Subscription: dieselben Nachrichten-IDs wie zuvor, überspringe Rendering');
+    //       return;
+    //     }
+    //   }
+    //   // sonst: neue oder längere Liste
+    //   this.lastLoadedMessageIds = ids;
+    //   this.messages = loadedMessages;
+    //   setTimeout(() => {
+    //     console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
+    //     scrollToBottom(this.scrollContainer.nativeElement);
+    //     setTimeout(() => {
+    //       console.log('Height after scroll:', this.scrollContainer.nativeElement.scrollHeight);
+    //       console.log('Loaded', loadedMessages.length, 'messages at', Date.now());
+
+    //       this.messagesReady = true;
+    //     }, 200);
+    //   }, 300);
+
+    // });
 
   }
 

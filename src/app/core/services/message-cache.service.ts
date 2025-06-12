@@ -24,6 +24,7 @@ import { detectRelevantChanges, } from '../utils/messages-utils';
 @Injectable({
   providedIn: 'root'
 })
+
 export class MessageCacheService {
   private messageCache = new Map<string, Message[]>();
   private messageSubject = new BehaviorSubject<Message[]>([]);
@@ -64,14 +65,26 @@ export class MessageCacheService {
     }
 
     const initial = this.getInitialMessages(context, currentUserId);
+    this.messageCache.set(cacheKey, [...initial]);
     this.messageSubject.next(initial);
 
     this.clearActiveSubscription();
     this.startLiveListener(context, currentUserId, cacheKey);
 
     const fullSet = await this.fetchFullMessageSet(context, currentUserId);
-    this.messageCache.set(cacheKey, fullSet);
-    this.messageSubject.next([...fullSet]);
+    const current = this.messageCache.get(cacheKey) || [];
+    const existingIds = new Set(current.map(m => m.id));
+    const newMessages = fullSet.filter(m => !existingIds.has(m.id));
+    if (newMessages.length > 0) {
+
+      const combined = [...newMessages, ...current];
+      combined.sort((a, b) => a.timestamp - b.timestamp); // sicherheitshalber nochmal sortieren
+      this.messageCache.set(cacheKey, combined);
+      this.messageSubject.next([...combined]);
+      console.debug(`loadMessagesForContext: Full-Load ergänzt ${newMessages.length} Nachrichten für ${cacheKey}`);
+    } else {
+      console.debug(`loadMessagesForContext: Full-Load keine neuen Nachrichten für ${cacheKey}`);
+    }
   }
 
   private getInitialMessages(context: MessageContext, currentUserId: string): Message[] {
@@ -246,6 +259,4 @@ export class MessageCacheService {
       replies: doc.replies ?? 0,
     }));
   }
-
-
 }
