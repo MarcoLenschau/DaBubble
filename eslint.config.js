@@ -18,7 +18,6 @@ export default defineConfig([
       "semi": ["error", "always"],
       "semi": "off",
       "no-console": ["error"],
-      "indent": ["warn", 2],
       "prefer-const": ["warn"],
     },
   },
