@@ -41,7 +41,7 @@ export class MainComponent implements OnInit {
     this.channels$ = this.firebase.getColRef("channels");
     this.channels$.subscribe((channels) => {
       this.channels = channels;
-    })
+    });
   }
 
   get showDevSpaceWindow(): boolean {
@@ -135,7 +135,7 @@ export class MainComponent implements OnInit {
       if (channelFromBackend.id === channel) {
         this.activeChannel = channelFromBackend;
       }
-    })
+    });
   }
 
   onContextSelected(context: MessageContext): void {

@@ -13,10 +13,10 @@ export class RouterService {
   }
 
   isSignInPage() {
-    return this.router.url == "/"
+    return this.router.url == "/";
   }
 
   isMainPage() {
-    return this.router.url == "/message"
+    return this.router.url == "/message";
   }
 }

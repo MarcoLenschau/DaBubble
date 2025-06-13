@@ -67,13 +67,13 @@ export class AuthService {
             console.error('Logout-Fehler:', error);
           });
       }
-    })
+    });
   }
 
   async loginWithGoogle(): Promise<User | null> {
     const userCreated = false;
     const provider = new GoogleAuthProvider();
-    return this.loginWithProvider(provider, userCreated)
+    return this.loginWithProvider(provider, userCreated);
   }
 
   async loginWithGitHub(): Promise<User | null> {

@@ -19,7 +19,7 @@ export class DialogUserDetailsComponent {
   }
 
   openEditDialog() {
-    let dialogRef = this.dialog.open(DialogUserEditComponent);
+    const dialogRef = this.dialog.open(DialogUserEditComponent);
     dialogRef.componentInstance.user = this.user;
     this.closeProfilView();
   }
