@@ -6,7 +6,7 @@
         </div>
 
         <div class="flex">
-            <img src="./assets/img/profile.svg" alt="profile-picture">
+            <img src="./assets/img/profilepic/{{currentProfilePicutre}}" class="big-profile-picture" alt="profile-picture">
             <span>{{user.displayName}}</span>
         </div>
 
@@ -15,7 +15,7 @@
                 <span>Aus der Liste wählen</span>
             </div>
             <div class="picture-list">
-                <img *ngFor="let picture of profilePicture" src="./assets/img/profilepic/{{picture}}.png" alt="{{picture}}">
+                <img *ngFor="let picture of profilePicture" (click)="selectPicture(picture + '.png');" src="./assets/img/profilepic/{{picture}}.png" alt="{{picture}}">
             </div>
         </div>
         <div class="button-container">

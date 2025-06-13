@@ -95,9 +95,8 @@ export class AuthService {
       });
   }
 
-  async saveCurrentUser(result: any, photoURL = ""): Promise<void> {
-    this.user = result.user;
-    if (photoURL) { this.user.photoURL = photoURL; }
+  async saveCurrentUser(user: any): Promise<void> {
+    this.user = user;
     this.userSubject.next(this.user);
     localStorage.setItem("loggedIn", "true");
     await this.userDataService.initCurrentUser();
@@ -127,8 +126,8 @@ export class AuthService {
     }
   }
 
-  async register(name: string, email: string, password: string): Promise<User | null> {
-    return this.createUserWithEmail(email, password, name)
+  async register(name: string, email: string, password: string, photoURL: string): Promise<User | null> {
+    return this.createUserWithEmail(email, password, name, photoURL)
       .catch(() => null);
   }
 
@@ -143,11 +142,12 @@ export class AuthService {
     };
   }
 
-  async createUserWithEmail(email: string, password: string, name: string): Promise<User> {
+  async createUserWithEmail(email: string, password: string, name: string, photoURL: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
-    result.user = this.createValidUser(result.user, name);
-    await this.firebase.addUser(result.user);
-    await this.saveCurrentUser(result, "./assets/img/profilepic/frederik.png");
+    let user = {...result.user, photoURL};
+    user = this.createValidUser(user, name);
+    await this.firebase.addUser(user);
+    await this.saveCurrentUser(user);
     await this.checkAllUser(result);
     return result.user;
   }
