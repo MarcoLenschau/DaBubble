@@ -1,26 +1,29 @@
 name: Auto Merge to Main
+
 on:
   push:
     branches:
       - dev-marco
       - dev-martinsinner
       - Emrah-Branch
+
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: main
 
       - name: Configure Git
         run: |
           git config user.name "Auto-Merge[Bot]"
-          git config user.email "noreply.github.com"
+          git config user.email "noreply@github.com"
 
-      - name: Merge current branch into main
+      - name: Merge Dev Branch into Main
         run: |
-          git checkout main
+          git fetch origin
           git merge origin/${{ github.ref_name }}
-          git push origin main
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} main
