@@ -21,7 +21,7 @@ export class PasswordResetComponent {
     await this.auth.resetPassword(this.email)
       .then(() =>{
         this.emailMessageShow();
-        this.emailMessage = "Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner."
+        this.emailMessage = "Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner.";
       })
       .catch(error => {
         this.emailMessageShow();
@@ -33,7 +33,7 @@ export class PasswordResetComponent {
     this.emailSend = true;
     setTimeout(() => {
       this.emailSend = false;
-    }, 10000)
+    }, 10000);
   }
 
   setValue(eventValue: string){

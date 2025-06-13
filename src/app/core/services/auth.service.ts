@@ -12,7 +12,7 @@ import { UserDataService } from './user-data.service';
 export class AuthService {
   private auth = inject(Auth);
   private firebase = inject(FirebaseService);
-  private userDataService = inject(UserDataService)
+  private userDataService = inject(UserDataService);
   private router = inject(RouterService);
   userSubject = new BehaviorSubject<any>({});
   user$ = this.userSubject.asObservable();
@@ -46,12 +46,10 @@ export class AuthService {
   async login(email: string, password: string): Promise<UserCredential | null> {
     try {
       const result = await signInWithEmailAndPassword(this.auth, email, password);
-      console.log(result)
       this.saveCurrentUser(result);
       return result;
     }
     catch (error) {
-      console.error(error);
       return null;
     }
   }
@@ -73,13 +71,13 @@ export class AuthService {
   }
 
   async loginWithGoogle(): Promise<User | null> {
-    let userCreated = false;
+    const userCreated = false;
     const provider = new GoogleAuthProvider();
     return this.loginWithProvider(provider, userCreated)
   }
 
   async loginWithGitHub(): Promise<User | null> {
-    let userCreated = false;
+    const userCreated = false;
     const provider = new GithubAuthProvider();
     return this.loginWithProvider(provider, userCreated);
   }
@@ -99,7 +97,7 @@ export class AuthService {
 
   async saveCurrentUser(result: any, photoURL = ""): Promise<void> {
     this.user = result.user;
-    if (photoURL) { this.user.photoURL = photoURL }
+    if (photoURL) { this.user.photoURL = photoURL; }
     this.userSubject.next(this.user);
     localStorage.setItem("loggedIn", "true");
     await this.userDataService.initCurrentUser();

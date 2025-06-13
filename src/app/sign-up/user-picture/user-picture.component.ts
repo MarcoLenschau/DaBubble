@@ -26,14 +26,13 @@ export class UserPictureComponent {
   constructor(private auth: AuthService, private router: RouterService) { }
 
   registerUser() {
-    console.log(this.user)
     this.auth.register(this.user.displayName, this.user.email, this.user.password).then(user => {
       if (user) {
         this.router.switchRoute("message");
       } else {
         this.sendData();
       }
-    })
+    });
   }
 
 

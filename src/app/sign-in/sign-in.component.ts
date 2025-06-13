@@ -16,7 +16,7 @@ import { deleteLocalStorage } from '../core/utils/auth-utils';
 export class SignInComponent {
   private authService = inject(AuthService);
   private firebase = inject(FirebaseService);
-  private userDataService = inject(UserDataService)
+  private userDataService = inject(UserDataService);
   public router = inject(RouterService);
   email = "";
   password = "";
@@ -31,7 +31,7 @@ export class SignInComponent {
   async loginWithEmail() {
     const user = await this.authService.login(this.email, this.password);;
     if (user) {
-      let user = await this.firebase.searchUsersByEmail(this.email);
+      const user = await this.firebase.searchUsersByEmail(this.email);
       this.authService.userSubject.next(user[0]);
       this.router.switchRoute("message");
     }
@@ -49,7 +49,6 @@ export class SignInComponent {
     const user = await this.authService.loginWithGitHub();
     if (user) {
       this.authService.user = this.firebase.toObj(user);
-      console.log(this.authService.user)
       this.router.switchRoute("message");
     }
   }
