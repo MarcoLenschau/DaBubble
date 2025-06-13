@@ -17,6 +17,9 @@ export default defineConfig([
       "max-lines-per-function": ["error", {max: 14, skipBlankLines: true, skipComments: true},],
       "semi": ["error", "always"],
       "semi": "off",
+      "no-console": ["error"],
+      "indent": ["warn", 2],
+      "prefer-const": ["warn"],
     },
   },
 ]);
