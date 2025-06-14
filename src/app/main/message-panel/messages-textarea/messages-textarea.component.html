@@ -1,12 +1,18 @@
 <div class="main-message-box" #chatDiv tabindex="0" [ngStyle]="{ padding: mainMessageBoxPadding }">
-  <!-- Eingabefeld -->
-  <div
-    class="textarea"
-    contenteditable="true"
-    #editableDiv
-    [attr.placeholder]="placeholder"
-    (input)="onInput($event)"
-  ></div>
+
+  <!-- Eingabefeld + Placeholder -->
+  <div class="textarea-wrapper">
+    <div
+      class="textarea"
+      contenteditable="true"
+      #editableDiv
+      (input)="onInput($event)"
+    ></div>
+
+ <div class="textarea-placeholder" *ngIf="!textInput">
+    {{ placeholder }}
+  </div>
+</div>
 
   <!-- Mention-Dropdown bei @ -->
   <div
@@ -16,21 +22,51 @@
     [style.left.px]="mentionBoxPosition.left"
   >
     <ul>
-      <li *ngFor="let user of filteredMentionUsers" (click)="selectMentionUser(user)">
-        <strong>&#64;{{ user.displayName }}</strong>
+      <li
+        class="profile-user"
+        *ngFor="let user of filteredMentionUsers"
+        (click)="selectMentionUser(user)"
+      >
+        <div class="profile-icon">
+          <img
+            class="profile-pic"
+            [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+            alt="{{ user.displayName }}"
+          />
+          <img
+            *ngIf="user.state"
+            class="profile-online"
+            src="assets/img/profilepic/online-user.png"
+            alt="online"
+          />
+        </div>
+        <div class="mention-user-name">{{ user.displayName }}</div>
       </li>
     </ul>
   </div>
 
   <!-- Benutzer-Dropdown durch Icon -->
-  <div
-    class="search-results"
-    *ngIf="showUserDropdown"
-    style="top: 100%; left: 16px;"
-  >
+  <div class="search-results" *ngIf="showUserDropdown" style="top: 100%; left: 16px;">
     <ul>
-      <li *ngFor="let user of allUsers" (click)="selectUserFromSmiley(user)">
-        <strong>&#64;{{ user.displayName }}</strong>
+      <li
+        class="profile-user"
+        *ngFor="let user of allUsers"
+        (click)="selectUserFromSmiley(user)"
+      >
+        <div class="profile-icon">
+          <img
+            class="profile-pic"
+            [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+            alt="{{ user.displayName }}"
+          />
+          <img
+            *ngIf="user.state"
+            class="profile-online"
+            src="assets/img/profilepic/online-user.png"
+            alt="online"
+          />
+        </div>
+        <div class="mention-user-name">{{ user.displayName }}</div>
       </li>
     </ul>
   </div>
@@ -64,7 +100,7 @@
     </span>
   </div>
 
- 
+  <!-- Senden -->
   <div class="textarea-send-button" (click)="sendMessage()">
     <img src="assets/img/message-icons/Send icon.svg" />
   </div>
