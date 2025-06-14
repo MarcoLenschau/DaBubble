@@ -3,7 +3,7 @@
         <h2 class="color-blue">Anmeldung</h2>
         <span>Wir empfehlen dir die Email zu nutzen, die du bei der Arbeit verwendest.</span>
         <app-input (valueChange)="setValue($event, 'email')" [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'" [height]="38"></app-input>
-        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'" [height]="38"></app-input>
+        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'" [height]="38" ></app-input>
         <a (click)="router.switchRoute('reset')">Passwort vergessen</a>
         <div class="separating-line-container">
             <div></div>

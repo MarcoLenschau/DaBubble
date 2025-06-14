@@ -12,16 +12,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
-  @ViewChild('name', { static: true }) name!: any;
-  @ViewChild('email', { static: true }) email!: any;
-  @ViewChild('password', { static: true }) password!: any;
+  @ViewChild('name') name!: any;
+  @ViewChild('email') email!: any;
+  @ViewChild('password') password!: any;
   @Output() dataReady = new EventEmitter<boolean>();
   @Output() userData = new EventEmitter<any>();
-  user = {
-    displayName: '',
-    email: '',
-    password: ''
-  };
+  user: any = {};
   error = false;
 
   constructor(public router: RouterService, private auth: AuthService) { }
@@ -51,23 +47,15 @@ export class RegisterComponent {
 
   validate(event: any, type: string) {
     if (type === 'name') {
-      event.length === 0 ? this.validateError(this.name) : this.validateError(this.name, "remove");
+      event.length === 0 ? this.auth.validateError(this.name) : this.auth.validateError(this.name, "remove");
     }else if (type === 'email') { 
-      this.auth.validateEmail(event) ? this.validateError(this.email, "remove") : this.validateError(this.email);
+      this.auth.validateEmail(event) ? this.auth.validateError(this.email, "remove") : this.auth.validateError(this.email);
     } else if (type === 'password') {
       this.validatePassword(event);
     }
   }
-
-  validateError(element: any, action = "add") {
-    if (action === "add") {
-      element.inputRef.nativeElement.classList.add('error');
-    } else {
-      element.inputRef.nativeElement.classList.remove('error');
-    }      
-  }
   
   validatePassword(event: any) {
-    event.length < 6 ? this.validateError(this.password) : this.validateError(this.password, "remove");
+    event.length < 6 ? this.auth.validateError(this.password) : this.auth.validateError(this.password, "remove");
   }
 }

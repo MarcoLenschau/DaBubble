@@ -9,13 +9,13 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './input.component.scss',
 })
 export class InputComponent {
-  @ViewChild('inputRef', { static: true }) inputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('inputRef') inputRef!: ElementRef<HTMLInputElement>;
   @Input() placeholder: string = '';
   @Input() type: string = 'text';
   @Input() img: string = '';
   @Input() value: string = '';
   @Input() height: number = 32;
-  @Input() width: number = 350;
+  @Input() width: number = 250;
   @Input() reverse: boolean = false;
   @Input() prefix: string = '';
   @Input() prefixIcon: string = '';

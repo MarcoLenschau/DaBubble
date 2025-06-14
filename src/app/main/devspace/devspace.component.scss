@@ -200,6 +200,11 @@ nav {
   left: 20px;
 }
 
+.active-user {
+  position: fixed;
+  top: 450px;
+  left: 8px;
+}
 
 // Responsiveness
 @media (max-width: $mobile-xl) {
@@ -220,4 +225,3 @@ nav {
     border-radius: 0;
   }
 }
-

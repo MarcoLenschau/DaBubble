@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './password-reset.component.scss'
 })
 export class PasswordResetComponent {
-  @ViewChild('emailRef', {static: true}) emailRef!: any;
+  @ViewChild('emailRef') emailRef!: any;
   email = "";
   emailSend = false;
   emailMessage = "";
@@ -21,20 +21,19 @@ export class PasswordResetComponent {
   async resetPassword() {
     await this.auth.resetPassword(this.email)
       .then(() =>{
-        this.emailMessageShow();
-        this.emailMessage = "Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner.";
+        this.emailMessageShow("Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner.");
       })
       .catch(error => {
-        this.emailMessageShow();
-        this.emailMessage = error;
+        this.emailMessageShow(error);
       });
   }
 
-  emailMessageShow() {
+  emailMessageShow(value: string) {
     this.emailSend = true;
     setTimeout(() => {
       this.emailSend = false;
     }, 10000);
+    this.emailMessage = value;
   }
 
   setValue(eventValue: string){
@@ -42,10 +41,6 @@ export class PasswordResetComponent {
   }
 
   validate(event: any) {
-    if (this.auth.validateEmail(event)) {
-      this.emailRef.inputRef.nativeElement.classList.remove('error');
-    } else {
-      this.emailRef.inputRef.nativeElement.classList.add('error');
-    }
+    this.auth.validateEmail(event) ? this.auth.validateError(this.emailRef, "remove") : this.auth.validateError(this.emailRef);
   }
 }

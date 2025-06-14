@@ -86,7 +86,7 @@ export class AuthService {
     return signInWithPopup(this.auth, provider)
       .then(async (result) => {
         this.isUserExists(result, userCreated);
-        await this.saveCurrentUser(result);
+        await this.saveCurrentUser(result.user);
         return result.user;
       })
       .catch((error) => {
@@ -165,5 +165,13 @@ export class AuthService {
   validateEmail(email: string):Boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  validateError(element: any, action = "add") {
+    if (action === "add") {
+      element.inputRef.nativeElement.classList.add('error');
+    } else {
+      element.inputRef.nativeElement.classList.remove('error');
+    }      
   }
 }
