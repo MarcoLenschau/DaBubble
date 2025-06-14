@@ -11,11 +11,9 @@
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
     background-color: $white;
-    height: 417px;
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+    height: 475px;
+    width: 275px;
+    @include dFlex($jc: none, $ai: none,$f: column, $g: 24px);
     >a {
         padding: 0px 35px;
     }
@@ -46,4 +44,11 @@
 
 .email {
     @include dFlex($jc: none, $g: 12px);
+}
+
+.check-email {
+    color: red;
+    font-size: 15px;
+    margin-top: -12px;
+    text-align: center;
 }

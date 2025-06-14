@@ -1,6 +1,12 @@
 @import "../shared/styles/mix-in.scss";
 @import "../shared/styles/color.scss";
 
+a {
+    &:hover {
+        color: gray;
+    }
+}
+
 .main-container {
     >span {
         width: 350px;

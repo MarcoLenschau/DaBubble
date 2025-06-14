@@ -17,6 +17,8 @@
   <div class="email">
     <img src="./assets/img/input/email.svg" alt="email" />
     <span>E-Mail Adresse</span>
+    <img *ngIf="user.emailAuth" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
+  <span *ngIf="!user.emailAuth" class="check-email">Bitte bestätigen sie ihre<br>Email Addresse !</span>
 </div>

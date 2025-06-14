@@ -41,6 +41,7 @@ export class FirebaseService {
       id: data.id,
       displayName: data.displayName,
       email: data.email,
+      emaiAuth: false,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       state: true,
       recentEmojis: data.recentEmojis || [],

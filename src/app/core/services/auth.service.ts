@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential, reauthenticateWithCredential, updateEmail, sendEmailVerification } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
@@ -135,6 +135,7 @@ export class AuthService {
     return {
       uid: user.uid,
       email: user.email,
+      emailAuth: false,
       photoURL: user.photoURL,
       displayName: name,
       state: true,
@@ -149,6 +150,7 @@ export class AuthService {
     await this.firebase.addUser(user);
     await this.saveCurrentUser(user);
     await this.checkAllUser(result);
+    sendEmailVerification(user);
     return result.user;
   }
 
@@ -173,5 +175,11 @@ export class AuthService {
     } else {
       element.inputRef.nativeElement.classList.remove('error');
     }      
+  }
+
+  editEmail(email: string) {
+    updateEmail(this.user, email).then(() => {
+      console.log("Email ist geupdatet")
+    });
   }
 }
