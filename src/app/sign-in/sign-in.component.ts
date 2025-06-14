@@ -28,6 +28,9 @@ export class SignInComponent {
     if (this.authService.user) {
       this.authService.logout();
     }
+    setTimeout(() => {
+      document.getElementById("loader")?.classList.add("d_none")
+    }, 1500);
   }
 
   async loginWithEmail() {

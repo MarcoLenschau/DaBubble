@@ -43,6 +43,10 @@ app-input {
     padding-left: 38px
 }
 
+.d_none {
+  display: none !important;
+}
+
 .loader {
     position: fixed;
     top: 0;
@@ -53,12 +57,7 @@ app-input {
     justify-content: center;
     align-items: center;
     animation: backgroundTransition 2s ease forwards;
-}
-
-#loader.start-animation .loader-image {
-  animation: fadeOut 1s ease forwards;
-  display: none;
-}
+  }
 
 .loader::before {
     content: '';
@@ -76,19 +75,6 @@ app-input {
     position: absolute;
     animation: logoTransition 2s ease forwards;
 }
-
-@keyframes fadeOut {
-  0% {
-    opacity: 2;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 
 @keyframes logoTransition {
   0% {
