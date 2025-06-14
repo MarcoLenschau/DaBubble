@@ -55,8 +55,10 @@ div {
   pointer-events: none;
 }
 
-
-
 :host-context(.with-icon) .input-prefix-wrapper input {
   padding-left: 42px !important;
+}
+
+.error {
+    border: red 1px solid !important;
 }

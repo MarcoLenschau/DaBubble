@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './input.component.scss',
 })
 export class InputComponent {
+  @ViewChild('inputRef', { static: true }) inputRef!: ElementRef<HTMLInputElement>;
   @Input() placeholder: string = '';
   @Input() type: string = 'text';
   @Input() img: string = '';

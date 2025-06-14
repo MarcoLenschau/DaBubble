@@ -6,10 +6,11 @@ import { AuthService } from '../core/services/auth.service';
 import { FirebaseService } from '../core/services/firebase.service';
 import { UserDataService } from '../core/services/user-data.service';
 import { deleteLocalStorage } from '../core/utils/auth-utils';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [InputComponent, ButtonComponent],
+  imports: [CommonModule, InputComponent, ButtonComponent],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss'
 })
@@ -20,6 +21,7 @@ export class SignInComponent {
   public router = inject(RouterService);
   email = "";
   password = "";
+  error = false;
 
   constructor() {
     deleteLocalStorage();
@@ -29,12 +31,21 @@ export class SignInComponent {
   }
 
   async loginWithEmail() {
-    const user = await this.authService.login(this.email, this.password);;
+    const user = await this.authService.login(this.email, this.password);
     if (user) {
       const user = await this.firebase.searchUsersByEmail(this.email);
       this.authService.userSubject.next(user[0]);
       this.router.switchRoute("message");
+    } else {
+      this.showErrorMessage();
     }
+  }
+
+  showErrorMessage() {
+    this.error = true;
+    setTimeout(() => {
+      this.error = false;
+    }, 5000);
   }
 
   async googleLogin() {
@@ -42,6 +53,8 @@ export class SignInComponent {
     if (user) {
       this.authService.user = this.firebase.toObj(user);
       this.router.switchRoute("message");
+    } else {
+      this.showErrorMessage();
     }
   }
 
@@ -50,6 +63,8 @@ export class SignInComponent {
     if (user) {
       this.authService.user = this.firebase.toObj(user);
       this.router.switchRoute("message");
+    } else {
+      this.showErrorMessage();
     }
   }
 

@@ -18,6 +18,7 @@
             <img src="./assets/img/logos/github.png" class="github-logo" alt="github-logo">
             <span>Anmelden mit Github</span>
         </div>
+        <span *ngIf="error" class="error-message">Email oder Password sind falsch !</span>
         <div class="button-container">
             <app-button [text]="'Anmelden'" [color]="'primary'" (clicked)="loginWithEmail();"></app-button>
             <app-button [text]="'Gäste Login'" [color]="'secondary'" (clicked)="router.switchRoute('/message'); gastLogin();"></app-button>
