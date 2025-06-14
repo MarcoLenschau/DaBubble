@@ -115,6 +115,7 @@ export class MessagesHeaderComponent {
     const inputElement = event.target as HTMLInputElement;
     const term = inputElement.value.trim();
     this.textInput = term;
+    
 
     this.calculateMentionBoxPosition(inputElement);
 

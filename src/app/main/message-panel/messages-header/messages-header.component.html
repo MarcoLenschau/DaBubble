@@ -25,18 +25,16 @@
           <h2>Neue Nachricht</h2>
         </ng-template>
       </div>
-      <div class= "channel-members-row" *ngIf="activeChannel">
+      <div class="channel-members-row" *ngIf="activeChannel">
         <div class="members-overview" (click)="openMembersOverlay()">
           <ng-container *ngFor="let member of activeChannel.members">
-            <img class="member-picture" 
-            [src]="loadMember()" />
+            <img class="member-picture" [src]="loadMember()" />
           </ng-container>
         </div>
 
         <button class="add-member-btn" (click)="openAddMemberOverlay()">
-          <img src="./assets/img/channel/members-add-button.png" alt="">
+          <img src="./assets/img/channel/members-add-button.png" alt="" />
         </button>
-        
       </div>
     </div>
 
@@ -67,7 +65,7 @@
   </ng-container>
 </div>
 
-
+<!-- SUCHERGEBNISSE -->
 <div
   class="search-results"
   [class.hidden]="!hasSearchResults"
@@ -75,18 +73,36 @@
   [style.left.px]="mentionBoxPosition.left"
 >
   <ul>
+    <!-- Treffer: Email -->
     <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
       <strong>{{ user.email }}</strong>
     </li>
 
-    <li *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
-      <strong>&#64;{{ user.displayName }}</strong>
+    <!-- Treffer: @User mit Bild & Online-Status -->
+    <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
+      <div class="profile-icon">
+        <img
+          class="profile-pic"
+          [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+          alt="{{ user.displayName }}"
+        />
+        <img
+  *ngIf="user.state"
+  class="profile-online"
+  src="./assets/img/profilepic/online-user.png"
+  alt="online"
+/>
+
+      </div>
+      <div class="mention-user-name">{{ user.displayName }}</div>
     </li>
 
+    <!-- Treffer: #Channel -->
     <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel)">
       <strong>#{{ channel.name }}</strong>
     </li>
 
+    <!-- Treffer: Nachricht -->
     <li *ngFor="let msg of searchResultsMessages" (click)="selectSearchResult(msg)">
       <div>{{ msg.text }}</div>
       <div class="meta">{{ msg.name }} • {{ msg.timestamp }}</div>
@@ -94,20 +110,21 @@
   </ul>
 </div>
 
+<!-- Overlays -->
 <app-channel-details-overlay
   *ngIf="showChannelOverlay"
   [channel]="activeChannel"
   (close)="closeChannelOverlay()"
 ></app-channel-details-overlay>
 
-<app-channel-members-overlay 
-*ngIf="showMembersOverlay"
-[members]="activeChannel.members"
-(close)="showMembersOverlay = false">
-</app-channel-members-overlay>
+<app-channel-members-overlay
+  *ngIf="showMembersOverlay"
+  [members]="activeChannel.members"
+  (close)="showMembersOverlay = false"
+></app-channel-members-overlay>
 
 <app-add-member-overlay
-*ngIf="showAddMemberOverlay"
-[channel]="activeChannel"
-(close)="showAddMemberOverlay = false">
-</app-add-member-overlay>
+  *ngIf="showAddMemberOverlay"
+  [channel]="activeChannel"
+  (close)="showAddMemberOverlay = false"
+></app-add-member-overlay>

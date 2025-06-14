@@ -268,7 +268,7 @@
 
 .bottom-toggle-icon {
   @include hover-image-swap(37px, 37px);
-  border-radius: 50%;
+  border-radius: 0%;
   background-color: $white;
 }
 
