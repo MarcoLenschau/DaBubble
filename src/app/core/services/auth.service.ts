@@ -161,4 +161,9 @@ export class AuthService {
       throw new Error('User wurde in Firestore nicht gefunden.');
     }
   }
+  
+  validateEmail(email: string):Boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 }

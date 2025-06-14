@@ -53,7 +53,7 @@ export class RegisterComponent {
     if (type === 'name') {
       event.length === 0 ? this.validateError(this.name) : this.validateError(this.name, "remove");
     }else if (type === 'email') { 
-      this.validateEmail(event) ? this.validateError(this.email, "remove") : this.validateError(this.email);
+      this.auth.validateEmail(event) ? this.validateError(this.email, "remove") : this.validateError(this.email);
     } else if (type === 'password') {
       this.validatePassword(event);
     }
@@ -66,12 +66,7 @@ export class RegisterComponent {
       element.inputRef.nativeElement.classList.remove('error');
     }      
   }
-
-  validateEmail(email: string):Boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
+  
   validatePassword(event: any) {
     event.length < 6 ? this.validateError(this.password) : this.validateError(this.password, "remove");
   }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { InputComponent } from '../shared/input/input.component';
 import { ButtonComponent } from '../shared/button/button.component';
 import { AuthService } from '../core/services/auth.service';
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './password-reset.component.scss'
 })
 export class PasswordResetComponent {
+  @ViewChild('emailRef', {static: true}) emailRef!: any;
   email = "";
   emailSend = false;
   emailMessage = "";
@@ -38,5 +39,13 @@ export class PasswordResetComponent {
 
   setValue(eventValue: string){
     this.email = eventValue;
+  }
+
+  validate(event: any) {
+    if (this.auth.validateEmail(event)) {
+      this.emailRef.inputRef.nativeElement.classList.remove('error');
+    } else {
+      this.emailRef.inputRef.nativeElement.classList.add('error');
+    }
   }
 }
