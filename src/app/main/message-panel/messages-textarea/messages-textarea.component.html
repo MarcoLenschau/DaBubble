@@ -55,7 +55,7 @@
     (click)="$event.stopPropagation()"
   >
     <span
-      *ngFor="let emoji of sortedEmojis"
+      *ngFor="let emoji of sortedEmojis.slice(0,20)"
       class="emoji-icon"
       (click)="addEmojiToMainMessage(emoji.unicode)"
       title="{{ emoji.name }}"
