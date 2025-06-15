@@ -26,22 +26,21 @@ export class FirebaseService {
   /**
    * Add new user in firebase.
    */
-  async addUser(data: any) {
+  async addUser(data: any, emaiAuth: boolean) {
     if (data && Object.keys(data).length) {
       const usersCollection = this.getDocRef('users');
       const userDocRef = doc(usersCollection);
       data.id = userDocRef.id;
-
-      await setDoc(userDocRef, this.toObj(data));
+      await setDoc(userDocRef, this.toObj(data, emaiAuth));
     }
   }
 
-  toObj(data: any): {} {
+  toObj(data: any, emailAuth: boolean): {} {
     return {
       id: data.id,
       displayName: data.displayName,
       email: data.email,
-      emaiAuth: false,
+      emailVerified: emailAuth,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       state: true,
       recentEmojis: data.recentEmojis || [],
@@ -83,27 +82,27 @@ export class FirebaseService {
 
   // TODO: async searchMessagesForUser(term: string, userId: string): Promise<Message[]> {}
 
-  /**
-   * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
-   */
-  async updateAllUsersWithLowercaseField(): Promise<void> {
-    const usersRef = collection(this.firebase, 'users');
-    const snapshot = await getDocs(usersRef);
+  // /**
+  //  * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
+  //  */
+  // async updateAllUsersWithLowercaseField(): Promise<void> {
+  //   const usersRef = collection(this.firebase, 'users');
+  //   const snapshot = await getDocs(usersRef);
 
-    const updates = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      const displayName = data['displayName'];
+  //   const updates = snapshot.docs.map((docSnap) => {
+  //     const data = docSnap.data();
+  //     const displayName = data['displayName'];
 
-      if (displayName && !data['displayName_lowercase']) {
-        const docRef = doc(this.firebase, 'users', docSnap.id);
-        return updateDoc(docRef, {
-          displayName_lowercase: displayName.toLowerCase(),
-        });
-      } else {
-        return Promise.resolve();
-      }
-    });
-  }
+  //     if (displayName && !data['displayName_lowercase']) {
+  //       const docRef = doc(this.firebase, 'users', docSnap.id);
+  //       return updateDoc(docRef, {
+  //         displayName_lowercase: displayName.toLowerCase(),
+  //       });
+  //     } else {
+  //       return Promise.resolve();
+  //     }
+  //   });
+  // }
 
   async updateUserState(user: any, state: boolean) {
     const docRef = doc(this.firebase, 'users', user.id);

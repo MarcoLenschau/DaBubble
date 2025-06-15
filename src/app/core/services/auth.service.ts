@@ -122,7 +122,7 @@ export class AuthService {
     });
     if (!userCreated) {
       result.user.state = true;
-      this.firebase.addUser(result.user);
+      this.firebase.addUser(result.user, true);
     }
   }
 
@@ -131,11 +131,11 @@ export class AuthService {
       .catch(() => null);
   }
 
-  createValidUser(user: any, name: string): any {
+  createValidUser(user: any, name: string, emailAuth: boolean): any {
     return {
       uid: user.uid,
       email: user.email,
-      emailAuth: false,
+      emailVerified: emailAuth,
       photoURL: user.photoURL,
       displayName: name,
       state: true,
@@ -146,11 +146,10 @@ export class AuthService {
   async createUserWithEmail(email: string, password: string, name: string, photoURL: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
     let user = {...result.user, photoURL};
-    user = this.createValidUser(user, name);
-    await this.firebase.addUser(user);
+    user = this.createValidUser(user, name, false);
+    await this.firebase.addUser(user, false);
     await this.saveCurrentUser(user);
     await this.checkAllUser(result);
-    sendEmailVerification(user);
     return result.user;
   }
 
@@ -182,4 +181,8 @@ export class AuthService {
       console.log("Email ist geupdatet")
     });
   }
+
+  sendEmailVerification() {
+    return sendEmailVerification(this.user);
+  };
 }

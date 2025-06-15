@@ -89,8 +89,6 @@ export class MessagesHeaderComponent {
   }
 
   ngOnInit() {
-    this.firebaseService.updateAllUsersWithLowercaseField();
-
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
 

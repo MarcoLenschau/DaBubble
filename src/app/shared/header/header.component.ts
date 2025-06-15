@@ -16,19 +16,17 @@ import { onSnapshot } from '@angular/fire/firestore';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user = {
-    displayName: "Gast",
-    photoURL: ""
-  };
+  user: any = {};
 
   users: Subscription;
 
   constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService, private firebase: FirebaseService) {
     this.users = this.auth.user$.subscribe(user => {
       this.user = user;
+      console.log(this.user)
     });
   }
-
+ 
   ngOnDestroy() {
     this.users.unsubscribe();
   }

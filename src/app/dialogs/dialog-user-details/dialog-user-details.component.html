@@ -15,10 +15,14 @@
     <span>Aktive</span>
   </div>
   <div class="email">
-    <img src="./assets/img/input/email.svg" alt="email" />
-    <span>E-Mail Adresse</span>
-    <img *ngIf="user.emailAuth" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
+    <div>
+      <img src="./assets/img/input/email.svg" alt="email" />
+      <span>E-Mail Adresse</span>
+    </div>
+
+    <a *ngIf="!user.emailVerified && user.reloadUserInfo.providerUserInfo[0].providerId === 'password'" (click)="sendMail();" class="send-button" [class.grey-send-button]="sendMailStatus">Bestätigen</a>
+    <img *ngIf="user.emailVerified" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
-  <span *ngIf="!user.emailAuth" class="check-email">Bitte bestätigen sie ihre<br>Email Addresse !</span>
+  <span *ngIf="!user.emailVerified" class="check-email">Bitte bestätigen sie ihre<br>Email Addresse !</span>
 </div>
