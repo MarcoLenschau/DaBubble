@@ -46,7 +46,7 @@ export class AuthService {
   async login(email: string, password: string): Promise<UserCredential | null> {
     try {
       const result = await signInWithEmailAndPassword(this.auth, email, password);
-      this.saveCurrentUser(result);
+      this.saveCurrentUser(result.user);
       return result;
     }
     catch (error) {
@@ -86,7 +86,7 @@ export class AuthService {
     return signInWithPopup(this.auth, provider)
       .then(async (result) => {
         this.isUserExists(result, userCreated);
-        await this.saveCurrentUser(result.user);
+        await this.saveCurrentUser({...result.user, provider: true});
         return result.user;
       })
       .catch((error) => {
@@ -122,7 +122,7 @@ export class AuthService {
     });
     if (!userCreated) {
       result.user.state = true;
-      this.firebase.addUser(result.user, true);
+      this.firebase.addUser(result.user, true, true);
     }
   }
 

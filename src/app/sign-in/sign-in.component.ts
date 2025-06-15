@@ -54,7 +54,7 @@ export class SignInComponent {
   async googleLogin() {
     const user = await this.authService.loginWithGoogle();
     if (user) {
-      this.authService.user = this.firebase.toObj(user, true);
+      this.authService.user = this.firebase.toObj(user, true, true);
       this.router.switchRoute("message");
     } else {
       this.showErrorMessage();
@@ -64,7 +64,7 @@ export class SignInComponent {
   async loginWithGithub() {
     const user = await this.authService.loginWithGitHub();
     if (user) {
-      this.authService.user = this.firebase.toObj(user, true);
+      this.authService.user = this.firebase.toObj(user, true, true);
       this.router.switchRoute("message");
     } else {
       this.showErrorMessage();

@@ -26,21 +26,22 @@ export class FirebaseService {
   /**
    * Add new user in firebase.
    */
-  async addUser(data: any, emaiAuth: boolean) {
+  async addUser(data: any, emaiAuth: boolean, provider = false) {
     if (data && Object.keys(data).length) {
       const usersCollection = this.getDocRef('users');
       const userDocRef = doc(usersCollection);
       data.id = userDocRef.id;
-      await setDoc(userDocRef, this.toObj(data, emaiAuth));
+      await setDoc(userDocRef, this.toObj(data, emaiAuth, provider));
     }
   }
 
-  toObj(data: any, emailAuth: boolean): {} {
+  toObj(data: any, emailAuth: boolean, provider: boolean): {} {
     return {
       id: data.id,
       displayName: data.displayName,
       email: data.email,
       emailVerified: emailAuth,
+      provider: provider,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       state: true,
       recentEmojis: data.recentEmojis || [],

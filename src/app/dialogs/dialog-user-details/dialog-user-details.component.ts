@@ -17,7 +17,7 @@ export class DialogUserDetailsComponent {
   private dialogRef = inject(MatDialogRef<DialogUserDetailsComponent>);
   @Input() user: any = {};
   sendMailStatus = false;
-  
+
   closeProfilView() {
     this.dialogRef.close();
   }
