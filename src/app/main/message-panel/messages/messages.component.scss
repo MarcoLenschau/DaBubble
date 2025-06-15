@@ -43,7 +43,7 @@
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
   height: 100%;
   flex: 1 1 auto;
-  opacity: 1;
+  opacity: 0;
   &.ready {
     opacity: 1;
   }

@@ -15,7 +15,12 @@ export class AppComponent implements OnInit {
 
   constructor(private messageCacheService: MessageCacheService) { }
 
-  ngOnInit() {
-    this.messageCacheService.initInitialMessageCache();
+  async ngOnInit() {
+    try {
+      await this.messageCacheService.initInitialMessageCache();
+      console.debug('Globaler Preload aller Nachrichten abgeschlossen');
+    } catch (err) {
+      console.error('Fehler beim globalen Preload', err);
+    }
   }
 }
