@@ -21,7 +21,7 @@ import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
 import { MessageCacheService } from '../../../core/services/message-cache.service';
-
+import { MessageEventService } from '../../../core/services/message-event.service';
 import { User } from '../../../core/models/user.model';
 import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
@@ -91,6 +91,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   messagesReady = false;
 
   private lastThreadId: string | null = null;
+  private shouldScrollAfterUpdate: boolean = true;
   private messagesSubscription?: Subscription;
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
@@ -98,8 +99,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
+    private messageCacheService: MessageCacheService,
+    private messageEventService: MessageEventService,
     private dialog: MatDialog,
-  ) { }
+  ) {
+    this.messageEventService.messageSent$.subscribe(contextType => {
+      this.shouldScrollAfterUpdate = (contextType === 'message');
+    });
+  }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -119,14 +126,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       });
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
-    });
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.scrollContainer && this.scrollContainer.nativeElement) {
-        scrollToBottom(this.scrollContainer.nativeElement);
-      }
     });
   }
 
@@ -164,7 +163,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
-    console.debug('subscribeToMessages: Context', this.messageContext);
 
     this.messagesSubscription?.unsubscribe();
     this.messagesReady = false;
@@ -180,8 +178,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         return;
       }
       this.messages = loadedMessages;
+
       setTimeout(() => {
-        scrollToBottom(this.scrollContainer.nativeElement);
+        if (this.shouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
+          scrollToBottom(this.scrollContainer.nativeElement);
+        }
         this.messagesReady = true;
       }, 0);
     });
@@ -189,6 +190,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
+    this.messagesReady = false;
 
     await this.ensureThreadId(msg);
 
@@ -221,6 +223,13 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.threadTitle = msg.channelId
         ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
         : msg.name;
+
+      setTimeout(() => {
+        if (this.scrollContainer?.nativeElement) {
+          scrollToBottom(this.scrollContainer.nativeElement);
+        }
+        this.messagesReady = true;
+      }, 0);
     });
   }
 

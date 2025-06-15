@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageDataService } from '../../../core/services/message-data.service';
+import { MessageEventService } from '../../../core/services/message-event.service';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { EMOJIS, Emoji } from '../../../core/interfaces/emojis.interface';
 import { Message } from '../../../core/models/message.model';
@@ -65,7 +66,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   constructor(
     private messageDataService: MessageDataService,
-    private userDataService: UserDataService
+    private userDataService: UserDataService, private messageEventService: MessageEventService
   ) { }
 
   get isThread(): boolean {
@@ -130,31 +131,31 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     };
   }
 
- selectMentionUser(user: User) {
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return;
+  selectMentionUser(user: User) {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
 
-  const range = sel.getRangeAt(0);
-  range.deleteContents();
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
 
-  const mentionText = `@${user.displayName} `;
-  const currentText = this.getTextFromEditableDiv();
-  const newText = currentText.replace(/@[\wäöüßÄÖÜ\-]*$/, mentionText);
+    const mentionText = `@${user.displayName} `;
+    const currentText = this.getTextFromEditableDiv();
+    const newText = currentText.replace(/@[\wäöüßÄÖÜ\-]*$/, mentionText);
 
-  this.editableDiv.nativeElement.innerText = newText;
-  this.placeCursorAtEnd(this.editableDiv.nativeElement);
+    this.editableDiv.nativeElement.innerText = newText;
+    this.placeCursorAtEnd(this.editableDiv.nativeElement);
 
-  this.textInput = newText;
+    this.textInput = newText;
 
-  this.showMentionDropdown = false;
-  this.filteredMentionUsers = [];
+    this.showMentionDropdown = false;
+    this.filteredMentionUsers = [];
 
-  this.messageContext = {
-    type: 'direct',
-    id: this.currentUser.id,     
-    receiverId: user.id         
-  };
-}
+    this.messageContext = {
+      type: 'direct',
+      id: this.currentUser.id,
+      receiverId: user.id
+    };
+  }
 
 
   toggleUserDropdown(event: MouseEvent): void {
@@ -242,6 +243,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
 
+    this.messageEventService.notifyMessageSent(this.mode);
     const message = this.createMessage(text);
 
     try {

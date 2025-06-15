@@ -11,12 +11,13 @@ import {
   orderBy,
   onSnapshot,
   QuerySnapshot,
-  QueryDocumentSnapshot,
   DocumentData,
   Unsubscribe
 } from '@angular/fire/firestore';
-
 import { detectRelevantChanges, } from '../utils/messages-utils';
+import {
+  filterMessagesByContext, messageBelongsToContext, mapDocToMessage, generateCacheKey, directQueryConditions, messageBelongsToThread,
+} from '../utils/message-cache-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -25,13 +26,19 @@ import { detectRelevantChanges, } from '../utils/messages-utils';
 export class MessageCacheService {
   private messageCache = new Map<string, Message[]>();
   private messageSubject = new BehaviorSubject<Message[]>([]);
-  private unsubscribeFn: Unsubscribe | null = null;
+  private threadMessageSubject = new BehaviorSubject<Message[]>([]);
+  private activeListeners = new Map<string, Unsubscribe>();
 
   constructor(private firestore: Firestore) { }
 
   get messages$(): Observable<Message[]> {
     return this.messageSubject.asObservable();
   }
+
+  get threadMessages$(): Observable<Message[]> {
+    return this.threadMessageSubject.asObservable();
+  }
+
 
   async initInitialMessageCache(): Promise<void> {
     const q = query(
@@ -48,17 +55,8 @@ export class MessageCacheService {
     this.messageCache.set('all', allMessages);
   }
 
-  generateCacheKey(context: MessageContext, currentUserId?: string): string {
-    if (context.type === 'channel') {
-      return `channel:${context.id}`;
-    } else {
-      const ids = [currentUserId || '', context.receiverId || ''].sort();
-      return `direct:${ids[0]}-${ids[1]}`;
-    }
-  }
-
   async loadMessagesForContext(context: MessageContext, currentUserId: string): Promise<void> {
-    const cacheKey = this.generateCacheKey(context, currentUserId);
+    const cacheKey = generateCacheKey(context, currentUserId);
 
     if (this.messageCache.has(cacheKey)) {
       this.messageSubject.next([...this.messageCache.get(cacheKey)!]);
@@ -66,38 +64,80 @@ export class MessageCacheService {
     }
 
     const allMessages = this.messageCache.get('all') ?? [];
-    const filtered = this.filterMessagesByContext(allMessages, context, currentUserId);
+    const filtered = filterMessagesByContext(allMessages, context, currentUserId);
     this.messageCache.set(cacheKey, filtered);
     this.messageSubject.next([...filtered]);
 
-    this.clearActiveSubscription();
-    this.startLiveListener(context, currentUserId, cacheKey);
+    // this.clearActiveSubscription();
+    await this.removeLiveListener(cacheKey);
+    this.registerLiveListener(cacheKey, () => this.createContextListener(context, currentUserId, cacheKey));
   }
 
-  private clearActiveSubscription(): void {
-    if (this.unsubscribeFn) {
-      this.unsubscribeFn();
-      this.unsubscribeFn = null;
+  async loadMessagesForThread(threadId: string): Promise<void> {
+    const cacheKey = `thread:${threadId}`;
+
+    if (this.messageCache.has(cacheKey)) {
+      this.threadMessageSubject.next([...this.messageCache.get(cacheKey)!]);
+      return;
+    }
+
+    const allMessages = this.messageCache.get('all') ?? [];
+    const filtered = allMessages.filter(msg => msg.threadId === threadId);
+    this.messageCache.set(cacheKey, filtered);
+    this.threadMessageSubject.next([...filtered]);
+
+    await this.removeLiveListener(cacheKey);
+    this.registerLiveListener(cacheKey, () => this.createThreadListener(threadId, cacheKey));
+  }
+
+  private registerLiveListener(
+    cacheKey: string,
+    setupFn: () => Unsubscribe
+  ): void {
+    if (this.activeListeners.has(cacheKey)) {
+      return;
+    }
+
+    const unsubscribe = setupFn();
+    this.activeListeners.set(cacheKey, unsubscribe);
+  }
+
+  public async removeLiveListener(cacheKey: string): Promise<void> {
+    const unsub = this.activeListeners.get(cacheKey);
+    if (unsub) {
+      unsub();
+      this.activeListeners.delete(cacheKey);
     }
   }
 
-  private startLiveListener(context: MessageContext, currentUserId: string, cacheKey: string) {
+  private createContextListener(
+    context: MessageContext,
+    currentUserId: string,
+    cacheKey: string
+  ): Unsubscribe {
     const col = collection(this.firestore, 'messages');
 
     if (context.type === 'channel') {
       const q = query(col, where('channelId', '==', context.id), orderBy('timestamp', 'asc'));
-      const unsub = onSnapshot(q, snap => this.handleDocChanges(snap, cacheKey));
-      this.unsubscribeFn = unsub;
+      return onSnapshot(q, snap => this.handleDocChanges(snap, cacheKey));
     }
 
-    else if (context.type === 'direct' && context.receiverId) {
-      const q1 = query(col, ...this.directQueryConditions(currentUserId, context.receiverId));
-      const q2 = query(col, ...this.directQueryConditions(context.receiverId, currentUserId));
+    if (context.type === 'direct' && context.receiverId) {
+      const q1 = query(col, ...directQueryConditions(currentUserId, context.receiverId));
+      const q2 = query(col, ...directQueryConditions(context.receiverId, currentUserId));
 
       const unsub1 = onSnapshot(q1, snap => this.handleDocChanges(snap, cacheKey));
       const unsub2 = onSnapshot(q2, snap => this.handleDocChanges(snap, cacheKey));
-      this.unsubscribeFn = () => { unsub1(); unsub2(); };
+      return () => { unsub1(); unsub2(); };
     }
+
+    return () => { };
+  }
+
+  private createThreadListener(threadId: string, cacheKey: string): Unsubscribe {
+    const col = collection(this.firestore, 'messages');
+    const q = query(col, where('threadId', '==', threadId), orderBy('timestamp', 'asc'));
+    return onSnapshot(q, snap => this.handleDocChangesThread(snap, cacheKey));
   }
 
   private handleDocChanges(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
@@ -108,7 +148,7 @@ export class MessageCacheService {
     let contextChanged = false;
 
     snapshot.docChanges().forEach(change => {
-      const msg = this.mapDocToMessage(change.doc as any);
+      const msg = mapDocToMessage(change.doc as any);
       const idxGlobal = global.findIndex(m => m.id === msg.id);
       if (change.type === 'added') {
         if (idxGlobal === -1) {
@@ -126,7 +166,7 @@ export class MessageCacheService {
         globalChanged = true;
       }
 
-      const belongs = this.messageBelongsToContext(msg, cacheKey);
+      const belongs = messageBelongsToContext(msg, cacheKey);
       const idxCtx = currentContextMessages.findIndex(m => m.id === msg.id);
       if (change.type === 'added') {
         if (belongs && idxCtx === -1) {
@@ -168,77 +208,66 @@ export class MessageCacheService {
     }
   }
 
-  private messageBelongsToContext(msg: Message, cacheKey: string): boolean {
-    if (cacheKey.startsWith('channel:')) {
-      const channelId = cacheKey.split(':')[1];
-      return msg.channelId === channelId;
-    }
-    if (cacheKey.startsWith('direct:')) {
-      const ids = cacheKey.substring('direct:'.length).split('-');
-      if (!msg.isDirectMessage) return false;
-      return ((msg.userId === ids[0] && msg.receiverId === ids[1]) ||
-        (msg.userId === ids[1] && msg.receiverId === ids[0]));
-    }
-    return false;
-  }
+  private handleDocChangesThread(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
+    let global = this.messageCache.get('all') ?? [];
+    let globalChanged = false;
 
+    const threadMessages = this.messageCache.get(cacheKey) ?? [];
+    let threadChanged = false;
 
-  private filterMessagesByContext(messages: Message[], context: MessageContext, currentUserId: string): Message[] {
-    if (context.type === 'channel') {
-      return messages.filter(m => m.channelId === context.id);
-    }
-    if (context.type === 'direct') {
-      if (!context.receiverId) return [];
-      return messages.filter(m =>
-        m.isDirectMessage &&
-        ((m.userId === currentUserId && m.receiverId === context.receiverId) ||
-          (m.userId === context.receiverId && m.receiverId === currentUserId))
-      );
-    }
-    return [];
-  }
+    snapshot.docChanges().forEach(change => {
+      const msg = mapDocToMessage(change.doc as any);
+      const idxGlobal = global.findIndex(m => m.id === msg.id);
 
-  private directQueryConditions(userA: string, userB: string) {
-    return [
-      where('isDirectMessage', '==', true),
-      where('userId', '==', userA),
-      where('receiverId', '==', userB),
-      orderBy('timestamp', 'asc')
-    ];
-  }
+      if (change.type === 'added' && idxGlobal === -1) {
+        global.push(msg);
+        global.sort((a, b) => a.timestamp - b.timestamp);
+        globalChanged = true;
+      } else if (change.type === 'modified' && idxGlobal !== -1) {
+        if (detectRelevantChanges(global[idxGlobal], msg)) {
+          global[idxGlobal] = msg;
+          globalChanged = true;
+        }
+      } else if (change.type === 'removed' && idxGlobal !== -1) {
+        global.splice(idxGlobal, 1);
+        globalChanged = true;
+      }
 
-  private mapDocToMessage(doc: QueryDocumentSnapshot<DocumentData>): Message {
-    const data = doc.data() as any;
-    return new Message({
-      id: doc.id,
-      name: data.name,
-      text: data.text,
-      timestamp: data.timestamp ?? Date.now(),
-      userId: data.userId,
-      receiverId: data.receiverId ?? '',
-      isDirectMessage: data.isDirectMessage ?? false,
-      channelId: data.channelId ?? '',
-      threadId: data.threadId ?? '',
-      reactions: data.reactions ?? [],
-      lastReplyTimestamp: data.lastReplyTimestamp,
-      replies: data.replies ?? 0,
+      const belongs = messageBelongsToThread(msg, cacheKey);
+      const idxThread = threadMessages.findIndex(m => m.id === msg.id);
+
+      if (change.type === 'added' && belongs && idxThread === -1) {
+        threadMessages.push(msg);
+        threadMessages.sort((a, b) => a.timestamp - b.timestamp);
+        threadChanged = true;
+      } else if (change.type === 'modified') {
+        if (idxThread !== -1) {
+          if (detectRelevantChanges(threadMessages[idxThread], msg)) {
+            if (belongs) {
+              threadMessages[idxThread] = msg;
+            } else {
+              threadMessages.splice(idxThread, 1);
+            }
+            threadChanged = true;
+          }
+        } else if (belongs) {
+          threadMessages.push(msg);
+          threadMessages.sort((a, b) => a.timestamp - b.timestamp);
+          threadChanged = true;
+        }
+      } else if (change.type === 'removed' && idxThread !== -1) {
+        threadMessages.splice(idxThread, 1);
+        threadChanged = true;
+      }
     });
-  }
 
-  private mapToMessages(docs: any[]): Message[] {
-    return docs.map(doc => new Message({
-      id: doc.id,
-      name: doc.name,
-      text: doc.text,
-      timestamp: doc.timestamp ?? Date.now(),
-      userId: doc.userId,
-      receiverId: doc.receiverId ?? '',
-      isDirectMessage: doc.isDirectMessage ?? false,
-      channelId: doc.channelId ?? '',
-      threadId: doc.threadId ?? '',
-      reactions: doc.reactions ?? [],
-      lastReplyTimestamp: doc.lastReplyTimestamp,
-      replies: doc.replies ?? 0,
-    }));
+    if (globalChanged) {
+      this.messageCache.set('all', global);
+    }
+
+    if (threadChanged) {
+      this.messageCache.set(cacheKey, threadMessages);
+      this.threadMessageSubject.next([...threadMessages]);
+    }
   }
 }

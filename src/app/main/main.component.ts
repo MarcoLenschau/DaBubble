@@ -6,6 +6,7 @@ import { Message } from '../core/models/message.model';
 import { MessageWindowComponent } from './message-window/message-window.component';
 import { ThreadWindowComponent } from './thread-window/thread-window.component';
 import { FirebaseService } from '../core/services/firebase.service';
+import { MessageEventService } from '../core/services/message-event.service';
 import { Observable } from 'rxjs';
 import { MessageContext } from '../core/interfaces/message-context.interface';
 import { ViewMode } from '../core/enums/view-mode.enum';
@@ -37,7 +38,7 @@ export class MainComponent implements OnInit {
   mobileMaxWidth = 896;
   tabletMaxWidth = 1440;
 
-  constructor(private firebase: FirebaseService, private breakpointObserver: BreakpointObserver) {
+  constructor(private firebase: FirebaseService, private breakpointObserver: BreakpointObserver, private messageEventService: MessageEventService) {
     this.channels$ = this.firebase.getColRef("channels");
     this.channels$.subscribe((channels) => {
       this.channels = channels;
@@ -126,9 +127,7 @@ export class MainComponent implements OnInit {
       this.showMessage = true;
       this.showThread = false;
     }
-
   }
-
 
   onChannelSelected(channel: string) {
     this.channels.forEach((channelFromBackend: any) => {
@@ -147,6 +146,7 @@ export class MainComponent implements OnInit {
     if (!same) {
       console.log("MainComponent: messageContext wurde wirklich geändert:", context);
       this.messageContext = context;
+      this.messageEventService.notifyMessageSent('message');
     } else {
       console.log("MainComponent: Kein Update notwendig (messageContext gleich)");
     }
