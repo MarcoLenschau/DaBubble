@@ -27,12 +27,3 @@ jobs:
           git fetch origin
           git merge origin/${{ github.ref_name }}
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} main
-
-      - name: Send Discord Notification
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{"username": "GitHub", "content": "🚀 New commit on `main` !"}' \
-            $DISCORD_WEBHOOK_URL
