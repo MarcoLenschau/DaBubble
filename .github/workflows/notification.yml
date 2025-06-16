@@ -17,5 +17,5 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
             -X POST \
-            -d '{"username": "GitHub", "content": "New commit from $GITHUB_ACTOR in `$BRANCH_NAME` !"}' \
+            -d "{\"username\": \"GitHub\", \"content\": \"New commit from $GITHUB_ACTOR in \`$BRANCH_NAME\`!\"}" \
             $DISCORD_WEBHOOK_URL
