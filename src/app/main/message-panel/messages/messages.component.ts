@@ -92,6 +92,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   private lastThreadId: string | null = null;
   private shouldScrollAfterUpdate: boolean = true;
+  private threadShouldScrollAfterUpdate: boolean = true;
   private messagesSubscription?: Subscription;
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
@@ -103,8 +104,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     private messageEventService: MessageEventService,
     private dialog: MatDialog,
   ) {
-    this.messageEventService.messageSent$.subscribe(contextType => {
-      this.shouldScrollAfterUpdate = (contextType === 'message');
+    this.messageEventService.messageWindowScroll$.subscribe(scroll => {
+      this.shouldScrollAfterUpdate = scroll;
+    });
+
+    this.messageEventService.threadWindowScroll$.subscribe(scroll => {
+      this.threadShouldScrollAfterUpdate = scroll;
     });
   }
 
@@ -152,12 +157,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.subscribeToMessages();
     }
 
-    if (this.isThread &&
-      changes['starterMessage'] &&
-      this.starterMessage &&
-      this.starterMessage.id !== this.lastThreadId) {
+    if (this.isThread && changes['starterMessage'] && this.starterMessage) {
+      this.messageEventService.notifyScrollIntent('thread', true);
       this.setReplyToMessage(this.starterMessage);
-      this.lastThreadId = this.starterMessage.id;
     }
   }
 
@@ -210,9 +212,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private subscribeToThreadMessages(msg: Message): void {
     let isFirst = true;
     this.threadMessagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(loadedMessages => {
-      this.threadMessages = loadedMessages;
 
-      this.filteredMessages = [msg, ...this.threadMessages.filter(m => m.id !== msg.id)];
+      this.filteredMessages = loadedMessages;
 
       if (!isFirst) {
         this.updateRepliesCountIfNeeded(msg);
@@ -225,7 +226,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         : msg.name;
 
       setTimeout(() => {
-        if (this.scrollContainer?.nativeElement) {
+        if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
           scrollToBottom(this.scrollContainer.nativeElement);
         }
         this.messagesReady = true;
@@ -298,6 +299,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async handleEmojiClick(emojiName: string, msg: Message): Promise<void> {
+    this.messageEventService.notifyScrollIntent('message', false);
+    this.messageEventService.notifyScrollIntent('thread', false);
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);

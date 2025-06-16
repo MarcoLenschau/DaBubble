@@ -68,7 +68,6 @@ export class MessageCacheService {
     this.messageCache.set(cacheKey, filtered);
     this.messageSubject.next([...filtered]);
 
-    // this.clearActiveSubscription();
     await this.removeLiveListener(cacheKey);
     this.registerLiveListener(cacheKey, () => this.createContextListener(context, currentUserId, cacheKey));
   }

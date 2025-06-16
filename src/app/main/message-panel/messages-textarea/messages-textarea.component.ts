@@ -243,7 +243,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
 
-    this.messageEventService.notifyMessageSent(this.mode);
+    this.messageEventService.notifyScrollIntent(this.mode, true);
+    if (this.mode == 'thread') {
+      this.messageEventService.notifyScrollIntent('message', false);
+    }
     const message = this.createMessage(text);
 
     try {

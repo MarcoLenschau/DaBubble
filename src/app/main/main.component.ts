@@ -146,7 +146,7 @@ export class MainComponent implements OnInit {
     if (!same) {
       console.log("MainComponent: messageContext wurde wirklich geändert:", context);
       this.messageContext = context;
-      this.messageEventService.notifyMessageSent('message');
+      this.messageEventService.notifyScrollIntent('message', true);
     } else {
       console.log("MainComponent: Kein Update notwendig (messageContext gleich)");
     }
@@ -155,6 +155,5 @@ export class MainComponent implements OnInit {
       this.showDevSpace = false;
       this.showThread = false;
     }
-
   }
 }
