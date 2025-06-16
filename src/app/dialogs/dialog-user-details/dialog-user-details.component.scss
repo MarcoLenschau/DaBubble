@@ -14,9 +14,6 @@
     height: 495px;
     width: 275px;
     @include dFlex($jc: none, $ai: none,$f: column, $g: 24px);
-    >a {
-        padding: 0px 35px;
-    }
 }
 
 .profile {
