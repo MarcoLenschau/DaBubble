@@ -25,7 +25,7 @@ export class DialogUserEditComponent {
 
   async userSave() {
 
-    const trimmedName = 'Mike';
+    const trimmedName = 'Fritz Fischer';
     // const trimmedName = this.user.displayName?.trim();
     // if (!trimmedName) return;
 

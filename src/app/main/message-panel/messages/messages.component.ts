@@ -223,7 +223,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.threadSymbol = msg.channelId ? '#' : '@';
 
       const threadRootMsg = this.filteredMessages.find(m => m.id === msg.id) ?? msg;
-
+      console.log('Root message in filteredMessages:', threadRootMsg);
+      console.log('Original msg:', msg);
       this.threadTitle = threadRootMsg.channelId
         ? this.channels.find(c => c.id === threadRootMsg.channelId)?.name ?? 'Unbekannter Kanal'
         : threadRootMsg.name;
