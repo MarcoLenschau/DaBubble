@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference, writeBatch } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -109,4 +109,35 @@ export class FirebaseService {
     const docRef = doc(this.firebase, 'users', user.id);
     await updateDoc(docRef, { state: state });
   }
+
+  async updateUser(userId: string, data: Partial<any>): Promise<void> {
+    const userDocRef = doc(this.firebase, 'users', userId);
+    await updateDoc(userDocRef, data);
+  }
+
+  async updateUserNameInMessages(userId: string, newName: string): Promise<void> {
+    const messagesRef = collection(this.firebase, 'messages');
+    const q = query(messagesRef, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+
+    let batch = writeBatch(this.firebase);
+    let batchCount = 0;
+    const batchLimit = 500;
+
+    for (const docSnap of snapshot.docs) {
+      batch.update(docSnap.ref, { name: newName });
+      batchCount++;
+
+      if (batchCount === batchLimit) {
+        await batch.commit();
+        batch = writeBatch(this.firebase);
+        batchCount = 0;
+      }
+    }
+
+    if (batchCount > 0) {
+      await batch.commit();
+    }
+  }
+
 }

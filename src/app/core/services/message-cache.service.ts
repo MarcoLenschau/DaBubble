@@ -269,4 +269,47 @@ export class MessageCacheService {
       this.threadMessageSubject.next([...threadMessages]);
     }
   }
+
+  updateUserNameInCache(userId: string, newName: string): void {
+    const allMessages = this.messageCache.get('all') || [];
+    let updated = false;
+
+    allMessages.forEach(msg => {
+      if (msg.userId === userId && msg.name !== newName) {
+        msg.name = newName;
+        updated = true;
+      }
+    });
+    if (!updated) return;
+
+    this.messageCache.set('all', allMessages);
+
+    const currentMessages = this.messageSubject.getValue();
+    let visibleChanged = false;
+    currentMessages.forEach(msg => {
+      if (msg.userId === userId && msg.name !== newName) {
+        msg.name = newName;
+        visibleChanged = true;
+      }
+    });
+
+    if (visibleChanged) {
+      // this.messageCache.set(this.currentContextCacheKey, currentMessages); // optional
+      this.messageSubject.next([...currentMessages]);
+    }
+
+    const currentThreadMessages = this.threadMessageSubject.getValue();
+    let threadChanged = false;
+    currentThreadMessages.forEach(msg => {
+      if (msg.userId === userId && msg.name !== newName) {
+        msg.name = newName;
+        threadChanged = true;
+      }
+    });
+
+    if (threadChanged) {
+      this.threadMessageSubject.next([...currentThreadMessages]);
+    }
+  }
+
 }

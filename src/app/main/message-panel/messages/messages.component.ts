@@ -221,9 +221,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       isFirst = false;
 
       this.threadSymbol = msg.channelId ? '#' : '@';
-      this.threadTitle = msg.channelId
-        ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
-        : msg.name;
+
+      const threadRootMsg = this.filteredMessages.find(m => m.id === msg.id) ?? msg;
+
+      this.threadTitle = threadRootMsg.channelId
+        ? this.channels.find(c => c.id === threadRootMsg.channelId)?.name ?? 'Unbekannter Kanal'
+        : threadRootMsg.name;
+
+
+      // this.threadTitle = msg.channelId
+      //   ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
+      //   : msg.name;
 
       setTimeout(() => {
         if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
@@ -367,7 +375,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.editedText = '';
   }
 
-  saveEditedMessage(msg: Message): void {
+  saveEditedMessage(msg: Message, index: number): void {
     const trimmed = this.editedText.trim();
     if (!trimmed || trimmed === msg.text) {
       this.cancelEditing();
@@ -375,8 +383,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     const updatedMessage = { ...msg, text: trimmed };
-    this.messageDataService.updateMessage(updatedMessage).then(() => {
-      this.cancelEditing();
+    this.messages[index] = { ...this.messages[index], text: trimmed };
+    this.cancelEditing();
+    this.messageEventService.notifyScrollIntent('message', false);
+    this.messageEventService.notifyScrollIntent('thread', false);
+    this.messageDataService.updateMessage(updatedMessage).catch(err => {
+      console.error('Error saving edited message:', err);
     });
   }
 

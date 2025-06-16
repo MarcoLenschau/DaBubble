@@ -41,12 +41,12 @@
             <div *ngIf="editingMessageId === msg.id" class="edit-container">
               <div class="edit-box">
                 <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
-                  (keydown.enter)="saveEditedMessage(msg)" (keydown.escape)="cancelEditing()"></textarea>
+                  (keydown.enter)="saveEditedMessage(msg, i)" (keydown.escape)="cancelEditing()"></textarea>
 
                 <div class="edit-actions">
                   <span class="emoji-icon">😊</span>
                   <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
-                  <button class="save-btn" (click)="saveEditedMessage(msg)">Speichern</button>
+                  <button class="save-btn" (click)="saveEditedMessage(msg, i)">Speichern</button>
                 </div>
               </div>
             </div>
