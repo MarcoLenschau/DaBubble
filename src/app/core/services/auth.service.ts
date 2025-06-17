@@ -35,18 +35,25 @@ export class AuthService {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
         if (user?.displayName) {
-          console.log("Restore: " + user.displayName);
-          this.user = user;
-          this.userSubject.next(user);
-          await this.userDataService.initCurrentUser();
+          await this.restoreProviderAuth(user);
         } else {
-          if(user.email) {
-            let userData = await this.firebase.searchUsersByEmail(user.email);  
-            this.userSubject.next(userData[0]);
-          }
-        }
+          await this.restoreEmailAuth(user)
+        };
       }
     });
+  }
+
+  async restoreProviderAuth(user: any): Promise<void> {
+    this.user = user;
+    this.userSubject.next(user);
+    await this.userDataService.initCurrentUser();
+  }
+
+  async restoreEmailAuth(user: any): Promise<void> {
+    if(user.email) {
+      let userData = await this.firebase.searchUsersByEmail(user.email);  
+      this.userSubject.next(userData[0]);
+    }
   }
 
   async login(email: string, password: string): Promise<UserCredential | null> {
@@ -137,22 +144,10 @@ export class AuthService {
       .catch(() => null);
   }
 
-  createValidUser(user: any, name: string, emailAuth: boolean): any {
-    return {
-      uid: user.uid,
-      email: user.email,
-      emailVerified: emailAuth,
-      photoURL: user.photoURL,
-      displayName: name,
-      state: true,
-      stsTokenManager: user.stsTokenManager ?? null,
-    };
-  }
-
   async createUserWithEmail(email: string, password: string, name: string, photoURL: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
-    let user = {...result.user, photoURL};
-    user = this.createValidUser(user, name, false);
+    let user: any = {...result.user, photoURL};
+    user = this.firebase.toObj(user, false, false);
     await this.firebase.addUser(user, false);
     await this.saveCurrentUser(user);
     await this.checkAllUser(result);
