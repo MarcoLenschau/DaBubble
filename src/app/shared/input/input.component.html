@@ -1,13 +1,5 @@
 <div class="input-prefix-wrapper" [class.flex-row]="reverse">
     <img  *ngIf="prefixIcon" class="input-prefix-icon" [src]="prefixIcon" alt="icon">
-    <input
-      [style.height.px]="height"
-      [class.input-distance]="reverse"
-      [class.distance]="img === 'none'"
-      type="text"
-      [placeholder]="placeholder"
-      [value]="value"
-      (input)="addData($event)"
-      style="width: 100%;"
-    >
+    <input #inputRef [style.height.px]="height" [style.width.px]="width" [class.input-distance]="reverse" [class.distance]="img === 'none'"
+      [type]="type" [placeholder]="placeholder" [value]="value" (input)="addData($event)">
 </div>

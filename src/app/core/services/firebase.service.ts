@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference, writeBatch } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -26,21 +26,22 @@ export class FirebaseService {
   /**
    * Add new user in firebase.
    */
-  async addUser(data: any) {
+  async addUser(data: any, emaiAuth: boolean, provider = false) {
     if (data && Object.keys(data).length) {
       const usersCollection = this.getDocRef('users');
       const userDocRef = doc(usersCollection);
       data.id = userDocRef.id;
-
-      await setDoc(userDocRef, this.toObj(data));
+      await setDoc(userDocRef, this.toObj(data, emaiAuth, provider));
     }
   }
 
-  toObj(data: any): {} {
+  toObj(data: any, emailAuth: boolean, provider: boolean): {} {
     return {
       id: data.id,
       displayName: data.displayName,
       email: data.email,
+      emailVerified: emailAuth,
+      provider: provider,
       photoURL: data.photoURL || './assets/img/profilepic/frederik.png',
       state: true,
       recentEmojis: data.recentEmojis || [],
@@ -82,30 +83,61 @@ export class FirebaseService {
 
   // TODO: async searchMessagesForUser(term: string, userId: string): Promise<Message[]> {}
 
-  /**
-   * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
-   */
-  async updateAllUsersWithLowercaseField(): Promise<void> {
-    const usersRef = collection(this.firebase, 'users');
-    const snapshot = await getDocs(usersRef);
+  // /**
+  //  * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
+  //  */
+  // async updateAllUsersWithLowercaseField(): Promise<void> {
+  //   const usersRef = collection(this.firebase, 'users');
+  //   const snapshot = await getDocs(usersRef);
 
-    const updates = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      const displayName = data['displayName'];
+  //   const updates = snapshot.docs.map((docSnap) => {
+  //     const data = docSnap.data();
+  //     const displayName = data['displayName'];
 
-      if (displayName && !data['displayName_lowercase']) {
-        const docRef = doc(this.firebase, 'users', docSnap.id);
-        return updateDoc(docRef, {
-          displayName_lowercase: displayName.toLowerCase(),
-        });
-      } else {
-        return Promise.resolve();
-      }
-    });
-  }
+  //     if (displayName && !data['displayName_lowercase']) {
+  //       const docRef = doc(this.firebase, 'users', docSnap.id);
+  //       return updateDoc(docRef, {
+  //         displayName_lowercase: displayName.toLowerCase(),
+  //       });
+  //     } else {
+  //       return Promise.resolve();
+  //     }
+  //   });
+  // }
 
   async updateUserState(user: any, state: boolean) {
     const docRef = doc(this.firebase, 'users', user.id);
     await updateDoc(docRef, { state: state });
   }
+
+  async updateUser(userId: string, data: Partial<any>): Promise<void> {
+    const userDocRef = doc(this.firebase, 'users', userId);
+    await updateDoc(userDocRef, data);
+  }
+
+  async updateUserNameInMessages(userId: string, newName: string): Promise<void> {
+    const messagesRef = collection(this.firebase, 'messages');
+    const q = query(messagesRef, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+
+    let batch = writeBatch(this.firebase);
+    let batchCount = 0;
+    const batchLimit = 500;
+
+    for (const docSnap of snapshot.docs) {
+      batch.update(docSnap.ref, { name: newName });
+      batchCount++;
+
+      if (batchCount === batchLimit) {
+        await batch.commit();
+        batch = writeBatch(this.firebase);
+        batchCount = 0;
+      }
+    }
+
+    if (batchCount > 0) {
+      await batch.commit();
+    }
+  }
+
 }

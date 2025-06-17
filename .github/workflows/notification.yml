@@ -1,0 +1,21 @@
+name: Send Discord Notification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          BRANCH_NAME: ${{ github.ref_name }}    
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d "{\"username\": \"GitHub\", \"content\": \"New commit from $GITHUB_ACTOR in \`$BRANCH_NAME\`!\"}" \
+            $DISCORD_WEBHOOK_URL

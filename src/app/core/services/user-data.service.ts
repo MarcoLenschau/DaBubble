@@ -5,6 +5,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { deleteDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { MessageCacheService } from './message-cache.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class UserDataService {
   private currentUserSubject = new BehaviorSubject<User>(this.createGuestUser());
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private firebaseService: FirebaseService, private injector: Injector) { }
+  constructor(private firebaseService: FirebaseService, private injector: Injector, private messageCacheService: MessageCacheService) { }
 
   private get auth(): AuthService {
     return this.injector.get(AuthService);
@@ -151,5 +152,30 @@ export class UserDataService {
     }
     return true;
   }
+
+  async updateUserName(userId: string, newName: string): Promise<void> {
+    const currentUser = this.currentUserSubject.value;
+
+    if (currentUser.displayName === newName) {
+      return;
+    }
+
+    await this.firebaseService.updateUser(userId, { displayName: newName });
+    await this.firebaseService.updateUserNameInMessages(userId, newName);
+
+    this.messageCacheService.updateUserNameInCache(userId, newName);
+
+    if (this.auth.user) {
+      this.auth.user.displayName = newName;
+      this.auth.userSubject.next(this.auth.user);
+    }
+
+    this.setCurrentUser(new User({
+      ...currentUser,
+      displayName: newName
+    }));
+  }
+
+
 
 }

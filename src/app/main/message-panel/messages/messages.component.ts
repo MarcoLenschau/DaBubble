@@ -14,19 +14,20 @@ import {
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, firstValueFrom, take, distinctUntilChanged } from 'rxjs';
+import { Subscription, firstValueFrom, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
-import { MessageCacheService } from '../../../core/services/message-cache.service';
-
+import { MessageEventService } from '../../../core/services/message-event.service';
+import { ViewMode } from '../../../core/enums/view-mode.enum';
 import { User } from '../../../core/models/user.model';
 import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
+import { Reaction } from '../../../core/interfaces/reaction.interface';
 import {
   formatTime,
   formatDate,
@@ -34,20 +35,22 @@ import {
   formatRelativeTimeSimple
 } from '../../../core/utils/date-utils';
 import {
-  getEmojiByName,
-  getEmojiByUnicode,
-  addEmojiToTextarea,
-  addEmojiToMessage,
   getUserById,
   getUserNames,
   formatUserNames,
   isOwnMessage,
   trackByMessageId,
+} from '../../../core/utils/messages-utils';
+import {
+  getEmojiByName,
+  getEmojiByUnicode,
+  addEmojiToTextarea,
+  addEmojiToMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-  detectRelevantChanges,
-} from '../../../core/utils/messages-utils';
-import { scrollToBottom, isUserScrolledToBottom } from '../../../core/utils/scroll-utils';
+  applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount
+} from '../../../core/utils/emojis-utils';
+import { scrollToBottom } from '../../../core/utils/scroll-utils';
 
 @Component({
   selector: 'app-messages',
@@ -63,12 +66,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
   @Input() messageContext?: MessageContext;
+  @Input() viewMode: ViewMode = ViewMode.Desktop; // TODO !!!!!!!!!!!!!
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
+  @Output() starterMessageChange = new EventEmitter<Message>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
-  private autoScrollEnabled = true;
-
 
   users: User[] = [];
   currentUser!: User;
@@ -89,27 +92,31 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
-
   editingMessageId: string | null = null;
   editedText: string = '';
   messagesReady = false;
+  showAllReactions: { [messageId: string]: boolean } = {};
 
-
-  private lastThreadId: string | null = null;
+  private shouldScrollAfterUpdate: boolean = true;
+  private threadShouldScrollAfterUpdate: boolean = true;
   private messagesSubscription?: Subscription;
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
-  private repliesUpdateTimeout?: ReturnType<typeof setTimeout>;
-  private lastLoadedMessageIds: string[] | null = null;
-  private isFirstEmission = true;
-
 
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
-    private messageCacheService: MessageCacheService,
+    private messageEventService: MessageEventService,
     private dialog: MatDialog,
-  ) { }
+  ) {
+    this.messageEventService.messageWindowScroll$.subscribe(scroll => {
+      this.shouldScrollAfterUpdate = scroll;
+    });
+
+    this.messageEventService.threadWindowScroll$.subscribe(scroll => {
+      this.threadShouldScrollAfterUpdate = scroll;
+    });
+  }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -132,17 +139,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.scrollContainer && this.scrollContainer.nativeElement) {
-        scrollToBottom(this.scrollContainer.nativeElement);
-      }
-    });
-  }
-
   onScroll(): void {
     const container = this.scrollContainer.nativeElement;
-    this.autoScrollEnabled = isUserScrolledToBottom(container);
   }
 
   handleEditClick(msg: Message, index: number): void {
@@ -164,118 +162,47 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.subscribeToMessages();
     }
 
-    if (this.isThread &&
-      changes['starterMessage'] &&
-      this.starterMessage &&
-      this.starterMessage.id !== this.lastThreadId) {
+    if (this.isThread && changes['starterMessage'] && this.starterMessage) {
+      this.messageEventService.notifyScrollIntent('thread', true);
       this.setReplyToMessage(this.starterMessage);
-      this.lastThreadId = this.starterMessage.id;
     }
   }
 
   private subscribeToMessages(): void {
-
     if (!this.messageContext || !this.currentUser?.id) return;
-    console.debug('subscribeToMessages aufgerufen für Context:', this.messageContext);
+
     this.messagesSubscription?.unsubscribe();
+    this.messagesReady = false;
 
-    const messageSource$ = this.messageDataService.getMessagesForContext(this.messageContext, this.currentUser.id);
-
-    this.isFirstEmission = true; // Kennzeichnung, dass beim nächsten emit initial ist
-    this.lastLoadedMessageIds = null; // reset für neuen Kontext
+    const messageSource$ = this.messageDataService.getMessagesForContext(
+      this.messageContext, this.currentUser.id
+    );
 
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       if (!Array.isArray(loadedMessages)) {
         this.messages = loadedMessages;
+        this.messagesReady = true;
         return;
       }
-      // IDs extrahieren (nachdem Service garantiert asc-sorted liefert)
-      const currIds = loadedMessages.map(m => m.id);
-
-      if (this.lastLoadedMessageIds) {
-        debugger;
-        const prevIds = this.lastLoadedMessageIds;
-        if (prevIds.length === currIds.length && prevIds.every((id, idx) => id === currIds[idx])) {
-          // IDs-Liste identisch
-          if (!this.isFirstEmission) {
-            // Prüfen, ob Inhalte sich geändert haben
-            let contentChanged = false;
-            for (let i = 0; i < loadedMessages.length; i++) {
-              const oldMsg = this.messages[i];
-              const newMsg = loadedMessages[i];
-              if (detectRelevantChanges(oldMsg, newMsg)) {
-                contentChanged = true;
-                break;
-              }
-            }
-            if (!contentChanged) {
-              console.debug('subscribeToMessages: IDs gleich und keine relevanten Änderungen → überspringe Rendering');
-              // Keine Änderung an IDs und Inhalten → nichts tun
-              return;
-            }
-            console.debug('subscribeToMessages: IDs gleich, aber Inhalte geändert → update');
-          }
-          // Wenn isFirstEmission true, behandeln wir es wie neue Liste weiter unten
-        }
-        // andernfalls: IDs-Liste ungleich → neue/andere Nachrichten → übernehmen
-      }
-
-
-
-
-      // Erste Initial-Emission oder IDs unterschiedlich oder Inhalt geändert:
-      this.lastLoadedMessageIds = currIds;
       this.messages = loadedMessages;
 
-      // Scroll-Logik:
       setTimeout(() => {
-        console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
-        scrollToBottom(this.scrollContainer.nativeElement);
-        setTimeout(() => {
-          console.log('Height after scroll:', this.scrollContainer.nativeElement.scrollHeight);
-          console.log('Loaded', loadedMessages.length, 'messages at', Date.now());
-          this.messagesReady = true;
-        }, 200);
-      }, 300);
-
-      this.isFirstEmission = false;
+        if (this.shouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
+          scrollToBottom(this.scrollContainer.nativeElement);
+        }
+        this.messagesReady = true;
+      }, 0);
     });
-
-    // this.messagesSubscription = messageSource$.pipe(distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))).subscribe((loadedMessages) => {
-    //   const ids = loadedMessages.map(m => m.id);
-    //   if (this.lastLoadedMessageIds) {
-    //     // prüfen, ob identische ID-Liste
-    //     const prev = this.lastLoadedMessageIds;
-    //     if (prev.length === ids.length && prev.every((id, idx) => id === ids[idx])) {
-    //       console.debug('Subscription: dieselben Nachrichten-IDs wie zuvor, überspringe Rendering');
-    //       return;
-    //     }
-    //   }
-    //   // sonst: neue oder längere Liste
-    //   this.lastLoadedMessageIds = ids;
-    //   this.messages = loadedMessages;
-    //   setTimeout(() => {
-    //     console.log('Height before scroll:', this.scrollContainer.nativeElement.scrollHeight);
-    //     scrollToBottom(this.scrollContainer.nativeElement);
-    //     setTimeout(() => {
-    //       console.log('Height after scroll:', this.scrollContainer.nativeElement.scrollHeight);
-    //       console.log('Loaded', loadedMessages.length, 'messages at', Date.now());
-
-    //       this.messagesReady = true;
-    //     }, 200);
-    //   }, 300);
-
-    // });
-
   }
 
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
+    this.messagesReady = false;
 
     await this.ensureThreadId(msg);
 
     this.threadMessagesSubscription?.unsubscribe();
-
+    this.starterMessage = { ...msg };
     this.subscribeToThreadMessages(msg);
   }
 
@@ -290,19 +217,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private subscribeToThreadMessages(msg: Message): void {
     let isFirst = true;
     this.threadMessagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(loadedMessages => {
-      this.threadMessages = loadedMessages;
 
-      this.filteredMessages = [msg, ...this.threadMessages.filter(m => m.id !== msg.id)];
+      this.filteredMessages = loadedMessages;
 
       if (!isFirst) {
         this.updateRepliesCountIfNeeded(msg);
       }
       isFirst = false;
 
-      this.threadSymbol = msg.channelId ? '#' : '@';
-      this.threadTitle = msg.channelId
-        ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
-        : msg.name;
+      this.updateStarterMessageFromLoaded(msg);
+
+      this.scheduleAutoScrollAndMarkReady();
     });
   }
 
@@ -314,6 +239,29 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         .catch(error =>
           console.error('Error updating replies count:', error));
     }
+  }
+
+  private updateStarterMessageFromLoaded(msg: Message): void {
+    const updatedRoot = this.filteredMessages.find(m => m.id === msg.id);
+    if (!updatedRoot) return;
+
+    const nameChanged = updatedRoot.name && updatedRoot.name !== this.starterMessage?.name;
+    const channelChanged = updatedRoot.channelId && updatedRoot.channelId !== this.starterMessage?.channelId;
+
+    if (nameChanged || channelChanged) {
+      const newStarter: Message = { ...updatedRoot };
+      this.starterMessage = newStarter;
+      this.starterMessageChange.emit(newStarter);
+    }
+  }
+
+  private scheduleAutoScrollAndMarkReady(): void {
+    setTimeout(() => {
+      if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
+        scrollToBottom(this.scrollContainer.nativeElement);
+      }
+      this.messagesReady = true;
+    }, 0);
   }
 
   async saveMessage(msg: Message) {
@@ -335,15 +283,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   closeThread() {
     this.showThreadChange.emit(false);
     this.threadMessagesSubscription?.unsubscribe();
-  }
-
-  cancelReply() {
-    this.replyToMessage = null;
-  }
-
-  clearTextarea() {
-    this.textareaContent = '';
-    this.replyToMessage = null;
   }
 
   setHoverState(index: number | null) {
@@ -371,6 +310,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async handleEmojiClick(emojiName: string, msg: Message): Promise<void> {
+    this.disableAutoScroll();
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
@@ -399,25 +339,31 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
       const threadMessages = wrapper.closest('.thread-messages');
       if (tooltip && threadMessages) {
-        this.adjustTooltipPosition(tooltip as HTMLElement, threadMessages as HTMLElement);
+        applyTooltipOverflowAdjustment(tooltip as HTMLElement, threadMessages as HTMLElement);
       }
     }, 60);
   }
 
-  adjustTooltipPosition(tooltipElement: HTMLElement, threadMessages: HTMLElement) {
-    if (!tooltipElement) return;
+  getVisibleReactions(message: Message): Reaction[] {
+    return getVisibleReactions(
+      message,
+      !!this.showAllReactions[message.id],
+      this.viewMode,
+      this.isThread
+    );
+  }
 
-    const rect = tooltipElement.getBoundingClientRect();
-    const threadRect = threadMessages.getBoundingClientRect();
+  getHiddenReactionCount(message: Message): number {
+    return getHiddenReactionCount(
+      message,
+      !!this.showAllReactions[message.id],
+      this.viewMode,
+      this.isThread
+    );
+  }
 
-    const overflowRight = rect.right - threadRect.right;
-
-    if (overflowRight > 0) {
-      tooltipElement.style.transform = `translateX(-${overflowRight + 4}px)`;
-
-    } else {
-      tooltipElement.style.transform = '';
-    }
+  toggleShowAll(messageId: string): void {
+    this.showAllReactions[messageId] = !this.showAllReactions[messageId];
   }
 
   editMenuOpenIndex: number | null = null;
@@ -425,7 +371,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   toggleEditMenu(index: number): void {
     this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
   }
-
 
   startEditing(msg: Message): void {
     this.editingMessageId = msg.id;
@@ -437,7 +382,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.editedText = '';
   }
 
-  saveEditedMessage(msg: Message): void {
+  saveEditedMessage(msg: Message, index: number): void {
     const trimmed = this.editedText.trim();
     if (!trimmed || trimmed === msg.text) {
       this.cancelEditing();
@@ -445,9 +390,17 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     const updatedMessage = { ...msg, text: trimmed };
-    this.messageDataService.updateMessage(updatedMessage).then(() => {
-      this.cancelEditing();
+    this.messages[index] = { ...this.messages[index], text: trimmed };
+    this.cancelEditing();
+    this.disableAutoScroll();
+    this.messageDataService.updateMessage(updatedMessage).catch(err => {
+      console.error('Error saving edited message:', err);
     });
+  }
+
+  disableAutoScroll() {
+    this.messageEventService.notifyScrollIntent('message', false);
+    this.messageEventService.notifyScrollIntent('thread', false);
   }
 
   formatTime = formatTime;

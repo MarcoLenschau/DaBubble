@@ -34,12 +34,12 @@ export class DevspaceComponent {
 
   isWorkspaceOpen: boolean = true;
   isWorkspaceHovered: boolean = false;
-
+  channels: any = [];
   channels$!: Observable<Channel[]>;
   activeUser: string | null = null;
   user$: Observable<any[]>;
   users: any;
-  currentUser!: User
+  currentUser!: User;
 
   private currentUserSubscription?: Subscription;
   constructor(
@@ -50,8 +50,11 @@ export class DevspaceComponent {
       if (users.length > 0) {
         this.users = users;
       }
-    })
+    });
     this.channels$ = this.channelDataService.getChannels();
+    this.channels$.subscribe(channels => {
+      this.channels = channels;
+    });
   }
 
   async ngOnInit(): Promise<void> {

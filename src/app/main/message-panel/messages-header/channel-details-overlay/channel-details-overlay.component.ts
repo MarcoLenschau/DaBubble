@@ -33,11 +33,8 @@ export class ChannelDetailsOverlayComponent {
     if (this.newName) {
       this.channelDataService.updateChannelName(this.channel.id, this.newName).then(() => {
         this.channel.name = this.newName;
-        console.log(this.channel.name);
         this.editName = false;
-      })
-      console.log(this.newName);
-
+      });
     }
   }
 
@@ -50,12 +47,8 @@ export class ChannelDetailsOverlayComponent {
     if (this.newDescription) {
       this.channelDataService.updateChannelDescription(this.channel.id, this.newDescription).then(() => {
         this.channel.description = this.newDescription;
-        console.log(this.channel.description);
         this.editDescription = false;
-      })
-
+      });
     }
   }
-
-
 }

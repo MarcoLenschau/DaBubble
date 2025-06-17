@@ -88,7 +88,9 @@ nav {
 
 .devspace-messages {
   display: flex;
+  justify-content: space-between;
   flex-direction: column;
+  height: 210px;
 }
 
 .message-title-arrow {
@@ -112,6 +114,8 @@ nav {
   flex-direction: column;
   gap: 13px;
   margin-top: 16px;
+  position: relative;
+  top: 65px;
 }
 
 .profile-user {
@@ -191,8 +195,17 @@ nav {
   overflow-y: scroll;
   height: 445px;
   width: 315px;
-  position: absolute;
-  top: 510px;
+  position: relative;
+  top: 85px;
+}
+
+.scrollbar-channel {
+  overflow-y: scroll;
+  height: 190px;
+}
+
+.channel-open {
+  top: 450px !important;
 }
 
 .active {
@@ -200,6 +213,11 @@ nav {
   left: 20px;
 }
 
+.active-user {
+  position: fixed;
+  top: 230px;
+  left: 8px;
+}
 
 // Responsiveness
 @media (max-width: $mobile-xl) {
@@ -220,4 +238,3 @@ nav {
     border-radius: 0;
   }
 }
-

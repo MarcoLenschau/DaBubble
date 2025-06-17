@@ -29,6 +29,8 @@ export class MessagePanelComponent {
     userId: string;
   }>();
   @Output() closeThreadPanelWindow = new EventEmitter<void>();
+  @Output() starterMessageChange = new EventEmitter<Message>();
+
 
   // @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
@@ -44,6 +46,11 @@ export class MessagePanelComponent {
 
   onStartThread(message: Message, userId: string) {
     this.threadStart.emit({ starterMessage: message, userId });
+  }
+
+  onStarterMessageChange(updatedMessage: Message) {
+    this.starterMessage = { ...updatedMessage };
+    this.starterMessageChange?.emit(this.starterMessage);
   }
 
   onCloseClick() {

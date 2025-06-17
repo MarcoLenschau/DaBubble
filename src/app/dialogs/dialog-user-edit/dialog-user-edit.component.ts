@@ -3,6 +3,7 @@ import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FirebaseService } from '../../core/services/firebase.service';
+import { UserDataService } from '../../core/services/user-data.service';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -14,7 +15,7 @@ import { FirebaseService } from '../../core/services/firebase.service';
 export class DialogUserEditComponent {
   @Input() user: any = {};
 
-  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService) {
+  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService, private userDataService: UserDataService) {
     console.log('DialogUserEditComponent initialized with user:', this.user);
   }
 
@@ -22,5 +23,18 @@ export class DialogUserEditComponent {
     this.dialogRef.close();
   }
 
-  userSave() { }
+  async userSave() {
+
+    const trimmedName = 'Fridolin Feuerbach';
+    // const trimmedName = this.user.displayName?.trim();
+    // if (!trimmedName) return;
+
+    try {
+      await this.userDataService.updateUserName(this.user.id, trimmedName);
+
+      this.dialogClose();
+    } catch (err) {
+      console.error('Error saving new username:', err);
+    }
+  }
 }

@@ -89,8 +89,6 @@ export class MessagesHeaderComponent {
   }
 
   ngOnInit() {
-    this.firebaseService.updateAllUsersWithLowercaseField();
-
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
 
@@ -115,6 +113,7 @@ export class MessagesHeaderComponent {
     const inputElement = event.target as HTMLInputElement;
     const term = inputElement.value.trim();
     this.textInput = term;
+    
 
     this.calculateMentionBoxPosition(inputElement);
 

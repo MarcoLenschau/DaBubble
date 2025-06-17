@@ -6,19 +6,14 @@
     position: fixed;
     top: 84px;
     right: 5px;
-    padding: 32px;
+    padding: 24px 20px;
     border-top-left-radius: 24px;
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
     background-color: $white;
-    height: 417px;
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    >a {
-        padding: 0px 35px;
-    }
+    height: 495px;
+    width: 275px;
+    @include dFlex($jc: none, $ai: none,$f: column, $g: 24px);
 }
 
 .profile {
@@ -45,5 +40,25 @@
 }
 
 .email {
-    @include dFlex($jc: none, $g: 12px);
+    @include dFlex($jc: space-between);
+    >div {
+        @include dFlex($g: 6px);
+    }
+}
+
+.check-email {
+    color: red;
+    font-size: 15px;
+    margin-top: -12px;
+    text-align: center;
+}
+
+.send-button {
+    color: blue;
+    font-size: 15px;
+}
+
+.grey-send-button {
+    color: gray !important;
+    cursor: no-drop;
 }

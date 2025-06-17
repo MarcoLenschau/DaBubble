@@ -3,8 +3,8 @@ import { FirebaseService } from './firebase.service';
 import { MessageCacheService } from './message-cache.service';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import {
   doc,
   updateDoc,
@@ -12,10 +12,6 @@ import {
   setDoc,
   collection,
   Firestore,
-  query,
-  where,
-  orderBy,
-  collectionData,
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -63,21 +59,23 @@ export class MessageDataService {
   }
 
   getMessagesForThread(threadId: string): Observable<Message[]> {
-    const q = query(
-      collection(this.firestore, 'messages'),
-      where('threadId', '==', threadId),
-      orderBy('timestamp', 'asc')
+    const load$ = from(
+      this.messageCacheService.loadMessagesForThread(threadId)
     );
 
-    return collectionData(q, { idField: 'id' }).pipe(
-      map(docs => this.mapToMessages(docs))
+    return load$.pipe(
+      switchMap(() => this.messageCacheService.threadMessages$)
     );
   }
 
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
-    this.messageCacheService.loadMessagesForContext(context, currentUserId)
-      .catch(err => console.error('Cache-Fehler', err));
-    return this.messageCacheService.messages$;
+    const load$ = from(
+      this.messageCacheService.loadMessagesForContext(context, currentUserId)
+    );
+
+    return load$.pipe(
+      switchMap(() => this.messageCacheService.messages$)
+    );
   }
 
   private getCleanJson(message: Message): any {
@@ -95,22 +93,5 @@ export class MessageDataService {
       lastReplyTimestamp: message.lastReplyTimestamp ?? null,
       replies: message.replies ?? 0,
     };
-  }
-
-  private mapToMessages(docs: any[]): Message[] {
-    return docs.map(doc => new Message({
-      id: doc.id,
-      name: doc.name,
-      text: doc.text,
-      timestamp: doc.timestamp ?? Date.now(),
-      userId: doc.userId,
-      receiverId: doc.receiverId ?? '',
-      isDirectMessage: doc.isDirectMessage ?? false,
-      channelId: doc.channelId ?? '',
-      threadId: doc.threadId ?? '',
-      reactions: doc.reactions ?? [],
-      lastReplyTimestamp: doc.lastReplyTimestamp,
-      replies: doc.replies ?? 0,
-    }));
   }
 }

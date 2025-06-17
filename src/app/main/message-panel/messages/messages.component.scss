@@ -43,7 +43,7 @@
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
   height: 100%;
   flex: 1 1 auto;
-  opacity: 1;
+  opacity: 0;
   &.ready {
     opacity: 1;
   }
@@ -198,11 +198,22 @@
   width: fit-content;
   @include text-style(18px, 400, $black);
   cursor: default;
-
+  line-height: 1.2;
+  max-height: 500px;
+  overflow-y: auto;
+  word-break: break-word;     
+  overflow-wrap: break-word; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+    
   &.own-message-text {
     border-radius: 20px 0 20px 20px;
     background-color: $purple-2;
     @include text-style(18px, 400, $white);
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -268,7 +279,7 @@
 
 .bottom-toggle-icon {
   @include hover-image-swap(37px, 37px);
-  border-radius: 50%;
+  border-radius: 0%;
   background-color: $white;
 }
 
@@ -346,6 +357,10 @@
       -ms-overflow-style: none;
       @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: column);
       @include transition();
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       // &.overflowing-right {
       //   transform: translateX(-35%);

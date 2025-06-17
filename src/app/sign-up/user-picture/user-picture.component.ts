@@ -13,7 +13,7 @@ import { RouterService } from '../../core/services/router.service';
 export class UserPictureComponent {
   @Input() user: any = {};
   @Output() dataReady = new EventEmitter<boolean>();
-
+  currentProfilePicutre = "profile.svg"; 
   profilePicture = [
     "elias",
     "elise",
@@ -26,16 +26,19 @@ export class UserPictureComponent {
   constructor(private auth: AuthService, private router: RouterService) { }
 
   registerUser() {
-    console.log(this.user)
-    this.auth.register(this.user.displayName, this.user.email, this.user.password).then(user => {
+    const filename = "./assets/img/profilepic/" + this.currentProfilePicutre;
+    this.auth.register(this.user.displayName, this.user.email, this.user.password, filename).then(user => {
       if (user) {
         this.router.switchRoute("message");
       } else {
         this.sendData();
       }
-    })
+    });
   }
 
+  selectPicture(picture: any) {
+    this.currentProfilePicutre = picture;
+  }
 
   sendData() {
     this.dataReady.emit(false);

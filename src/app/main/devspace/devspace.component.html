@@ -60,23 +60,27 @@
                         " alt="#">
                     <span>Entwicklerteam</span>
                 </div> -->
-
-                <ng-container *ngFor="let channel of channels$ | async">
-                    <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
-                        (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel.id)" [ngClass]="{
-                            'hovered': hoveredChannel === channel.id,
-                            'active': activeChannel === channel.id
-                        }">
-                        <img [src]="
-                            activeChannel === channel.id
-                                ? './assets/img/devspace/tag-click.png'
-                                : hoveredChannel === channel.id
-                                    ? './assets/img/devspace/tag-hover.png'
-                                    : './assets/img/devspace/tag-default.png'
-                        " alt="#">
-                        <span>{{ channel.name }}</span>
+                <div [class.scrollbar-channel]="channels.length > 4">
+                    <ng-container *ngFor="let channel of channels">
+                    <div >
+                        <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
+                            (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel.id)" [ngClass]="{
+                                'hovered': hoveredChannel === channel.id,
+                                'active': activeChannel === channel.id
+                            }">
+                            <img [src]="
+                                activeChannel === channel.id
+                                    ? './assets/img/devspace/tag-click.png'
+                                    : hoveredChannel === channel.id
+                                        ? './assets/img/devspace/tag-hover.png'
+                                        : './assets/img/devspace/tag-default.png'
+                            " alt="#">
+                            <span>{{ channel.name }}</span>
+                        </div>
                     </div>
                 </ng-container>
+                </div>
+  
 
                 <div class="devspace-channel-add" (click)="showAddChannel = true" style="cursor:pointer;">
                     <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'"
@@ -102,9 +106,10 @@
 
             <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users.length > 6">
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName, user.id)"
-                    [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}">
+                    [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}"
+                    [class.active-user]="user.email === auth.user.email" [class.channel-open]="user.email === auth.user.email && isChannelOpen">
                     <div class="profile-icon">
-                        <img class="profile-pic" [src]="user.photoURL" alt="user">
+                        <img  class="profile-pic" [src]="user.photoURL" alt="user">
                         <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
                     </div>
                     <p>{{user.displayName}}</p>

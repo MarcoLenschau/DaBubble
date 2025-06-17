@@ -41,12 +41,12 @@
             <div *ngIf="editingMessageId === msg.id" class="edit-container">
               <div class="edit-box">
                 <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
-                  (keydown.enter)="saveEditedMessage(msg)" (keydown.escape)="cancelEditing()"></textarea>
+                  (keydown.enter)="saveEditedMessage(msg, i)" (keydown.escape)="cancelEditing()"></textarea>
 
                 <div class="edit-actions">
                   <span class="emoji-icon">😊</span>
                   <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
-                  <button class="save-btn" (click)="saveEditedMessage(msg)">Speichern</button>
+                  <button class="save-btn" (click)="saveEditedMessage(msg, i)">Speichern</button>
                 </div>
               </div>
             </div>
@@ -135,9 +135,9 @@
                'thread-reactions': isThread,
                'message-reactions': isMessage,
                'reactions-right-aligned': isOwnMessage(msg),
-               'reactions-left-aligned': !isOwnMessage(msg)
+               'reactions-left-aligned': !isOwnMessage(msg), 'expanded': showAllReactions[msg.id]
              }">
-          <div *ngFor="let reaction of msg.reactions; let j = index" class="bottom-emoji-wrapper"
+          <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper"
             (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
             (mouseleave)="setTooltipHoveredState(null, null)">
             <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
@@ -151,6 +151,25 @@
               </div>
             </div>
           </div>
+          <button *ngIf="getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
+            +{{ getHiddenReactionCount(msg) }} weitere
+          </button>
+
+          <button *ngIf="getHiddenReactionCount(msg) == 0" (click)="toggleShowAll(msg.id)">
+            Weniger anzeigen
+          </button>
+
+
+          <!-- <button *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
+            +{{ getHiddenReactionCount(msg) }} weitere
+          </button>
+
+          <button *ngIf="showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
+            Weniger anzeigen
+          </button> -->
+
+
+
 
           <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
             <img src="assets/img/message-icons/add-reaction.svg" class="default" />

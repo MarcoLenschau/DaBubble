@@ -22,7 +22,7 @@ export class DialogUserOptionsComponent {
   }
 
   openDialog() {
-    let dialogDetails = this.dialog.open(DialogUserDetailsComponent);
+    const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
     dialogDetails.componentInstance.user = this.user;
     this.dialogRef.close();
   }

@@ -1,0 +1,11 @@
+<div class="main-container">
+    <div class="content">
+        <app-input #email (valueChange)="validate($event); setValue($event, 'email');" 
+        [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'" [height]="48"></app-input>
+        <app-input #password (valueChange)="setValue($event, 'password');"
+        [placeholder]="'Password'" [img]="'password.svg'" [height]="48"></app-input>
+        <div class="send-button">
+            <app-button [text]="'E-Mail senden'" [color]="'primary'" (clicked)="editEmail();"></app-button>
+        </div>
+    </div>
+</div>

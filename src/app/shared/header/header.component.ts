@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { RouterService } from '../../core/services/router.service';
 import { InputComponent } from '../input/input.component';
 import { DialogUserOptionsComponent } from '../../dialogs/dialog-user-options/dialog-user-options.component';
-import { MatDialog } from '@angular/material/dialog'
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { Subscription } from 'rxjs';
 import { FirebaseService } from '../../core/services/firebase.service';
@@ -16,25 +16,23 @@ import { onSnapshot } from '@angular/fire/firestore';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  user = {
-    displayName: "Gast",
-    photoURL: ""
-  };
+  user: any = {};
 
-  users: Subscription
+  users: Subscription;
 
   constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService, private firebase: FirebaseService) {
     this.users = this.auth.user$.subscribe(user => {
       this.user = user;
+      console.log(this.user)
     });
   }
-
+ 
   ngOnDestroy() {
     this.users.unsubscribe();
   }
 
   openDialog() {
-    let dialogRef = this.dialog.open(DialogUserOptionsComponent);
+    const dialogRef = this.dialog.open(DialogUserOptionsComponent);
     dialogRef.componentInstance.user = this.user;
   }
 }

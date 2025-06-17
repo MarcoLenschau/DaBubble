@@ -1,8 +1,6 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   ViewChild,
   ElementRef,
   OnInit,
@@ -12,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageDataService } from '../../../core/services/message-data.service';
+import { MessageEventService } from '../../../core/services/message-event.service';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { EMOJIS, Emoji } from '../../../core/interfaces/emojis.interface';
 import { Message } from '../../../core/models/message.model';
@@ -19,10 +18,7 @@ import { Channel } from '../../../core/models/channel.model';
 import { User } from '../../../core/models/user.model';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
-import {
-  getSortedEmojisForUser,
-  updateEmojiDataForUser,
-} from '../../../core/utils/messages-utils';
+import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis-utils';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -40,8 +36,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() messageContext?: MessageContext;
-
-  // @Output() messageSent = new EventEmitter<void>();
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
@@ -65,7 +59,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   constructor(
     private messageDataService: MessageDataService,
-    private userDataService: UserDataService
+    private userDataService: UserDataService, private messageEventService: MessageEventService
   ) { }
 
   get isThread(): boolean {
@@ -151,10 +145,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
     this.messageContext = {
       type: 'direct',
-      id: user.id,
-      receiverId: this.currentUser.id,
+      id: this.currentUser.id,
+      receiverId: user.id
     };
   }
+
 
   toggleUserDropdown(event: MouseEvent): void {
     this.showUserDropdown = !this.showUserDropdown;
@@ -184,8 +179,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
     this.messageContext = {
       type: 'direct',
-      id: user.id,
-      receiverId: this.currentUser.id,
+      id: this.currentUser.id,
+      receiverId: user.id,
     };
   }
 
@@ -241,6 +236,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
 
+    this.messageEventService.notifyScrollIntent(this.mode, true);
+    if (this.mode == 'thread') {
+      this.messageEventService.notifyScrollIntent('message', false);
+    }
     const message = this.createMessage(text);
 
     try {
