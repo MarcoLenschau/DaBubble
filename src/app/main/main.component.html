@@ -19,7 +19,8 @@
 
   <div class="spacer" *ngIf="showMessageWindow && showThreadWindow"></div>
 
-  <app-thread-window [starterMessage]="starterMessage" [userId]="userId"
+  <app-thread-window [starterMessage]="starterMessage"
+    (starterMessageChange)="onStarterMessageChangedFromThread($event)" [userId]="userId"
     [ngClass]="{ visible: showThreadWindow, hidden: !showThreadWindow }"
     (showThreadClosing)="onThreadClose()"></app-thread-window>
 </div>

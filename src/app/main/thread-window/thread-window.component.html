@@ -1,6 +1,3 @@
-<app-message-panel
-  [mode]="'thread'"
-  [starterMessage]="starterMessage"
-  [userId]="userId"
-  (closeThreadPanelWindow)="onInnerClose()"
-></app-message-panel>
+<app-message-panel [mode]="'thread'" [starterMessage]="starterMessage"
+  (starterMessageChange)="onStarterMessageChangeFromPanel($event)" [userId]="userId"
+  (closeThreadPanelWindow)="onInnerClose()"></app-message-panel>

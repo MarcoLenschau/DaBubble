@@ -64,6 +64,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() messageContext?: MessageContext;
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
+  @Output() starterMessageChange = new EventEmitter<Message>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
@@ -197,7 +198,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     await this.ensureThreadId(msg);
 
     this.threadMessagesSubscription?.unsubscribe();
-
+    this.starterMessage = { ...msg };
     this.subscribeToThreadMessages(msg);
   }
 
@@ -222,24 +223,48 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
       this.threadSymbol = msg.channelId ? '#' : '@';
 
-      const threadRootMsg = this.filteredMessages.find(m => m.id === msg.id) ?? msg;
-      console.log('Root message in filteredMessages:', threadRootMsg);
-      console.log('Original msg:', msg);
-      this.threadTitle = threadRootMsg.channelId
-        ? this.channels.find(c => c.id === threadRootMsg.channelId)?.name ?? 'Unbekannter Kanal'
-        : threadRootMsg.name;
+
+      this.updateStarterMessageFromLoaded(msg);
+
+      this.scheduleAutoScrollAndMarkReady();
+
+      // const updatedRoot = this.filteredMessages.find(m => m.id === msg.id);
+      // if (updatedRoot) {
+      //   if (updatedRoot.name && updatedRoot.name !== msg.name) {
+      //     msg.name = updatedRoot.name;
+      //   }
+
+      //   if (updatedRoot.channelId && updatedRoot.channelId !== msg.channelId) {
+      //     msg.channelId = updatedRoot.channelId;
+      //   }
+
+      // Aktualisierung des threadTitle (nur intern, optional)
+      // this.threadTitle = updatedRoot.channelId
+      //   ? this.channels.find(c => c.id === updatedRoot.channelId)?.name ?? 'Unbekannter Kanal'
+      //   : updatedRoot.name;
+      // }
+
+
+
+
+      // const threadRootMsg = this.filteredMessages.find(m => m.id === msg.id) ?? msg;
+      // console.log('Root message in filteredMessages:', threadRootMsg);
+      // console.log('Original msg:', msg);
+      // this.threadTitle = threadRootMsg.channelId
+      //   ? this.channels.find(c => c.id === threadRootMsg.channelId)?.name ?? 'Unbekannter Kanal'
+      //   : threadRootMsg.name;
 
 
       // this.threadTitle = msg.channelId
       //   ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
       //   : msg.name;
 
-      setTimeout(() => {
-        if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
-          scrollToBottom(this.scrollContainer.nativeElement);
-        }
-        this.messagesReady = true;
-      }, 0);
+      // setTimeout(() => {
+      //   if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
+      //     scrollToBottom(this.scrollContainer.nativeElement);
+      //   }
+      //   this.messagesReady = true;
+      // }, 0);
     });
   }
 
@@ -251,6 +276,29 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         .catch(error =>
           console.error('Error updating replies count:', error));
     }
+  }
+
+  private updateStarterMessageFromLoaded(msg: Message): void {
+    const updatedRoot = this.filteredMessages.find(m => m.id === msg.id);
+    if (!updatedRoot) return;
+
+    const nameChanged = updatedRoot.name && updatedRoot.name !== this.starterMessage?.name;
+    const channelChanged = updatedRoot.channelId && updatedRoot.channelId !== this.starterMessage?.channelId;
+
+    if (nameChanged || channelChanged) {
+      const newStarter: Message = { ...updatedRoot };
+      this.starterMessage = newStarter;
+      this.starterMessageChange.emit(newStarter);
+    }
+  }
+
+  private scheduleAutoScrollAndMarkReady(): void {
+    setTimeout(() => {
+      if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
+        scrollToBottom(this.scrollContainer.nativeElement);
+      }
+      this.messagesReady = true;
+    }, 0);
   }
 
   async saveMessage(msg: Message) {

@@ -13,8 +13,14 @@ export class ThreadWindowComponent {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Output() showThreadClosing = new EventEmitter<boolean>();
+  @Output() starterMessageChange = new EventEmitter<Message>();
 
   onInnerClose() {
     this.showThreadClosing.emit(false);
+  }
+
+  onStarterMessageChangeFromPanel(updatedMessage: Message) {
+    this.starterMessage = { ...updatedMessage };
+    this.starterMessageChange.emit(this.starterMessage);
   }
 }

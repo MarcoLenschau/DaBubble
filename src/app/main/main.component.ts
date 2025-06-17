@@ -113,6 +113,11 @@ export class MainComponent implements OnInit {
     }
   }
 
+  onStarterMessageChangedFromThread(updatedMessage: Message) {
+    this.starterMessage = { ...updatedMessage };
+  }
+
+
   openDevSpace(): void {
     if (this.viewMode === 'mobile') {
       this.showDevSpace = true;
