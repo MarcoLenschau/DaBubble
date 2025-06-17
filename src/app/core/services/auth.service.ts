@@ -34,11 +34,17 @@ export class AuthService {
   private async restoreAuthState(): Promise<void> {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
-        this.user = user;
-        this.userSubject.next(user);
-        await this.userDataService.initCurrentUser();
-      } else {
-        this.userSubject.next(null);
+        if (user?.displayName) {
+          console.log("Restore: " + user.displayName);
+          this.user = user;
+          this.userSubject.next(user);
+          await this.userDataService.initCurrentUser();
+        } else {
+          if(user.email) {
+            let userData = await this.firebase.searchUsersByEmail(user.email);  
+            this.userSubject.next(userData[0]);
+          }
+        }
       }
     });
   }
