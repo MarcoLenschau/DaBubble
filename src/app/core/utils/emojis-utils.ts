@@ -2,6 +2,7 @@ import { Emoji } from '../interfaces/emojis.interface';
 import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Reaction } from '../interfaces/reaction.interface';
+import { ViewMode } from '../enums/view-mode.enum';
 
 export function getEmojiByName(
     emojis: Emoji[],
@@ -202,3 +203,31 @@ export function applyTooltipOverflowAdjustment(
         ? `translateX(-${overflowRight + extraOffset}px)`
         : '';
 }
+
+export function getVisibleReactions(
+    message: Message,
+    showAll: boolean,
+    viewMode: ViewMode,
+    isThreadView: boolean
+): Reaction[] {
+    const all = message.reactions || [];
+    const limit = getReactionLimit(viewMode, isThreadView);
+    return showAll ? all : all.slice(0, limit);
+}
+
+export function getHiddenReactionCount(
+    message: Message,
+    showAll: boolean,
+    viewMode: ViewMode,
+    isThreadView: boolean
+): number {
+    const all = message.reactions || [];
+    const limit = getReactionLimit(viewMode, isThreadView);
+    return !showAll && all.length > limit ? all.length - limit : 0;
+}
+
+function getReactionLimit(viewMode: ViewMode, isThreadView: boolean): number {
+    if (viewMode === ViewMode.Mobile || isThreadView) return 7;
+    return 20;
+}
+

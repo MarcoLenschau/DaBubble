@@ -20,13 +20,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
-import { MessageCacheService } from '../../../core/services/message-cache.service';
 import { MessageEventService } from '../../../core/services/message-event.service';
+import { ViewMode } from '../../../core/enums/view-mode.enum';
 import { User } from '../../../core/models/user.model';
 import { Message } from '../../../core/models/message.model';
 import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
+import { Reaction } from '../../../core/interfaces/reaction.interface';
 import {
   formatTime,
   formatDate,
@@ -47,9 +48,9 @@ import {
   addEmojiToMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-  applyTooltipOverflowAdjustment,
+  applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount
 } from '../../../core/utils/emojis-utils';
-import { scrollToBottom, isUserScrolledToBottom } from '../../../core/utils/scroll-utils';
+import { scrollToBottom } from '../../../core/utils/scroll-utils';
 
 @Component({
   selector: 'app-messages',
@@ -65,6 +66,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
   @Input() messageContext?: MessageContext;
+  @Input() viewMode: ViewMode = ViewMode.Desktop; // TODO !!!!!!!!!!!!!
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() starterMessageChange = new EventEmitter<Message>();
@@ -93,6 +95,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   editingMessageId: string | null = null;
   editedText: string = '';
   messagesReady = false;
+  showAllReactions: { [messageId: string]: boolean } = {};
 
   private shouldScrollAfterUpdate: boolean = true;
   private threadShouldScrollAfterUpdate: boolean = true;
@@ -339,6 +342,28 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         applyTooltipOverflowAdjustment(tooltip as HTMLElement, threadMessages as HTMLElement);
       }
     }, 60);
+  }
+
+  getVisibleReactions(message: Message): Reaction[] {
+    return getVisibleReactions(
+      message,
+      !!this.showAllReactions[message.id],
+      this.viewMode,
+      this.isThread
+    );
+  }
+
+  getHiddenReactionCount(message: Message): number {
+    return getHiddenReactionCount(
+      message,
+      !!this.showAllReactions[message.id],
+      this.viewMode,
+      this.isThread
+    );
+  }
+
+  toggleShowAll(messageId: string): void {
+    this.showAllReactions[messageId] = !this.showAllReactions[messageId];
   }
 
   editMenuOpenIndex: number | null = null;
