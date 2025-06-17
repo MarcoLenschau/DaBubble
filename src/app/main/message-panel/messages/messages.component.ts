@@ -34,18 +34,21 @@ import {
   formatRelativeTimeSimple
 } from '../../../core/utils/date-utils';
 import {
-  getEmojiByName,
-  getEmojiByUnicode,
-  addEmojiToTextarea,
-  addEmojiToMessage,
   getUserById,
   getUserNames,
   formatUserNames,
   isOwnMessage,
   trackByMessageId,
+} from '../../../core/utils/messages-utils';
+import {
+  getEmojiByName,
+  getEmojiByUnicode,
+  addEmojiToTextarea,
+  addEmojiToMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-} from '../../../core/utils/messages-utils';
+  applyTooltipOverflowAdjustment,
+} from '../../../core/utils/emojis-utils';
 import { scrollToBottom, isUserScrolledToBottom } from '../../../core/utils/scroll-utils';
 
 @Component({
@@ -91,7 +94,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   editedText: string = '';
   messagesReady = false;
 
-  private lastThreadId: string | null = null;
   private shouldScrollAfterUpdate: boolean = true;
   private threadShouldScrollAfterUpdate: boolean = true;
   private messagesSubscription?: Subscription;
@@ -101,7 +103,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
-    private messageCacheService: MessageCacheService,
     private messageEventService: MessageEventService,
     private dialog: MatDialog,
   ) {
@@ -221,50 +222,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       }
       isFirst = false;
 
-      this.threadSymbol = msg.channelId ? '#' : '@';
-
-
       this.updateStarterMessageFromLoaded(msg);
 
       this.scheduleAutoScrollAndMarkReady();
-
-      // const updatedRoot = this.filteredMessages.find(m => m.id === msg.id);
-      // if (updatedRoot) {
-      //   if (updatedRoot.name && updatedRoot.name !== msg.name) {
-      //     msg.name = updatedRoot.name;
-      //   }
-
-      //   if (updatedRoot.channelId && updatedRoot.channelId !== msg.channelId) {
-      //     msg.channelId = updatedRoot.channelId;
-      //   }
-
-      // Aktualisierung des threadTitle (nur intern, optional)
-      // this.threadTitle = updatedRoot.channelId
-      //   ? this.channels.find(c => c.id === updatedRoot.channelId)?.name ?? 'Unbekannter Kanal'
-      //   : updatedRoot.name;
-      // }
-
-
-
-
-      // const threadRootMsg = this.filteredMessages.find(m => m.id === msg.id) ?? msg;
-      // console.log('Root message in filteredMessages:', threadRootMsg);
-      // console.log('Original msg:', msg);
-      // this.threadTitle = threadRootMsg.channelId
-      //   ? this.channels.find(c => c.id === threadRootMsg.channelId)?.name ?? 'Unbekannter Kanal'
-      //   : threadRootMsg.name;
-
-
-      // this.threadTitle = msg.channelId
-      //   ? this.channels.find(c => c.id === msg.channelId)?.name ?? 'Unbekannter Kanal'
-      //   : msg.name;
-
-      // setTimeout(() => {
-      //   if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
-      //     scrollToBottom(this.scrollContainer.nativeElement);
-      //   }
-      //   this.messagesReady = true;
-      // }, 0);
     });
   }
 
@@ -322,15 +282,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.threadMessagesSubscription?.unsubscribe();
   }
 
-  cancelReply() {
-    this.replyToMessage = null;
-  }
-
-  clearTextarea() {
-    this.textareaContent = '';
-    this.replyToMessage = null;
-  }
-
   setHoverState(index: number | null) {
     this.hoveredIndex = index;
     if (index === null) {
@@ -356,8 +307,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async handleEmojiClick(emojiName: string, msg: Message): Promise<void> {
-    this.messageEventService.notifyScrollIntent('message', false);
-    this.messageEventService.notifyScrollIntent('thread', false);
+    this.disableAutoScroll();
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
@@ -386,25 +336,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
       const threadMessages = wrapper.closest('.thread-messages');
       if (tooltip && threadMessages) {
-        this.adjustTooltipPosition(tooltip as HTMLElement, threadMessages as HTMLElement);
+        applyTooltipOverflowAdjustment(tooltip as HTMLElement, threadMessages as HTMLElement);
       }
     }, 60);
-  }
-
-  adjustTooltipPosition(tooltipElement: HTMLElement, threadMessages: HTMLElement) {
-    if (!tooltipElement) return;
-
-    const rect = tooltipElement.getBoundingClientRect();
-    const threadRect = threadMessages.getBoundingClientRect();
-
-    const overflowRight = rect.right - threadRect.right;
-
-    if (overflowRight > 0) {
-      tooltipElement.style.transform = `translateX(-${overflowRight + 4}px)`;
-
-    } else {
-      tooltipElement.style.transform = '';
-    }
   }
 
   editMenuOpenIndex: number | null = null;
@@ -412,7 +346,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   toggleEditMenu(index: number): void {
     this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
   }
-
 
   startEditing(msg: Message): void {
     this.editingMessageId = msg.id;
@@ -434,11 +367,15 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const updatedMessage = { ...msg, text: trimmed };
     this.messages[index] = { ...this.messages[index], text: trimmed };
     this.cancelEditing();
-    this.messageEventService.notifyScrollIntent('message', false);
-    this.messageEventService.notifyScrollIntent('thread', false);
+    this.disableAutoScroll();
     this.messageDataService.updateMessage(updatedMessage).catch(err => {
       console.error('Error saving edited message:', err);
     });
+  }
+
+  disableAutoScroll() {
+    this.messageEventService.notifyScrollIntent('message', false);
+    this.messageEventService.notifyScrollIntent('thread', false);
   }
 
   formatTime = formatTime;

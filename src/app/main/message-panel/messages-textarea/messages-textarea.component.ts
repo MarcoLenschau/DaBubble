@@ -1,8 +1,6 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   ViewChild,
   ElementRef,
   OnInit,
@@ -20,10 +18,7 @@ import { Channel } from '../../../core/models/channel.model';
 import { User } from '../../../core/models/user.model';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
-import {
-  getSortedEmojisForUser,
-  updateEmojiDataForUser,
-} from '../../../core/utils/messages-utils';
+import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis-utils';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -41,8 +36,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() messageContext?: MessageContext;
-
-  // @Output() messageSent = new EventEmitter<void>();
 
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
