@@ -64,7 +64,7 @@
                     <ng-container *ngFor="let channel of channels">
                     <div >
                         <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
-                            (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel.id)" [ngClass]="{
+                            (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel)" [ngClass]="{
                                 'hovered': hoveredChannel === channel.id,
                                 'active': activeChannel === channel.id
                             }">
@@ -105,7 +105,7 @@
             </div>
 
             <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users.length > 6">
-                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user.displayName, user.id)"
+                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user)"
                     [ngClass]="{'hovered' : activeUser !== user.displayName, 'active' : activeUser === user.displayName}"
                     [class.active-user]="user.email === auth.user.email" [class.channel-open]="user.email === auth.user.email && isChannelOpen">
                     <div class="profile-icon">

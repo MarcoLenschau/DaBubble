@@ -6,13 +6,13 @@
 
 
 
-  <app-devspace (channelSelected)="onChannelSelected($event)" (contextSelected)="onContextSelected($event)"
+  <app-devspace (channelSelected)="onChannelSelected($event)" (userSelected)="onUserSelected($event)" (contextSelected)="onContextSelected($event)"
     (closeThreadWindow)="onThreadClose()"
     [ngClass]="{ visible: showDevSpaceWindow, hidden: !showDevSpaceWindow }">></app-devspace>
 
   <div class="spacer" *ngIf="showDevSpaceWindow && showMessageWindow"></div>
 
-  <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel"
+  <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel" [activeUser]="activeUser"
     (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
     (contextSelected)="onContextSelected($event)" [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }"
     [viewMode]="viewMode"></app-message-window>

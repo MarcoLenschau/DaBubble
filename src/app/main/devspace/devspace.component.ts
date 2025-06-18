@@ -19,6 +19,7 @@ import { emitChannelContext, emitDirectUserContext } from '../../core/utils/mess
 })
 export class DevspaceComponent {
   @Output() channelSelected = new EventEmitter<string>();
+  @Output() userSelected = new EventEmitter<any>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() closeThreadWindow = new EventEmitter<void>();
 
@@ -29,14 +30,14 @@ export class DevspaceComponent {
   isMessageHovered: boolean = false;
 
   hoveredChannel: string | null = null;
-  activeChannel: string | null = null;
+  activeChannel: any = null;
+  activeUser: any = null;
   showAddChannel = false;
 
   isWorkspaceOpen: boolean = true;
   isWorkspaceHovered: boolean = false;
   channels: any = [];
   channels$!: Observable<Channel[]>;
-  activeUser: string | null = null;
   user$: Observable<any[]>;
   users: any;
   currentUser!: User;
@@ -100,16 +101,19 @@ export class DevspaceComponent {
     }
   }
 
-  setActiveUser(name: string, id: string) {
-    this.activeUser = name;
-    emitDirectUserContext(this.contextSelected, this.currentUser.id, id);
+  setActiveUser(user: any) {
+    this.userSelected.emit(user);
+    this.activeUser = user;
+    this.activeChannel = null;
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
     this.closeThread();
   }
 
-  selectChannel(id: string) {
-    this.activeChannel = id;
-    this.channelSelected.emit(id);
-    emitChannelContext(this.contextSelected, id);
+  selectChannel(channel: any) {
+    this.activeChannel = channel;
+    this.activeUser = null;
+    this.channelSelected.emit(channel.id);
+    emitChannelContext(this.contextSelected, channel.id);
     this.closeThread();
   }
 
