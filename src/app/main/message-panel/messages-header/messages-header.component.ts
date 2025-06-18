@@ -25,6 +25,7 @@ export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
   @Input() activeChannel: any = {};
+  @Input() activeUser: any = null;
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>(); // TODO

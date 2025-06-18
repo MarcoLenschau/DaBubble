@@ -15,6 +15,7 @@ export class MessageWindowComponent {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() activeChannel: string | null = null;
+  @Input() activeUser: any = null;
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
 

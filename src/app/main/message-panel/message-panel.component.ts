@@ -23,6 +23,7 @@ export class MessagePanelComponent {
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
+  @Input() activeUser: any = null;
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
   @Output() contextSelected = new EventEmitter<MessageContext>();

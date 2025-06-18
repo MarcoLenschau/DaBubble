@@ -30,6 +30,7 @@ export class MainComponent implements OnInit {
   showMessage = true;
   showThread = false;
   activeChannel: string | null = null;
+  activeUser: any = null;
   starterMessage?: Message;
   userId?: string;
   channels$: Observable<any>;
@@ -138,8 +139,14 @@ export class MainComponent implements OnInit {
     this.channels.forEach((channelFromBackend: any) => {
       if (channelFromBackend.id === channel) {
         this.activeChannel = channelFromBackend;
+        this.activeUser = null;
       }
     });
+  }
+
+  onUserSelected(user: any) {
+    this.activeUser = user;
+    this.activeChannel = null;
   }
 
   onContextSelected(context: MessageContext): void {
