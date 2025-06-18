@@ -442,30 +442,21 @@
 
 .edit-menu {
   position: absolute;
-  top: 62px; 
+  top: 62px;
   left: 0px;
   background-color: white;
   color: #141d2f;
-  padding: 12px 24px; 
-  border-radius: 35px; 
-  font-size: 20px; 
+  padding: 12px 24px;
+   border-radius: 12px 25px 25px 25px;
+  font-size: 20px;
   white-space: nowrap;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   z-index: 100;
   cursor: pointer;
 
-  
+ 
   &::before {
-    content: "";
-    position: absolute;
-    top: -8px;
-    left: 20px;
-    width: 14px;
-    height: 14px;
-    background-color: white;
-    transform: rotate(45deg);
-    box-shadow: -2px -2px 6px rgba(0, 0, 0, 0.05);
-    z-index: -1;
+    display: none;
   }
 
   &:hover {
