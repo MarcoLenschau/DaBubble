@@ -36,7 +36,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() messageContext?: MessageContext;
-
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
@@ -46,6 +45,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
   currentUser!: User;
+  recorder: any = {};
+  stream: any = {};  
+  record = false;
+  chunks: any = [];
+  audioInSeconds = {};
 
   // User & Mention-Funktion
   allUsers: User[] = [];
@@ -317,6 +321,46 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.chatDiv.nativeElement.focus();
+  }
+
+  async sendAudioMessage() {
+    let blob = await this.recordStop(this.recorder, this.stream); 
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onloadedmetadata = () => {
+      this.audioInSeconds = Math.round(audio.duration);
+    };
+    this.createAudioMessage(blob);
+    this.saveAudioMessage(blob);
+  }
+
+  createAudioMessage(blob: any) {
+    const url = URL.createObjectURL(blob);
+    const audio = document.createElement('audio');
+    audio.src = url;
+    audio.controls = true; 
+    document.querySelector(".thread-messages")?.appendChild(audio);
+  }
+
+  saveAudioMessage(blob: any) {
+    const audioData = new FormData();
+    audioData.append('audio', blob, 'message.webm');
+  }
+
+  async startRecord() {
+    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    this.recorder = new MediaRecorder(this.stream);
+    this.recorder.ondataavailable = (e: any) => this.chunks.push(e.data);
+    this.recorder.start();
+    this.record = true;
+  }
+
+  async recordStop(recorder: any, stream: any) {
+    recorder.stop();
+    await new Promise(r => recorder.onstop = r);
+    stream.getTracks().forEach((t: any) => t.stop());
+    this.record = false;
+    return new Blob(this.chunks, { type: 'audio/webm' });
   }
 }
 

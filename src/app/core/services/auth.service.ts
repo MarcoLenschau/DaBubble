@@ -191,7 +191,7 @@ export class AuthService {
     });
   }
 
-  sendEmailVerification(): {} {
+  sendEmailVerification() {
     return sendEmailVerification(this.user);
   };
 }
