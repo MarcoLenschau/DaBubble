@@ -50,7 +50,6 @@ export class MessagesHeaderComponent {
   private currentUserSubscription?: Subscription;
 
   constructor(
-    private firebaseService: FirebaseService,
     private userDataService: UserDataService,
     private channelDataService: ChannelDataService
   ) {}
