@@ -137,7 +137,9 @@
                'reactions-right-aligned': isOwnMessage(msg),
                'reactions-left-aligned': !isOwnMessage(msg), 'expanded': showAllReactions[msg.id]
              }">
-          <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper"
+          <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper" [ngClass]="{
+            'selected': userHasReactedToEmoji(msg, reaction.emojiName, currentUser.id)
+          }" (click)="handleEmojiClick(reaction.emojiName, msg, j)"
             (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
             (mouseleave)="setTooltipHoveredState(null, null)">
             <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
@@ -151,25 +153,14 @@
               </div>
             </div>
           </div>
-          <button *ngIf="getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
+          <button class="emojis-shown-btn" *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0"
+            (click)="toggleShowAll(msg.id)">
             +{{ getHiddenReactionCount(msg) }} weitere
           </button>
 
-          <button *ngIf="getHiddenReactionCount(msg) == 0" (click)="toggleShowAll(msg.id)">
+          <button class="emojis-shown-btn" *ngIf="shouldShowCollapseButton(msg)" (click)="toggleShowAll(msg.id)">
             Weniger anzeigen
           </button>
-
-
-          <!-- <button *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
-            +{{ getHiddenReactionCount(msg) }} weitere
-          </button>
-
-          <button *ngIf="showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0" (click)="toggleShowAll(msg.id)">
-            Weniger anzeigen
-          </button> -->
-
-
-
 
           <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
             <img src="assets/img/message-icons/add-reaction.svg" class="default" />

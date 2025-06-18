@@ -5,6 +5,7 @@ import { MessagesHeaderComponent } from './messages-header/messages-header.compo
 import { MessagesTextareaComponent } from './messages-textarea/messages-textarea.component';
 import { MessageContext } from '../../core/interfaces/message-context.interface';
 import { NgClass } from '@angular/common';
+import { ViewMode } from '../../core/enums/view-mode.enum';
 
 @Component({
   selector: 'app-message-panel',
@@ -23,6 +24,7 @@ export class MessagePanelComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() activeChannel: string | null = null;
   @Input() messageContext?: MessageContext;
+  @Input() viewMode!: ViewMode;
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;

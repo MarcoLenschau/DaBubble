@@ -320,6 +320,14 @@
     @include dFlex($jc: flex-start, $ai: center, $g: 10px, $f: row);
     cursor: pointer;
 
+    &:hover {
+      border-color: $purple-2;
+    }
+  
+    &.selected {
+      border-color: $purple-3;
+    }
+
     .bottom-emoji {
       display: inline-flex;
       justify-content: center;
@@ -394,6 +402,31 @@
   .reduce-gap {
     position: relative;
     right: 6px;
+  }
+}
+
+.emojis-shown-btn {
+  height: 34px;
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  border: 1px solid $light-purple;
+  background-color: $white;
+  width: fit-content;
+  border-radius: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  @include text-style(16px, 400, $black);
+  cursor: pointer;
+  @include transition();
+
+  &:hover {
+    border-color: $purple-2;
+  }
+
+  &:active {
+    border-color: $purple-3;
   }
 }
 

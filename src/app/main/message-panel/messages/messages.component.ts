@@ -48,7 +48,7 @@ import {
   addEmojiToMessage,
   getSortedEmojisForUser,
   updateEmojiDataForUser,
-  applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount
+  applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton,
 } from '../../../core/utils/emojis-utils';
 import { scrollToBottom } from '../../../core/utils/scroll-utils';
 
@@ -309,7 +309,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  async handleEmojiClick(emojiName: string, msg: Message): Promise<void> {
+  async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
     this.disableAutoScroll();
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
@@ -322,6 +322,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     await this.saveMessage(updatedMsg);
+    if (reactionIndex !== undefined) {
+      const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
+
+      if (reaction) {
+        this.setTooltipHoveredState(reactionIndex, reaction.userIds);
+      } else {
+        this.setTooltipHoveredState(null, null);
+      }
+
+    }
   }
 
   userHasReactedToEmoji(msg: Message, emojiName: string, userId: string): boolean {
@@ -357,6 +367,15 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return getHiddenReactionCount(
       message,
       !!this.showAllReactions[message.id],
+      this.viewMode,
+      this.isThread
+    );
+  }
+
+  shouldShowCollapseButton(message: Message): boolean {
+    return shouldShowCollapseButton(
+      message,
+      this.showAllReactions,
       this.viewMode,
       this.isThread
     );
