@@ -23,17 +23,20 @@ export class AuthService {
 
   constructor() {
     this.users$ = this.firebase.getColRef('users');
-    this.users$.forEach((users: any) => {
-      // Mehrfache Subscriptions auf denselben Stream?
+    this.users$.subscribe((users: any) => {
       this.users = users;
     });
+    this.checkIfEmailVerified();
+    this.restoreAuthState();
+  }
+
+  checkIfEmailVerified(): void {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
       if (user) {  
         this.emailVerified = true;
       } 
     });
-    this.restoreAuthState();
   }
 
   private async restoreAuthState(): Promise<void> {
@@ -72,7 +75,7 @@ export class AuthService {
     }
   }
 
-  logout() {
+  logout(): void {
     this.users.forEach(async (user) => {
       if (user.email === this.user.email) {
         await this.firebase.updateUserState(user, false);
@@ -169,12 +172,12 @@ export class AuthService {
     }
   }
   
-  validateEmail(email: string):Boolean {
+  validateEmail(email: string): Boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-  validateError(element: any, action = "add") {
+  validateError(element: any, action = "add"): void {
     if (action === "add") {
       element.inputRef.nativeElement.classList.add('error');
     } else {
@@ -182,13 +185,13 @@ export class AuthService {
     }      
   }
 
-  editEmail(email: string) {
-    updateEmail(this.user, email).then(() => {
+  editEmail(email: string, user: any): void {
+    updateEmail(user, email).then(() => {
       console.log("Email ist geupdatet")
     });
   }
 
-  sendEmailVerification() {
+  sendEmailVerification(): {} {
     return sendEmailVerification(this.user);
   };
 }

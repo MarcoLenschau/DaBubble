@@ -2,7 +2,7 @@ import { Component, inject, ViewChild } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { InputComponent } from "../../shared/input/input.component";
 import { ButtonComponent } from "../../shared/button/button.component";
-import { EmailAuthProvider, reauthenticateWithCredential } from '@angular/fire/auth';
+import { EmailAuthProvider, getAuth, onAuthStateChanged, reauthenticateWithCredential, sendEmailVerification } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-dialog-email-edit',
@@ -17,11 +17,14 @@ export class DialogEmailEditComponent {
   password = "";
 
   editEmail() {
-    const credential = EmailAuthProvider.credential(this.auth.user.email!, this.password);
-    reauthenticateWithCredential(this.auth.user, credential)
-    .then(() => this.auth.editEmail(this.newEmail));
+    const auth = getAuth();
+    if (auth.currentUser) {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email!, this.password);
+      reauthenticateWithCredential(auth.currentUser, credential)
+      .then(() => this.auth.editEmail(this.newEmail, auth.currentUser));
+    }
   }
-
+  
   validate(event: any) {
     this.auth.validateEmail(event) ? this.auth.validateError(this.email, "remove") : this.auth.validateError(this.email);
   }
