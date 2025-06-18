@@ -231,3 +231,16 @@ function getReactionLimit(viewMode: ViewMode, isThreadView: boolean): number {
     return 20;
 }
 
+export function shouldShowCollapseButton(
+    message: Message,
+    showAllReactions: { [id: string]: boolean },
+    viewMode: ViewMode,
+    isThreadView: boolean
+): boolean {
+    const all = message.reactions || [];
+    const limit = getReactionLimit(viewMode, isThreadView);
+    return showAllReactions[message.id] === true && all.length > limit;
+}
+
+
+

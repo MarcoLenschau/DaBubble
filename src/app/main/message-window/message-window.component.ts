@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Message } from '../../core/models/message.model';
 import { MessagePanelComponent } from '../message-panel/message-panel.component';
 import { MessageContext } from '../../core/interfaces/message-context.interface';
+import { ViewMode } from '../../core/enums/view-mode.enum';
 
 @Component({
   selector: 'app-message-window',
@@ -15,6 +16,8 @@ export class MessageWindowComponent {
   @Input() userId?: string;
   @Input() activeChannel: string | null = null;
   @Input() messageContext?: MessageContext;
+  @Input() viewMode!: ViewMode;
+
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
