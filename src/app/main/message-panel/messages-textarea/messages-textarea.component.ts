@@ -87,22 +87,28 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.currentUserSubscription?.unsubscribe();
   }
 
-  onInput(event: Event): void {
-    const text = this.getTextFromEditableDiv();
-    this.textInput = text;
+ onInput(event: Event): void {
+  const text = this.getTextFromEditableDiv();
+  this.textInput = text;
 
-    const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
-    if (match) {
-      this.mentionQuery = match[1].toLowerCase();
-      this.filteredMentionUsers = this.allUsers.filter((user) =>
-        user.displayName.toLowerCase().includes(this.mentionQuery)
-      );
-      this.showMentionDropdown = this.filteredMentionUsers.length > 0;
-      this.setMentionBoxPosition();
-    } else {
-      this.showMentionDropdown = false;
-    }
+  const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
+  if (match) {
+    this.mentionQuery = match[1].toLowerCase();
+
+    // NEU: Wenn leer, alle User anzeigen
+    this.filteredMentionUsers = this.mentionQuery.length === 0
+      ? this.allUsers
+      : this.allUsers.filter((user) =>
+          user.displayName.toLowerCase().includes(this.mentionQuery)
+        );
+
+    this.showMentionDropdown = this.filteredMentionUsers.length > 0;
+    this.setMentionBoxPosition();
+  } else {
+    this.showMentionDropdown = false;
   }
+}
+
 
   getTextFromEditableDiv(): string {
     return this.editableDiv.nativeElement.innerText;

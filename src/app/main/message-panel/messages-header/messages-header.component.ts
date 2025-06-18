@@ -9,15 +9,28 @@ import { UserDataService } from '../../../core/services/user-data.service';
 import { ChannelDataService } from '../../../core/services/channel-data.service';
 import { Channel } from '../../../core/models/channel.model';
 import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
-import { emitContextSelected, emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages-utils';
-import { Observable, Subscription } from 'rxjs';
+import {
+  emitContextSelected,
+  emitDirectUserContext,
+  emitChannelContext,
+  emitMessageContextFromMessage,
+} from '../../../core/utils/messages-utils';
+import { Subscription } from 'rxjs';
 import { ChannelMembersOverlayComponent } from './channel-members-overlay/channel-members-overlay.component';
 import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overlay.component';
 
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelDetailsOverlayComponent, ChannelMembersOverlayComponent, AddMemberOverlayComponent],
+  imports: [
+    NgIf,
+    CommonModule,
+    NgFor,
+    FormsModule,
+    ChannelDetailsOverlayComponent,
+    ChannelMembersOverlayComponent,
+    AddMemberOverlayComponent,
+  ],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })
@@ -27,7 +40,7 @@ export class MessagesHeaderComponent {
   @Input() activeChannel: any = {};
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
-  @Output() searchResultSelected = new EventEmitter<Message>(); // TODO
+  @Output() searchResultSelected = new EventEmitter<Message>();
 
   arrowHover = false;
   showChannelOverlay = false;
@@ -40,18 +53,18 @@ export class MessagesHeaderComponent {
     private firebaseService: FirebaseService,
     private userDataService: UserDataService,
     private channelDataService: ChannelDataService
-  ) { }
+  ) {}
 
   textInput = '';
   currentUser!: User;
   selectedRecipients: { id: string; displayName: string }[] = [];
 
-  searchResultsUser: any[] = [];
+  searchResultsUser: User[] = [];
   searchResultsEmail: any[] = [];
-  searchResultsChannels: any[] = [];
+  searchResultsChannels: Channel[] = [];
   searchResultsMessages: Message[] = [];
-
   allChannels: Channel[] = [];
+  allUsers: User[] = [];
 
   mentionBoxPosition = { top: 0, left: 0 };
   private searchDebounceTimer?: any;
@@ -91,17 +104,15 @@ export class MessagesHeaderComponent {
   ngOnInit() {
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
-
-      const dummy = this.allChannels.filter((channel) =>
-        channel.name.toLowerCase().includes('')
-      );
-      console.log('Dummy filter done, length:', dummy.length);
-
       this.searchResultsChannels = [];
     });
 
     this.currentUserSubscription = this.userDataService.currentUser$.subscribe((user) => {
       this.currentUser = user;
+    });
+
+    this.userDataService.getUsers().subscribe((users) => {
+      this.allUsers = users;
     });
   }
 
@@ -113,12 +124,11 @@ export class MessagesHeaderComponent {
     const inputElement = event.target as HTMLInputElement;
     const term = inputElement.value.trim();
     this.textInput = term;
-    
 
     this.calculateMentionBoxPosition(inputElement);
 
     clearTimeout(this.searchDebounceTimer);
-    this.searchDebounceTimer = setTimeout(async () => {
+    this.searchDebounceTimer = setTimeout(() => {
       if (!term) {
         this.clearResults();
         return;
@@ -128,19 +138,23 @@ export class MessagesHeaderComponent {
         const query = term.slice(1).toLowerCase();
 
         if (this.validateEmail(query)) {
-          this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(query);
+          this.searchResultsEmail = this.allUsers.filter((u) =>
+            u.email?.toLowerCase().includes(query)
+          );
           this.searchResultsUser = [];
           this.searchResultsChannels = [];
-        } else if (query.length >= 1) {
-          this.searchResultsUser = await this.firebaseService.searchUsersByNameFragment(query);
+        } else {
+          this.searchResultsUser =
+            query.length === 0
+              ? this.allUsers
+              : this.allUsers.filter((user) =>
+                  user.displayName.toLowerCase().includes(query)
+                );
           this.searchResultsEmail = [];
           this.searchResultsChannels = [];
         }
-
       } else if (term.startsWith('#')) {
-        if (this.allChannels.length === 0) {
-          return;
-        }
+        if (this.allChannels.length === 0) return;
 
         const query = term.slice(1).toLowerCase();
         this.searchResultsChannels = this.allChannels.filter((channel) =>
@@ -148,15 +162,15 @@ export class MessagesHeaderComponent {
         );
         this.searchResultsUser = [];
         this.searchResultsEmail = [];
-
       } else if (this.validateEmail(term)) {
-        this.searchResultsEmail = await this.firebaseService.searchUsersByEmail(term);
+        this.searchResultsEmail = this.allUsers.filter((u) =>
+          u.email?.toLowerCase().includes(term.toLowerCase())
+        );
         this.searchResultsUser = [];
         this.searchResultsChannels = [];
       }
     }, 100);
   }
-
 
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
     const rect = inputElement.getBoundingClientRect();
@@ -171,7 +185,7 @@ export class MessagesHeaderComponent {
     return re.test(email.toLowerCase());
   }
 
-  selectUser(user: any) {
+  selectUser(user: User) {
     const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);
     if (match) {
       this.textInput = this.textInput.replace(/@[\wäöüßÄÖÜ\-]+$/, `@${user.displayName} `);
@@ -191,9 +205,7 @@ export class MessagesHeaderComponent {
   }
 
   selectChannel(channel: Channel) {
-
     this.textInput += `#${channel.name} `;
-
     emitChannelContext(this.contextSelected, channel.id);
 
     setTimeout(() => {
@@ -205,7 +217,6 @@ export class MessagesHeaderComponent {
 
   selectSearchResult(msg: Message) {
     emitMessageContextFromMessage(this.contextSelected, msg, this.currentUser.id);
-
     this.searchResultSelected.emit(msg);
     this.textInput = '';
     this.clearResults();
