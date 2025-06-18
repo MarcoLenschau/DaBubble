@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential, reauthenticateWithCredential, updateEmail, sendEmailVerification } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential, reauthenticateWithCredential, updateEmail, sendEmailVerification, onAuthStateChanged, getAuth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
@@ -19,14 +19,19 @@ export class AuthService {
   users$: Observable<any>;
   users: any[] = [];
   user: any = {};
+  emailVerified = false;
 
   constructor() {
     this.users$ = this.firebase.getColRef('users');
     this.users$.forEach((users: any) => {
-
       // Mehrfache Subscriptions auf denselben Stream?
-
       this.users = users;
+    });
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {  
+        this.emailVerified = true;
+      } 
     });
     this.restoreAuthState();
   }

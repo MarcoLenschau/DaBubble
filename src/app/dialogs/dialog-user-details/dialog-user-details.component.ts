@@ -18,6 +18,10 @@ export class DialogUserDetailsComponent {
   @Input() user: any = {};
   sendMailStatus = false;
 
+  constructor() {
+    
+  }
+
   closeProfilView() {
     this.dialogRef.close();
   }

@@ -17,13 +17,15 @@ import { onSnapshot } from '@angular/fire/firestore';
 })
 export class HeaderComponent {
   user: any = {};
-
   users: Subscription;
 
   constructor(private dialog: MatDialog, public router: RouterService, private auth: AuthService, private firebase: FirebaseService) {
     this.users = this.auth.user$.subscribe(user => {
       this.user = user;
-      console.log(this.user)
+      if (this.auth.emailVerified) {
+        this.user.emailVerified = true;
+        this.firebase.updateUser(this.user.id, user);
+      }
     });
   }
  
