@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getAuth } from '@angular/fire/auth';
 import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference, writeBatch } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -13,9 +14,7 @@ export class FirebaseService {
   }
 
   getColRef(col: string) {
-
     // Wiederholtes, unkontrolliertes Subscriben auf collectionData-Observables? 
-
     return collectionData(this.getDocRef(col), { idField: 'id' });
   }
 
@@ -80,31 +79,7 @@ export class FirebaseService {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
-
-  // TODO: async searchMessagesForUser(term: string, userId: string): Promise<Message[]> {}
-
-  // /**
-  //  * Aktualisiert bestehende Benutzer mit lowercase displayName-Feld
-  //  */
-  // async updateAllUsersWithLowercaseField(): Promise<void> {
-  //   const usersRef = collection(this.firebase, 'users');
-  //   const snapshot = await getDocs(usersRef);
-
-  //   const updates = snapshot.docs.map((docSnap) => {
-  //     const data = docSnap.data();
-  //     const displayName = data['displayName'];
-
-  //     if (displayName && !data['displayName_lowercase']) {
-  //       const docRef = doc(this.firebase, 'users', docSnap.id);
-  //       return updateDoc(docRef, {
-  //         displayName_lowercase: displayName.toLowerCase(),
-  //       });
-  //     } else {
-  //       return Promise.resolve();
-  //     }
-  //   });
-  // }
-
+  
   async updateUserState(user: any, state: boolean) {
     const docRef = doc(this.firebase, 'users', user.id);
     await updateDoc(docRef, { state: state });
@@ -139,5 +114,31 @@ export class FirebaseService {
       await batch.commit();
     }
   }
+  
 
+  async addAudioMessage(data: any) {
+    const messageCollection = this.getDocRef('messages');
+    const messageRef = doc(messageCollection);
+    const audioBlob = data.get('audio');
+    const base64: any = await this.blobToBase64(audioBlob);
+    await setDoc(messageRef, this.getCleanAudioMessage(base64));
+  }
+
+  getCleanAudioMessage(base64: string) {
+    const auth = getAuth();
+    return {
+      audio: base64,
+      timestamp: Date.now(),
+      from: auth.currentUser?.email
+    };
+  }
+
+  blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 }

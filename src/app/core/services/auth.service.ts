@@ -5,6 +5,7 @@ import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { RouterService } from './router.service';
 import { UserDataService } from './user-data.service';
+import { doc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',

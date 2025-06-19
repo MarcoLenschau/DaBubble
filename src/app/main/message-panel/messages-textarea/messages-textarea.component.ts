@@ -5,6 +5,7 @@ import {
   ElementRef,
   OnInit,
   OnDestroy,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,7 @@ import { User } from '../../../core/models/user.model';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis-utils';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -39,12 +41,14 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
-
+  
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
   currentUser!: User;
+
+  // For audio messages
   recorder: any = {};
   stream: any = {};  
   record = false;
@@ -59,12 +63,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   mentionQuery = '';
   mentionBoxPosition = { top: 0, left: 0 };
 
+  private firebase = inject(FirebaseService);
+  private messageDataService = inject(MessageDataService);
+  private userDataService = inject(UserDataService);
+  private messageEventService = inject(MessageEventService);
   private currentUserSubscription?: Subscription;
-
-  constructor(
-    private messageDataService: MessageDataService,
-    private userDataService: UserDataService, private messageEventService: MessageEventService
-  ) { }
 
   get isThread(): boolean {
     return this.mode === 'thread';
@@ -91,28 +94,24 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.currentUserSubscription?.unsubscribe();
   }
 
- onInput(event: Event): void {
-  const text = this.getTextFromEditableDiv();
-  this.textInput = text;
-
-  const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
-  if (match) {
-    this.mentionQuery = match[1].toLowerCase();
-
-    // NEU: Wenn leer, alle User anzeigen
-    this.filteredMentionUsers = this.mentionQuery.length === 0
-      ? this.allUsers
-      : this.allUsers.filter((user) =>
-          user.displayName.toLowerCase().includes(this.mentionQuery)
-        );
-
-    this.showMentionDropdown = this.filteredMentionUsers.length > 0;
-    this.setMentionBoxPosition();
-  } else {
-    this.showMentionDropdown = false;
+  onInput(event: Event): void {
+    const text = this.getTextFromEditableDiv();
+    this.textInput = text;
+    const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
+    if (match) {
+      this.mentionQuery = match[1].toLowerCase();
+      // NEU: Wenn leer, alle User anzeigen
+      this.filteredMentionUsers = this.mentionQuery.length === 0
+        ? this.allUsers
+        : this.allUsers.filter((user) =>
+            user.displayName.toLowerCase().includes(this.mentionQuery)
+          );
+      this.showMentionDropdown = this.filteredMentionUsers.length > 0;
+      this.setMentionBoxPosition();
+    } else {
+      this.showMentionDropdown = false;
+    }
   }
-}
-
 
   getTextFromEditableDiv(): string {
     return this.editableDiv.nativeElement.innerText;
@@ -121,13 +120,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   setMentionBoxPosition() {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
-
     const range = selection.getRangeAt(0).cloneRange();
     range.collapse(true);
-
     const rect = range.getBoundingClientRect();
     const containerRect = this.editableDiv.nativeElement.getBoundingClientRect();
-
     this.mentionBoxPosition = {
       top: rect.bottom - containerRect.top + 20,
       left: rect.left - containerRect.left,
@@ -137,22 +133,16 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   selectMentionUser(user: User) {
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
-
     const range = sel.getRangeAt(0);
     range.deleteContents();
-
     const mentionText = `@${user.displayName} `;
     const currentText = this.getTextFromEditableDiv();
     const newText = currentText.replace(/@[\wäöüßÄÖÜ\-]*$/, mentionText);
-
     this.editableDiv.nativeElement.innerText = newText;
     this.placeCursorAtEnd(this.editableDiv.nativeElement);
-
     this.textInput = newText;
-
     this.showMentionDropdown = false;
     this.filteredMentionUsers = [];
-
     this.messageContext = {
       type: 'direct',
       id: this.currentUser.id,
@@ -304,9 +294,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   async updateStarterMessage() {
-
     if (this.mode === 'thread' && this.starterMessage) {
-
       await this.messageDataService.updateMessageFields(this.starterMessage.id, {
         // replies: this.starterMessage.replies,
         lastReplyTimestamp: Date.now(),
@@ -342,9 +330,10 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     document.querySelector(".thread-messages")?.appendChild(audio);
   }
 
-  saveAudioMessage(blob: any) {
+  async saveAudioMessage(blob: any) {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
+    this.firebase.addAudioMessage(audioData);
   }
 
   async startRecord() {
