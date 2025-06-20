@@ -18,6 +18,7 @@ import {
 import { Subscription } from 'rxjs';
 import { ChannelMembersOverlayComponent } from './channel-members-overlay/channel-members-overlay.component';
 import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overlay.component';
+import { UserProfileOverlayComponent } from './user-profile-overlay/user-profile-overlay.component';
 
 @Component({
   selector: 'app-messages-header',
@@ -30,6 +31,7 @@ import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overl
     ChannelDetailsOverlayComponent,
     ChannelMembersOverlayComponent,
     AddMemberOverlayComponent,
+    UserProfileOverlayComponent
   ],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
@@ -47,13 +49,14 @@ export class MessagesHeaderComponent {
   showChannelOverlay = false;
   showMembersOverlay = false;
   showAddMemberOverlay = false;
+  showUserProfileOverlay = false;
 
   private currentUserSubscription?: Subscription;
 
   constructor(
     private userDataService: UserDataService,
     private channelDataService: ChannelDataService
-  ) {}
+  ) { }
 
   textInput = '';
   currentUser!: User;
@@ -148,8 +151,8 @@ export class MessagesHeaderComponent {
             query.length === 0
               ? this.allUsers
               : this.allUsers.filter((user) =>
-                  user.displayName.toLowerCase().includes(query)
-                );
+                user.displayName.toLowerCase().includes(query)
+              );
           this.searchResultsEmail = [];
           this.searchResultsChannels = [];
         }
@@ -252,5 +255,13 @@ export class MessagesHeaderComponent {
 
   openAddMemberOverlay() {
     this.showAddMemberOverlay = true;
+  }
+
+  openUserProfileOverlay() {
+    this.showUserProfileOverlay = true;
+  }
+
+  closeUserProfileOverlay() {
+    this.showUserProfileOverlay = false;
   }
 }

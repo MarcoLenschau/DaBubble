@@ -14,8 +14,10 @@
         (click)="activeChannel ? openChannelOverlay() : null"
       >
         <ng-container *ngIf="activeUser; else channelHeader">
-          <img class="header-user-avatar" [src]="activeUser.photoURL" alt="Profilbild" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
-          <span class="header-user-name">{{ activeUser.displayName }}</span>
+          <div class="header-user-info" (click)="openUserProfileOverlay()" style="cursor:pointer; display: flex; align-items: center;">
+            <img class="header-user-avatar" [src]="activeUser.photoURL" alt="Profilbild" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+            <span class="header-user-name">{{ activeUser.displayName }}</span>
+          </div>
         </ng-container>
         <ng-template #channelHeader>
           <h2 *ngIf="activeChannel; else defaultTitle">
@@ -135,3 +137,10 @@
   [channel]="activeChannel"
   (close)="showAddMemberOverlay = false"
 ></app-add-member-overlay>
+
+
+<app-user-profile-overlay
+  *ngIf="showUserProfileOverlay"
+  [user]="activeUser"
+  (close)="closeUserProfileOverlay()">
+</app-user-profile-overlay>

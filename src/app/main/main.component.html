@@ -6,7 +6,7 @@
 
 
 
-  <app-devspace (channelSelected)="onChannelSelected($event)" (userSelected)="onUserSelected($event)" (contextSelected)="onContextSelected($event)"
+  <app-devspace (channelSelected)="onChannelSelected($event)" (userSelected)="onUserSelected($event)"(contextSelected)="onContextSelected($event)"
     (closeThreadWindow)="onThreadClose()"
     [ngClass]="{ visible: showDevSpaceWindow, hidden: !showDevSpaceWindow }">></app-devspace>
 
