@@ -10,6 +10,8 @@ import { MessageEventService } from '../core/services/message-event.service';
 import { Observable } from 'rxjs';
 import { MessageContext } from '../core/interfaces/message-context.interface';
 import { ViewMode } from '../core/enums/view-mode.enum';
+import { User } from '../core/models/user.model';
+import { Channel } from '../core/models/channel.model';
 
 @Component({
   selector: 'app-main',
@@ -29,8 +31,8 @@ export class MainComponent implements OnInit {
   showDevSpace = true;
   showMessage = true;
   showThread = false;
-  activeChannel: string | null = null;
-  activeUser: any = null;
+  activeChannel: Channel | null = null;
+  activeUser: User | null = null;
   starterMessage?: Message;
   userId?: string;
   channels$: Observable<any>;

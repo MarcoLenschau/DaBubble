@@ -31,7 +31,9 @@ export class AddChannelOverlayComponent {
       description: this.description.trim(),
       members: [JSON.stringify(currentUser)],
       messages: [],
-      createdBy: currentUser.displayName,
+      createdBy: currentUser.displayName, // wird benötigt?
+      createdById: currentUser.id,
+      createdAt: Date.now(),
     });
 
     await this.channelDataService.addChannel(newChannel);

@@ -1,74 +1,129 @@
-<div class="thread-messages scrollable" #scrollContainer [ngClass]="{ 'ready': messagesReady }" (scroll)="onScroll()">
-  <ng-container *ngIf="(isThread ? filteredMessages : messages).length > 0; else noMessages">
-    <ng-container *ngFor="let msg of isThread ? filteredMessages : messages; let i = index; trackBy: trackByMessageId">
+<div class="thread-messages scrollable" #scrollContainer [ngClass]="{ 'ready': messagesReady, 'flex-end': isMessage}"
+  (scroll)="onScroll()">
 
-      <!-- Neue Tageslinie -->
-      <ng-container *ngIf="isMessage && isNewDay(msg.timestamp, messages[i - 1]?.timestamp)">
-        <div class="date-divider">
-          <div class="date-line"></div>
-          <div class="date-text">{{ formatDate(msg.timestamp) }}</div>
-          <div class="date-line"></div>
+  <ng-container *ngIf="(isThread)">
+    <div class="thread-padding-top"></div>
+  </ng-container>
+
+  <ng-container *ngIf="(isMessage)">
+    <div class="message-padding-top"></div>
+
+    <ng-container *ngIf="activeChannel && activeChannel.createdById === currentUser?.id; else checkUser">
+      <div class="intro">
+        <span class="intro-name"># {{ activeChannel.name }}</span>
+
+        <p class="intro-text">Du hast diesen Channel {{ formatRelativeDayLowercaseNoTime(activeChannel.createdAt) }}
+          erstellt. Das ist der Anfang des Channels <span class="purple-color"># {{
+            activeChannel.name
+            }}</span>
+        </p>
+      </div>
+    </ng-container>
+
+    <ng-template #checkUser>
+      <ng-container *ngIf="activeUser && activeUser.id !== currentUser?.id; else selfUser">
+        <div class="intro">
+          <div class="intro-img-box">
+            <img class="user-avatar" [src]="activeUser.photoURL" alt="Profilbild">
+            <span class="intro-name">{{ activeUser.displayName }}</span>
+          </div>
+
+          <p class="intro-text">Diese Unterhaltung findet nur zwischen <span class="purple-color">&#64; {{
+              activeUser.displayName
+              }}</span> und dir statt.
+          </p>
         </div>
       </ng-container>
 
-      <!-- Nachricht -->
-      <div class="message-wrapper" [ngClass]="{
+      <ng-template #selfUser>
+        <ng-container *ngIf="activeUser && activeUser?.id === currentUser?.id">
+          <div class="intro">
+            <div class="intro-img-box">
+              <img class="user-avatar" [src]="activeUser.photoURL" alt="Profilbild">
+              <span class="intro-name">{{ activeUser.displayName }} (Du)</span>
+            </div>
+
+            <p class="intro-text">
+              <span class="bold">Dieser Raum ist nur für dich da.</span> Mache dir Notizen, liste deine To-dos auf oder
+              bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.
+            </p>
+          </div>
+
+        </ng-container>
+
+      </ng-template>
+    </ng-template>
+  </ng-container>
+
+  <ng-container *ngFor="let msg of isThread ? filteredMessages : messages; let i = index; trackBy: trackByMessageId">
+
+    <!-- Neue Tageslinie -->
+    <ng-container *ngIf="isMessage && isNewDay(msg.timestamp, messages[i - 1]?.timestamp)">
+      <div class="date-divider">
+        <div class="date-line"></div>
+        <div class="date-text">{{ formatDate(msg.timestamp) }}</div>
+        <div class="date-line"></div>
+      </div>
+    </ng-container>
+
+    <!-- Nachricht -->
+    <div class="message-wrapper" [ngClass]="{
             'hover-thread-message not-own-message': !isOwnMessage(msg),
             'hover-own-message': isOwnMessage(msg),
             'hover-message-wrapper': hoveredIndex === i
           }" (mouseenter)="setHoverState(i)" (mouseleave)="setHoverState(null)" (click)="closeEmojiRow($event)">
 
-        <div class="message-flex-box" [ngClass]="{
+      <div class="message-flex-box" [ngClass]="{
               'thread-message': !isOwnMessage(msg),
               'own-message': isOwnMessage(msg)
             }">
 
-          <img class="message-img" [src]="getUserById(msg.userId)?.photoURL ?? './assets/img/profilepic/frederik.png'"
-            alt="Profilbild {{ msg.name }}" />
+        <img class="message-img" [src]="getUserById(msg.userId)?.photoURL ?? './assets/img/profilepic/frederik.png'"
+          alt="Profilbild {{ msg.name }}" />
 
-          <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
-            <div class="message-body-header" [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }">
-              <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
-              <p>{{ isThread ? formatRelativeTimeSimple(msg.timestamp) : formatTime(msg.timestamp) }}</p>
-            </div>
-
-            <!-- Nachricht oder Bearbeitungsfeld -->
-            <p class="thread-message-text" *ngIf="editingMessageId !== msg.id"
-              [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
-              {{ msg.text }}
-            </p>
-
-            <div *ngIf="editingMessageId === msg.id" class="edit-container">
-              <div class="edit-box">
-                <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
-                  (keydown.enter)="saveEditedMessage(msg, i)" (keydown.escape)="cancelEditing()"></textarea>
-
-                <div class="edit-actions">
-                  <span class="emoji-icon">😊</span>
-                  <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
-                  <button class="save-btn" (click)="saveEditedMessage(msg, i)">Speichern</button>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- Antworten-Anzeige -->
-            <ng-container *ngIf="isMessage && msg.replies > 0">
-              <div class="replies-info-container">
-                <button class="show-replies-button"
-                  [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
-                  (click)="openThread(msg)">
-                  {{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten' }}
-                </button>
-                <span *ngIf="msg.lastReplyTimestamp" class="last-answer-time">
-                  Letzte Antwort {{ formatRelativeTimeSimple(msg.lastReplyTimestamp) }}
-                </span>
-              </div>
-            </ng-container>
+        <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
+          <div class="message-body-header" [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }">
+            <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
+            <p>{{ isThread ? formatRelativeTimeSimple(msg.timestamp) : formatTime(msg.timestamp) }}</p>
           </div>
 
-          <!-- Emoji-Zeile -->
-          <div class="emoji-row" [ngClass]="{
+          <!-- Nachricht oder Bearbeitungsfeld -->
+          <p class="thread-message-text" *ngIf="editingMessageId !== msg.id"
+            [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
+            {{ msg.text }}
+          </p>
+
+          <div *ngIf="editingMessageId === msg.id" class="edit-container">
+            <div class="edit-box">
+              <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
+                (keydown.enter)="saveEditedMessage(msg, i)" (keydown.escape)="cancelEditing()"></textarea>
+
+              <div class="edit-actions">
+                <span class="emoji-icon">😊</span>
+                <button class="cancel-btn" (click)="cancelEditing()">Abbrechen</button>
+                <button class="save-btn" (click)="saveEditedMessage(msg, i)">Speichern</button>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Antworten-Anzeige -->
+          <ng-container *ngIf="isMessage && msg.replies > 0">
+            <div class="replies-info-container">
+              <button class="show-replies-button"
+                [attr.data-text]="msg.replies + ' ' + (msg.replies === 1 ? 'Antwort' : 'Antworten')"
+                (click)="openThread(msg)">
+                {{ msg.replies }} {{ msg.replies === 1 ? 'Antwort' : 'Antworten' }}
+              </button>
+              <span *ngIf="msg.lastReplyTimestamp" class="last-answer-time">
+                Letzte Antwort {{ formatRelativeTimeSimple(msg.lastReplyTimestamp) }}
+              </span>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Emoji-Zeile -->
+        <div class="emoji-row" [ngClass]="{
               'emoji-row-left-aligned': isOwnMessage(msg),
               'emoji-row-right-aligned': !isOwnMessage(msg),
               'make-visible': hoveredIndex === i,
@@ -76,119 +131,111 @@
               'emoji-row-closed': !emojiMenuOpen[i]
             }" (click)="$event.stopPropagation()" (mouseleave)="onEmojiRowMouseLeave(i)">
 
-            <!-- Bitte nicht löschen! -->
-            <ng-container *ngIf="isThread && emojiMenuOpen[i]">
-              <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
+          <!-- Bitte nicht löschen! -->
+          <ng-container *ngIf="isThread && emojiMenuOpen[i]">
+            <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
+              (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+              {{ emoji.unicode }}
+            </span>
+          </ng-container>
+
+
+          <ng-container *ngIf="isMessage">
+            <span *ngFor="let emoji of sortedEmojis.slice(0, 2)" class="emoji-icon top-emojis"
+              (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+              {{ emoji.unicode }}
+            </span>
+            <ng-container *ngIf="emojiMenuOpen[i]">
+              <span *ngFor="let emoji of sortedEmojis.slice(2)" class="emoji-icon top-emojis"
                 (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
                 {{ emoji.unicode }}
               </span>
             </ng-container>
+          </ng-container>
 
-
-            <ng-container *ngIf="isMessage">
-              <span *ngFor="let emoji of sortedEmojis.slice(0, 2)" class="emoji-icon top-emojis"
-                (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
-                {{ emoji.unicode }}
-              </span>
-              <ng-container *ngIf="emojiMenuOpen[i]">
-                <span *ngFor="let emoji of sortedEmojis.slice(2)" class="emoji-icon top-emojis"
-                  (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
-                  {{ emoji.unicode }}
-                </span>
-              </ng-container>
-            </ng-container>
-
-            <!-- Reaktion hinzufügen -->
-            <div class="toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
-              <img src="assets/img/message-icons/add-reaction.svg" class="default" />
-              <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
-            </div>
-
-            <!-- Thread öffnen -->
-            <ng-container *ngIf="isMessage">
-              <div class="toggle-icon" (click)="openThread(msg)">
-                <img src="assets/img/message-icons/answer.svg" class="default" />
-                <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
-              </div>
-            </ng-container>
-
-            <!-- Drei Punkte Menü für eigene Nachricht -->
-            <ng-container *ngIf="isOwnMessage(msg)">
-              <div class="toggle-icon-wrapper">
-                <div class="toggle-icon" (click)="toggleEditMenu(i)">
-                  <img src="assets/img/message-icons/option.svg" class="default" />
-                  <img src="assets/img/message-icons/option-hover.svg" class="hover" />
-                </div>
-
-                <div class="edit-menu" *ngIf="editMenuOpenIndex === i"
-                  (click)="handleEditClick(msg, i); $event.stopPropagation()">
-                  Nachricht bearbeiten
-                </div>
-              </div>
-            </ng-container>
+          <!-- Reaktion hinzufügen -->
+          <div class="toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
+            <img src="assets/img/message-icons/add-reaction.svg" class="default" />
+            <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
           </div>
 
+          <!-- Thread öffnen -->
+          <ng-container *ngIf="isMessage">
+            <div class="toggle-icon" (click)="openThread(msg)">
+              <img src="assets/img/message-icons/answer.svg" class="default" />
+              <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
+            </div>
+          </ng-container>
+
+          <!-- Drei Punkte Menü für eigene Nachricht -->
+          <ng-container *ngIf="isOwnMessage(msg)">
+            <div class="toggle-icon-wrapper">
+              <div class="toggle-icon" (click)="toggleEditMenu(i)">
+                <img src="assets/img/message-icons/option.svg" class="default" />
+                <img src="assets/img/message-icons/option-hover.svg" class="hover" />
+              </div>
+
+              <div class="edit-menu" *ngIf="editMenuOpenIndex === i"
+                (click)="handleEditClick(msg, i); $event.stopPropagation()">
+                Nachricht bearbeiten
+              </div>
+            </div>
+          </ng-container>
         </div>
 
-        <!-- Reaktionen -->
-        <div class="reactions" *ngIf="msg.reactions?.length" [ngClass]="{
+      </div>
+
+      <!-- Reaktionen -->
+      <div class="reactions" *ngIf="msg.reactions?.length" [ngClass]="{
                'thread-reactions': isThread,
                'message-reactions': isMessage,
                'reactions-right-aligned': isOwnMessage(msg),
                'reactions-left-aligned': !isOwnMessage(msg), 'expanded': showAllReactions[msg.id]
              }">
-          <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper" [ngClass]="{
+        <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper" [ngClass]="{
             'selected': userHasReactedToEmoji(msg, reaction.emojiName, currentUser.id)
           }" (click)="handleEmojiClick(reaction.emojiName, msg, j)"
-            (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
-            (mouseleave)="setTooltipHoveredState(null, null)">
-            <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
-            <span class="count">{{ reaction.userIds.length }}</span>
+          (mouseenter)="setTooltipHoveredState(j, reaction.userIds); onMouseEnterEmojiWrapper($event, j)"
+          (mouseleave)="setTooltipHoveredState(null, null)">
+          <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
+          <span class="count">{{ reaction.userIds.length }}</span>
 
-            <div *ngIf="hoveredIndex === i && tooltipHoveredIndex == j" #emojiTooltip class="bottom-emoji-tooltip">
-              <span class="tooltip-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
-              <div>
-                <p class="tooltip-names">{{ formattedUserNames }}</p>
-                <p class="tooltip-text">{{ tooltipText }} reagiert</p>
-              </div>
+          <div *ngIf="hoveredIndex === i && tooltipHoveredIndex == j" #emojiTooltip class="bottom-emoji-tooltip">
+            <span class="tooltip-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
+            <div>
+              <p class="tooltip-names">{{ formattedUserNames }}</p>
+              <p class="tooltip-text">{{ tooltipText }} reagiert</p>
             </div>
           </div>
-          <button class="emojis-shown-btn" *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0"
-            (click)="toggleShowAll(msg.id)">
-            +{{ getHiddenReactionCount(msg) }} weitere
-          </button>
-
-          <button class="emojis-shown-btn" *ngIf="shouldShowCollapseButton(msg)" (click)="toggleShowAll(msg.id)">
-            Weniger anzeigen
-          </button>
-
-          <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
-            <img src="assets/img/message-icons/add-reaction.svg" class="default" />
-            <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
-          </div>
         </div>
+        <button class="emojis-shown-btn" *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0"
+          (click)="toggleShowAll(msg.id)">
+          +{{ getHiddenReactionCount(msg) }} weitere
+        </button>
 
+        <button class="emojis-shown-btn" *ngIf="shouldShowCollapseButton(msg)" (click)="toggleShowAll(msg.id)">
+          Weniger anzeigen
+        </button>
+
+        <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
+          <img src="assets/img/message-icons/add-reaction.svg" class="default" />
+          <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
+        </div>
       </div>
 
-      <!-- Trennlinie für Antworten im Thread -->
-      <ng-container *ngIf="isThread">
-        <div *ngIf="i === 0 && filteredMessages.length > 1" class="thread-replies-divider">
-          <p>
-            {{ filteredMessages.length - 1 }}
-            {{ filteredMessages.length - 1 === 1 ? 'Antwort' : 'Antworten' }}
-          </p>
-          <div class="line"></div>
-        </div>
-      </ng-container>
+    </div>
 
+    <!-- Trennlinie für Antworten im Thread -->
+    <ng-container *ngIf="isThread">
+      <div *ngIf="i === 0 && filteredMessages.length > 1" class="thread-replies-divider">
+        <p>
+          {{ filteredMessages.length - 1 }}
+          {{ filteredMessages.length - 1 === 1 ? 'Antwort' : 'Antworten' }}
+        </p>
+        <div class="line"></div>
+      </div>
     </ng-container>
+
   </ng-container>
 
-  <ng-container *ngIf="activeChannel">
-    <div class="no-messages">Noch keine Nachrichten in diesem Channel.</div>
-  </ng-container>
-
-  <ng-template #noMessages>
-    <div class="no-messages">Keine Nachrichten vorhanden.</div>
-  </ng-template>
 </div>

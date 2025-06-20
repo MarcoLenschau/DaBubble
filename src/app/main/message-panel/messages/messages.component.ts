@@ -32,7 +32,8 @@ import {
   formatTime,
   formatDate,
   isNewDay,
-  formatRelativeTimeSimple
+  formatRelativeTimeSimple,
+  formatRelativeDayLowercaseNoTime
 } from '../../../core/utils/date-utils';
 import {
   getUserById,
@@ -64,9 +65,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() mode: 'thread' | 'message' = 'message';
-  @Input() activeChannel: string | null = null;
+  @Input() activeChannel: Channel | null = null;
+  @Input() activeUser: User | null = null;
   @Input() messageContext?: MessageContext;
-  @Input() viewMode: ViewMode = ViewMode.Desktop; // TODO !!!!!!!!!!!!!
+  @Input() viewMode: ViewMode = ViewMode.Desktop;
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() starterMessageChange = new EventEmitter<Message>();
@@ -98,7 +100,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   showAllReactions: { [messageId: string]: boolean } = {};
 
   private shouldScrollAfterUpdate: boolean = true;
-  private threadShouldScrollAfterUpdate: boolean = true;
+  private threadShouldScrollAfterUpdate: boolean = false;
   private messagesSubscription?: Subscription;
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
@@ -163,7 +165,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     if (this.isThread && changes['starterMessage'] && this.starterMessage) {
-      this.messageEventService.notifyScrollIntent('thread', true);
+      // this.messageEventService.notifyScrollIntent('thread', true);
       this.setReplyToMessage(this.starterMessage);
     }
   }
@@ -426,6 +428,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   formatDate = formatDate;
   isNewDay = isNewDay;
   formatRelativeTimeSimple = formatRelativeTimeSimple;
+  formatRelativeDayLowercaseNoTime = formatRelativeDayLowercaseNoTime;
   getUserNames = (userIds: string[]) => getUserNames(this.users, userIds, this.currentUser);
   getUserById = (userId: string) => getUserById(this.users, userId);
   formatUserNames = (userIds: string[]) => formatUserNames(this.users, userIds, this.currentUser);

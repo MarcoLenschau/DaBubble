@@ -8,7 +8,9 @@ export class Channel {
   messages: Message[] = [];
   // isPrivate?: boolean;
   // createdAt?: number;
-  createdBy?: string = ''; // userId
+  createdBy?: string = ''; //Löschen oder wird es gebraucht?
+  createdById?: string = ''; // userId
+  createdAt: number = Date.now();
 
   constructor(data?: Partial<Channel>) {
     if (data) {
@@ -18,6 +20,8 @@ export class Channel {
       this.members = data.members ?? this.members;
       this.messages = data.messages ?? this.messages;
       this.createdBy = data.createdBy ?? this.createdBy;
+      this.createdById = data.createdById ?? this.createdById;
+      this.createdAt = data.createdAt ?? this.createdAt;
     }
   }
 }

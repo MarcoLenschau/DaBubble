@@ -25,6 +25,8 @@ export class ChannelDataService {
               members: docData.members ?? [],
               messages: docData.messages ?? [],
               createdBy: docData.createdBy,
+              createdById: docData.createdById,
+              createdAt: docData.createdAt,
             })
         )
       )
@@ -36,6 +38,7 @@ export class ChannelDataService {
     const collectionRef = this.firebaseService.getDocRef(this.collectionPath);
     const docRef = doc(collectionRef); // Neue Referenz mit ID
     channel.id = docRef.id;
+    channel.createdAt = channel.createdAt ?? Date.now();
     await setDoc(docRef, this.getCleanJson(channel));
   }
 
@@ -59,6 +62,8 @@ export class ChannelDataService {
       members: channel.members,
       messages: channel.messages,
       createdBy: channel.createdBy,
+      createdById: channel.createdById,
+      createdAt: channel.createdAt,
     };
   }
 

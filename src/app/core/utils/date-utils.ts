@@ -30,7 +30,7 @@ function getDayDifference(today: Date, date: Date): number {
     const t = toDateOnly(today).getTime();
     const d = toDateOnly(date).getTime();
     const diff = t - d;
-    return diff / (1000 * 60 * 60 * 24);
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
 function toDateOnly(date: Date): Date {
@@ -78,3 +78,25 @@ export function formatRelativeTimeSimple(timestamp: number): string {
     const isToday = now.toDateString() === date.toDateString();
     return isToday ? formatTime(timestamp) : formatDateSimple(timestamp);
 }
+
+export function formatRelativeDayLowercaseNoTime(
+    timestamp: number | Date): string {
+    const date = typeof timestamp === 'number' ? new Date(timestamp) : timestamp;
+    const now = new Date();
+    const diffDays = getDayDifference(now, date);
+
+    if (diffDays === 0) {
+        return 'heute';
+    }
+    if (diffDays === 1) {
+        return 'gestern';
+    }
+
+    const sameYear = date.getFullYear() === now.getFullYear();
+    const options: Intl.DateTimeFormatOptions = sameYear
+        ? { day: 'numeric', month: 'long' }
+        : { day: 'numeric', month: 'long', year: 'numeric' };
+    const datePart = date.toLocaleDateString('de-DE', options);
+    return `am ${datePart}`;
+}
+

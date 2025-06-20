@@ -41,7 +41,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
-  
+
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
@@ -50,7 +50,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   // For audio messages
   recorder: any = {};
-  stream: any = {};  
+  stream: any = {};
   record = false;
   chunks: any = [];
   audioInSeconds = {};
@@ -104,8 +104,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       this.filteredMentionUsers = this.mentionQuery.length === 0
         ? this.allUsers
         : this.allUsers.filter((user) =>
-            user.displayName.toLowerCase().includes(this.mentionQuery)
-          );
+          user.displayName.toLowerCase().includes(this.mentionQuery)
+        );
       this.showMentionDropdown = this.filteredMentionUsers.length > 0;
       this.setMentionBoxPosition();
     } else {
@@ -312,7 +312,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   async sendAudioMessage() {
-    let blob = await this.recordStop(this.recorder, this.stream); 
+    let blob = await this.recordStop(this.recorder, this.stream);
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
     audio.onloadedmetadata = () => {
@@ -326,7 +326,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const url = URL.createObjectURL(blob);
     const audio = document.createElement('audio');
     audio.src = url;
-    audio.controls = true; 
+    audio.controls = true;
     document.querySelector(".thread-messages")?.appendChild(audio);
   }
 

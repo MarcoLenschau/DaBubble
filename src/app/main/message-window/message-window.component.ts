@@ -3,6 +3,8 @@ import { Message } from '../../core/models/message.model';
 import { MessagePanelComponent } from '../message-panel/message-panel.component';
 import { MessageContext } from '../../core/interfaces/message-context.interface';
 import { ViewMode } from '../../core/enums/view-mode.enum';
+import { User } from '../../core/models/user.model';
+import { Channel } from '../../core/models/channel.model';
 
 @Component({
   selector: 'app-message-window',
@@ -14,8 +16,8 @@ export class MessageWindowComponent {
   @Input() mode: 'message' | 'thread' = 'message';
   @Input() starterMessage?: Message;
   @Input() userId?: string;
-  @Input() activeChannel: string | null = null;
-  @Input() activeUser: any = null;
+  @Input() activeChannel: Channel | null = null;
+  @Input() activeUser: User | null = null;
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
 

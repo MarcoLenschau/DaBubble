@@ -8,16 +8,6 @@ export class MessageEventService {
 
   constructor() { }
 
-  //   private messageSentSubject = new Subject<'message' | 'thread' | ''>();
-
-  //   notifyMessageSent(contextType: 'message' | 'thread' | ''): void {
-  //     this.messageSentSubject.next(contextType);
-  //   }
-
-  //   get messageSent$(): Observable<'message' | 'thread' | ''> {
-  //     return this.messageSentSubject.asObservable();
-  //   }
-  // }
   private messageWindowScrollSubject = new Subject<boolean>();
   private threadWindowScrollSubject = new Subject<boolean>();
 

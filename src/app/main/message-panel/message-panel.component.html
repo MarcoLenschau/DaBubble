@@ -1,11 +1,13 @@
 <div [ngClass]="{ 'thread-container': isThread, 'message-container': isMessage }">
   <div class="message-content">
     <app-messages-header [mode]="mode" [starterMessage]="starterMessage" (closeThreadWindow)="onCloseClick()"
-      [activeChannel]="activeChannel" [activeUser]="activeUser" (contextSelected)="onContextSelectedFromHeader($event)"></app-messages-header>
+      [activeChannel]="activeChannel" [activeUser]="activeUser"
+      (contextSelected)="onContextSelectedFromHeader($event)"></app-messages-header>
 
     <app-messages [mode]="mode" [starterMessage]="starterMessage" [userId]="userId" [messageContext]="messageContext"
       (threadStart)="onStartThread($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"
-      (starterMessageChange)="onStarterMessageChange($event)" [viewMode]="viewMode"></app-messages>
+      [activeUser]="activeUser" (starterMessageChange)="onStarterMessageChange($event)"
+      [viewMode]="viewMode"></app-messages>
     <div class="message-textarea">
       <app-messages-textarea [mode]="mode" [starterMessage]="starterMessage" [textInput]="textInput"
         placeholder="Nachricht schreiben..." [messageContext]="messageContext"></app-messages-textarea>

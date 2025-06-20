@@ -19,7 +19,7 @@ import { emitChannelContext, emitDirectUserContext } from '../../core/utils/mess
 })
 export class DevspaceComponent {
   @Output() channelSelected = new EventEmitter<string>();
-  @Output() userSelected = new EventEmitter<any>();
+  @Output() userSelected = new EventEmitter<User>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() closeThreadWindow = new EventEmitter<void>();
 
