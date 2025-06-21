@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { Auth, signInWithPopup, GoogleAuthProvider, User, GithubAuthProvider, sendPasswordResetEmail, UserCredential, reauthenticateWithCredential, updateEmail, sendEmailVerification, onAuthStateChanged, getAuth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
@@ -13,8 +13,11 @@ import { doc } from '@angular/fire/firestore';
 export class AuthService {
   private auth = inject(Auth);
   private firebase = inject(FirebaseService);
-  private userDataService = inject(UserDataService);
   private router = inject(RouterService);
+  private injector = inject(Injector);
+  private get userDataService(): UserDataService {
+    return this.injector.get(UserDataService);
+  }
   userSubject = new BehaviorSubject<any>({});
   user$ = this.userSubject.asObservable();
   users$: Observable<any>;
@@ -34,9 +37,9 @@ export class AuthService {
   checkIfEmailVerified(): void {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
-      if (user) {  
+      if (user) {
         this.emailVerified = true;
-      } 
+      }
     });
   }
 
@@ -59,8 +62,8 @@ export class AuthService {
   }
 
   async restoreEmailAuth(user: any): Promise<void> {
-    if(user.email) {
-      let userData = await this.firebase.searchUsersByEmail(user.email);  
+    if (user.email) {
+      let userData = await this.firebase.searchUsersByEmail(user.email);
       this.userSubject.next(userData[0]);
     }
   }
@@ -108,7 +111,7 @@ export class AuthService {
     return signInWithPopup(this.auth, provider)
       .then(async (result) => {
         this.isUserExists(result, userCreated);
-        await this.saveCurrentUser({...result.user, provider: true});
+        await this.saveCurrentUser({ ...result.user, provider: true });
         return result.user;
       })
       .catch((error) => {
@@ -155,7 +158,7 @@ export class AuthService {
 
   async createUserWithEmail(email: string, password: string, name: string, photoURL: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
-    let user: any = {...result.user, photoURL};
+    let user: any = { ...result.user, photoURL };
     user = this.firebase.toObj(user, false, false);
     await this.firebase.addUser(user, false);
     await this.saveCurrentUser(user);
@@ -172,7 +175,7 @@ export class AuthService {
       throw new Error('User wurde in Firestore nicht gefunden.');
     }
   }
-  
+
   validateEmail(email: string): Boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -183,7 +186,7 @@ export class AuthService {
       element.inputRef.nativeElement.classList.add('error');
     } else {
       element.inputRef.nativeElement.classList.remove('error');
-    }      
+    }
   }
 
   editEmail(email: string, user: any): void {

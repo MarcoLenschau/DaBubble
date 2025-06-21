@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { User } from '../models/user.model';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { deleteDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
@@ -14,11 +14,29 @@ export class UserDataService {
   private readonly collectionPath = 'users';
   private currentUserSubject = new BehaviorSubject<User>(this.createGuestUser());
   public currentUser$ = this.currentUserSubject.asObservable();
+  private authSubscription?: Subscription;
 
-  constructor(private firebaseService: FirebaseService, private injector: Injector, private messageCacheService: MessageCacheService) { }
+  constructor(private firebaseService: FirebaseService, private injector: Injector, private messageCacheService: MessageCacheService,) {
+    this.authSubscription = this.authService.user$.subscribe(async (authUser) => {
+      if (!authUser) {
+        this.currentUserSubject.next(this.createGuestUser());
+        return;
+      }
+      const firestoreUsers = await this.firebaseService.searchUsersByEmail(authUser.email);
+      if (firestoreUsers.length > 0) {
+        this.currentUserSubject.next(this.mapToUser(firestoreUsers[0]));
+      } else {
+        this.currentUserSubject.next(this.createGuestUser());
+      }
+    });
+  }
 
-  private get auth(): AuthService {
+  private get authService(): AuthService {
     return this.injector.get(AuthService);
+  }
+
+  getCurrentUser(): User {
+    return this.currentUserSubject.value;
   }
 
   public setCurrentUser(user: User): void {
@@ -29,10 +47,25 @@ export class UserDataService {
     this.currentUserSubject.next(user);
   }
 
-  public async initCurrentUser(): Promise<void> {
-    const userDoc = await this.getCurrentUserDoc();
-    const user = userDoc ? this.mapToUser(userDoc) : this.createGuestUser();
-    this.setCurrentUser(user);
+  // public async initCurrentUser(): Promise<void> {
+  //   const userDoc = await this.getCurrentUserDoc();
+  //   const user = userDoc ? this.mapToUser(userDoc) : this.createGuestUser();
+  //   this.setCurrentUser(user);
+  // }
+
+  async initCurrentUser(): Promise<void> {
+    const authUser = this.authService.userSubject.value;
+    if (authUser?.email) {
+      const firestoreUsers = await this.firebaseService.searchUsersByEmail(authUser.email);
+      if (firestoreUsers.length > 0) {
+        const user = this.mapToUser(firestoreUsers[0]);
+        this.currentUserSubject.next(user);
+      } else {
+        this.currentUserSubject.next(this.createGuestUser());
+      }
+    } else {
+      this.currentUserSubject.next(this.createGuestUser());
+    }
   }
 
   /**
@@ -78,7 +111,7 @@ export class UserDataService {
   * @returns {Promise<any | null>} A promise resolving to the user document data or null if no matching user is found.
   */
   private async getCurrentUserDoc(): Promise<any | null> {
-    const email = this.auth.user?.email ?? null;
+    const email = this.authService.user?.email ?? null;
     if (!email) {
       return null;
     }
@@ -104,7 +137,7 @@ export class UserDataService {
     });
   }
 
-  public createGuestUser(): User {
+  public createGuestUser() {
     return new User({
       id: 'gast',
       displayName: 'Gast',
@@ -116,7 +149,7 @@ export class UserDataService {
     });
   }
 
-  private isUserEqual(u1: User, u2: User): boolean {
+  private isUserEqual(u1: User | null, u2: User | null): boolean {
     if (u1 === u2) return true;
     if (!u1 || !u2) return false;
 
@@ -156,7 +189,7 @@ export class UserDataService {
   async updateUserName(userId: string, newName: string): Promise<void> {
     const currentUser = this.currentUserSubject.value;
 
-    if (currentUser.displayName === newName) {
+    if (!currentUser || currentUser.displayName === newName) {
       return;
     }
 
@@ -165,9 +198,9 @@ export class UserDataService {
 
     this.messageCacheService.updateUserNameInCache(userId, newName);
 
-    if (this.auth.user) {
-      this.auth.user.displayName = newName;
-      this.auth.userSubject.next(this.auth.user);
+    if (this.authService.user) {
+      this.authService.user.displayName = newName;
+      this.authService.userSubject.next(this.authService.user);
     }
 
     this.setCurrentUser(new User({
@@ -176,6 +209,8 @@ export class UserDataService {
     }));
   }
 
-
+  ngOnDestroy() {
+    this.authSubscription?.unsubscribe();
+  }
 
 }
