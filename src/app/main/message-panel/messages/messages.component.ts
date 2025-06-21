@@ -133,6 +133,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(user => {
         this.currentUser = user;
+        console.log("Z136 this.currentUser: ", this.currentUser);
+
         this.subscribeToMessages();
         this.updateSortedEmojis();
       });
@@ -179,7 +181,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const messageSource$ = this.messageDataService.getMessagesForContext(
       this.messageContext, this.currentUser.id
     );
-
+    console.log("Z184 this.currentUser: ", this.currentUser);
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       if (!Array.isArray(loadedMessages)) {
         this.messages = loadedMessages;
@@ -200,7 +202,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
     this.messagesReady = false;
-
+    console.log("Z205 this.currentUser: ", this.currentUser);
     await this.ensureThreadId(msg);
 
     this.threadMessagesSubscription?.unsubscribe();
@@ -271,6 +273,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   openThread(msg: Message) {
+    console.log("Z276 this.currentUser: ", this.currentUser);
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
   }
 

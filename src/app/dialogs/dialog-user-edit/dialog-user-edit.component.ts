@@ -4,6 +4,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { UserDataService } from '../../core/services/user-data.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -25,12 +26,14 @@ export class DialogUserEditComponent {
 
   async userSave() {
 
-    const trimmedName = 'Fridolin Feuerbach';
-    // const trimmedName = this.user.displayName?.trim();
-    // if (!trimmedName) return;
+    const trimmedName = this.user.displayName?.trim();
+    if (!trimmedName) return;
 
     try {
       await this.userDataService.updateUserName(this.user.id, trimmedName);
+      const currentUser = await firstValueFrom(this.userDataService.currentUser$);
+      console.log('user: ', this.user);
+      console.log('currentUser: ', currentUser);
 
       this.dialogClose();
     } catch (err) {
