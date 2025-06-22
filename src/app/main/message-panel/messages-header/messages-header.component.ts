@@ -15,7 +15,7 @@ import {
   emitChannelContext,
   emitMessageContextFromMessage,
 } from '../../../core/utils/messages-utils';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 import { ChannelMembersOverlayComponent } from './channel-members-overlay/channel-members-overlay.component';
 import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overlay.component';
 import { UserProfileOverlayComponent } from './user-profile-overlay/user-profile-overlay.component';
@@ -104,15 +104,29 @@ export class MessagesHeaderComponent {
     );
   }
 
+  get viewUser(): User {
+    if (!this.currentUser) {
+      return this.activeUser;
+    }
+    return this.activeUser.id === this.currentUser.id
+      ? this.currentUser
+      : this.activeUser;
+  }
+
+
   ngOnInit() {
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
       this.searchResultsChannels = [];
     });
 
-    this.currentUserSubscription = this.userDataService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
-    });
+    this.currentUserSubscription = this.userDataService.currentUser$
+      .pipe(
+        filter(user => !!user && user.id !== 'default')
+      )
+      .subscribe((user) => {
+        this.currentUser = user;
+      });
 
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;

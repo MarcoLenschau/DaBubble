@@ -56,7 +56,7 @@ export class UserDataService {
         });
       }),
       shareReplay({ bufferSize: 1, refCount: true })
-    ).subscribe(); // wichtig: aktiv halten
+    ).subscribe();
   }
 
   private get authService(): AuthService {
@@ -173,9 +173,9 @@ export class UserDataService {
     });
   }
 
-  public createGuestUser() {
+  public createGuestUser(id: string = 'default') {
     return new User({
-      id: 'gast',
+      id: id,
       displayName: 'Gast',
       email: 'example@email.com',
       photoURL: './assets/img/profilepic/frederik.png',
@@ -225,7 +225,7 @@ export class UserDataService {
   async updateUserName(userId: string, newName: string): Promise<void> {
     const currentUser = this.currentUserSubject.value;
 
-    if (!currentUser || currentUser.displayName === newName) {
+    if (!currentUser || currentUser.id === 'default' || currentUser.displayName === newName) {
       return;
     }
 

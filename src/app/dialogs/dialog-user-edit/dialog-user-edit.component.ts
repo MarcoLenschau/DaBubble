@@ -4,7 +4,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { UserDataService } from '../../core/services/user-data.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, filter } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-user-edit',
@@ -25,15 +25,26 @@ export class DialogUserEditComponent {
   }
 
   async userSave() {
+    console.log('user: ', this.user);
 
     const trimmedName = this.user.displayName?.trim();
     if (!trimmedName) return;
 
     try {
-      await this.userDataService.updateUserName(this.user.id, trimmedName);
-      const currentUser = await firstValueFrom(this.userDataService.currentUser$);
-      console.log('user: ', this.user);
-      console.log('currentUser: ', currentUser);
+      const currentUser = await firstValueFrom(
+        this.userDataService.currentUser$.pipe(
+          filter(user => !!user && user.id !== 'default')
+        )
+      );
+      // await this.userDataService.updateUserName(this.user.id, trimmedName);
+      if (trimmedName !== currentUser.displayName) {
+        await this.userDataService.updateUserName(currentUser.id, trimmedName);
+
+        const updatedUser = await firstValueFrom(this.userDataService.currentUser$); // löschen
+        console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts: updatedUser: ', updatedUser);
+      }
+      console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts:user: ', this.user);
+      console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts: Former currentUser: ', currentUser);
 
       this.dialogClose();
     } catch (err) {

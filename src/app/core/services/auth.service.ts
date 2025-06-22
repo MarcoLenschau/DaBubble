@@ -50,6 +50,7 @@ export class AuthService {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.userSubject.next(user);
+        this.user = user;
 
         if (user.displayName) {
           await this.restoreProviderAuth(user);
@@ -57,6 +58,7 @@ export class AuthService {
           await this.restoreEmailAuth(user);
         }
       } else {
+        this.user = null;
         this.userSubject.next(null);
       }
 

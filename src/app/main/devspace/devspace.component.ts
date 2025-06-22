@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FirebaseService } from '../../core/services/firebase.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, filter } from 'rxjs';
 import { AddChannelOverlayComponent } from "./add-channel-overlay/add-channel-overlay.component";
 import { ChannelDataService } from '../../core/services/channel-data.service';
 import { UserDataService } from '../../core/services/user-data.service';
@@ -59,9 +59,11 @@ export class DevspaceComponent {
   }
 
   async ngOnInit(): Promise<void> {
-    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.currentUserSubscription = this.userDataService.currentUser$
+      .pipe(filter(user => !!user && user.id !== 'default'))
+      .subscribe(user => {
+        this.currentUser = user;
+      });
   }
   ngOnDestroy() {
     this.currentUserSubscription?.unsubscribe();
@@ -104,6 +106,9 @@ export class DevspaceComponent {
   setActiveUser(user: any) {
     this.userSelected.emit(user);
     this.activeUser = user;
+    console.log('src/app/main/devspace/devspace.component.ts this.auth.user.email: ', this.auth.user.email);
+    console.log('src/app/main/devspace/devspace.component.ts this.auth.user: ', this.auth.user);
+
     this.activeChannel = null;
     emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
     this.closeThread();

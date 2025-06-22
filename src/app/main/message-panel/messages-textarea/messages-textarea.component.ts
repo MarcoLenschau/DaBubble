@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 import { MessageDataService } from '../../../core/services/message-data.service';
 import { MessageEventService } from '../../../core/services/message-event.service';
 import { UserDataService } from '../../../core/services/user-data.service';
@@ -78,15 +78,19 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.updateSortedEmojis();
     document.addEventListener('click', this.handleClickOutside);
 
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;
     });
-    this.currentUserSubscription = this.userDataService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.currentUserSubscription = this.userDataService.currentUser$
+      .pipe(
+        filter(user => !!user && user.id !== 'default')
+      )
+      .subscribe(user => {
+        this.currentUser = user;
+      });
+    this.updateSortedEmojis();
   }
 
   ngOnDestroy(): void {

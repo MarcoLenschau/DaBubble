@@ -1,33 +1,26 @@
-<div
-  class="message-header"
-  [ngClass]="{
+<div class="message-header" [ngClass]="{
     'thread-header-height': isThread,
     'message-header-height': isMessage
-  }"
->
+  }">
   <ng-container *ngIf="isMessage">
     <div class="message-header-content">
-      <div
-        class="message-header-content-text"
-        (mouseenter)="arrowHover = true"
-        (mouseleave)="arrowHover = false"
-        (click)="activeChannel ? openChannelOverlay() : null"
-      >
+      <div class="message-header-content-text" (mouseenter)="arrowHover = true" (mouseleave)="arrowHover = false"
+        (click)="activeChannel ? openChannelOverlay() : null">
         <ng-container *ngIf="activeUser; else channelHeader">
-          <div class="header-user-info" (click)="openUserProfileOverlay()" style="cursor:pointer; display: flex; align-items: center;">
-            <img class="header-user-avatar" [src]="activeUser.photoURL" alt="Profilbild" style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
-            <span class="header-user-name">{{ activeUser.displayName }}</span>
+          <div class="header-user-info" (click)="openUserProfileOverlay()"
+            style="cursor:pointer; display: flex; align-items: center;">
+            <img class="header-user-avatar" [src]="viewUser.photoURL" alt="Profilbild"
+              style="width:40px; height:40px; border-radius:50%; margin-right:10px;">
+            <span class="header-user-name">{{ viewUser.displayName }}</span>
           </div>
         </ng-container>
         <ng-template #channelHeader>
           <h2 *ngIf="activeChannel; else defaultTitle">
             # {{ activeChannel.name }}
           </h2>
-          <img
-            [src]="arrowHover
+          <img [src]="arrowHover
               ? './assets/img/channel/arrow_down_hover.png'
-              : './assets/img/channel/keyboard_arrow_down.png'"
-          />
+              : './assets/img/channel/keyboard_arrow_down.png'" />
           <ng-template #defaultTitle>
             <h2>Neue Nachricht</h2>
           </ng-template>
@@ -75,12 +68,8 @@
 </div>
 
 <!-- SUCHERGEBNISSE -->
-<div
-  class="search-results"
-  [class.hidden]="!hasSearchResults"
-  [style.top.px]="mentionBoxPosition.top"
-  [style.left.px]="mentionBoxPosition.left"
->
+<div class="search-results" [class.hidden]="!hasSearchResults" [style.top.px]="mentionBoxPosition.top"
+  [style.left.px]="mentionBoxPosition.left">
   <ul>
     <!-- Treffer: Email -->
     <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
@@ -90,17 +79,9 @@
     <!-- Treffer: @User mit Bild & Online-Status -->
     <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
       <div class="profile-icon">
-        <img
-          class="profile-pic"
-          [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
-          alt="{{ user.displayName }}"
-        />
-        <img
-  *ngIf="user.state"
-  class="profile-online"
-  src="./assets/img/profilepic/online-user.png"
-  alt="online"
-/>
+        <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+          alt="{{ user.displayName }}" />
+        <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online" />
 
       </div>
       <div class="mention-user-name">{{ user.displayName }}</div>
@@ -120,27 +101,15 @@
 </div>
 
 <!-- Overlays -->
-<app-channel-details-overlay
-  *ngIf="showChannelOverlay"
-  [channel]="activeChannel"
-  (close)="closeChannelOverlay()"
-></app-channel-details-overlay>
+<app-channel-details-overlay *ngIf="showChannelOverlay" [channel]="activeChannel"
+  (close)="closeChannelOverlay()"></app-channel-details-overlay>
 
-<app-channel-members-overlay
-  *ngIf="showMembersOverlay"
-  [members]="activeChannel.members"
-  (close)="showMembersOverlay = false"
-></app-channel-members-overlay>
+<app-channel-members-overlay *ngIf="showMembersOverlay" [members]="activeChannel.members"
+  (close)="showMembersOverlay = false"></app-channel-members-overlay>
 
-<app-add-member-overlay
-  *ngIf="showAddMemberOverlay"
-  [channel]="activeChannel"
-  (close)="showAddMemberOverlay = false"
-></app-add-member-overlay>
+<app-add-member-overlay *ngIf="showAddMemberOverlay" [channel]="activeChannel"
+  (close)="showAddMemberOverlay = false"></app-add-member-overlay>
 
 
-<app-user-profile-overlay
-  *ngIf="showUserProfileOverlay"
-  [user]="activeUser"
-  (close)="closeUserProfileOverlay()">
+<app-user-profile-overlay *ngIf="showUserProfileOverlay" [user]="viewUser" (close)="closeUserProfileOverlay()">
 </app-user-profile-overlay>

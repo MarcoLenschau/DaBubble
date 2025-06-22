@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, firstValueFrom, take } from 'rxjs';
+import { Subscription, firstValueFrom, take, filter } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -134,7 +134,13 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    const firstUser = await firstValueFrom(this.userDataService.currentUser$);
+    const firstUser = await firstValueFrom(
+      this.userDataService.currentUser$.pipe(
+        filter(user => !!user && user.id !== 'default')
+      )
+    );
+
+    // const firstUser = await firstValueFrom(this.userDataService.currentUser$);
     this.currentUser = firstUser;
 
     this.updateSortedEmojis();
