@@ -15,6 +15,7 @@ import {
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, firstValueFrom, take } from 'rxjs';
+import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
@@ -41,6 +42,7 @@ import {
   formatUserNames,
   isOwnMessage,
   trackByMessageId,
+  areUsersEqual,
 } from '../../../core/utils/messages-utils';
 import {
   getEmojiByName,
@@ -104,6 +106,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private messagesSubscription?: Subscription;
   private threadMessagesSubscription?: Subscription;
   private currentUserSubscription?: Subscription;
+  private localEmojiStats: { [emojiName: string]: number } = {};
+  private localRecentEmojis: string[] = [];
+
 
   constructor(
     private userDataService: UserDataService,
@@ -129,19 +134,34 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    this.userDataService.currentUser$
-      .pipe(take(1))
-      .subscribe(user => {
-        this.currentUser = user;
-        console.log("Z136 this.currentUser: ", this.currentUser);
+    const firstUser = await firstValueFrom(this.userDataService.currentUser$);
+    this.currentUser = firstUser;
 
-        this.subscribeToMessages();
-        this.updateSortedEmojis();
+    this.updateSortedEmojis();
+    this.initializeLocalEmojiData();
+    this.subscribeToMessages();
+
+    this.currentUserSubscription = this.userDataService.currentUser$
+      .pipe(
+        skip(1),
+        distinctUntilChanged((a, b) => areUsersEqual(a, b))
+      )
+      .subscribe(user => {
+        console.log("🔁 **************************** currentUser changed:", user);
+        this.currentUser = user;
+        console.log("Z153 this.currentUser: ", this.currentUser);
+
       });
     firstValueFrom(this.userDataService.getUsers()).then(users => {
       this.users = users;
     });
   }
+
+  private initializeLocalEmojiData(): void {
+    this.localRecentEmojis = [...(this.currentUser.recentEmojis ?? [])];
+    this.localEmojiStats = { ...this.currentUser.emojiUsage ?? {} };
+  }
+
 
   onScroll(): void {
     const container = this.scrollContainer.nativeElement;
@@ -321,9 +341,19 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
 
     if (!wasAlreadyReacted && isReactedNow) {
-      const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
-      this.userDataService.setCurrentUser(updatedUser);
-      this.currentUser = updatedUser;
+
+      this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
+      if (this.localRecentEmojis[0] !== emojiName) {
+        this.localRecentEmojis = [
+          emojiName,
+          ...this.localRecentEmojis.filter((e) => e !== emojiName)
+        ];
+      }
+
+
+      // const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
+      // this.userDataService.setCurrentUser(updatedUser);
+      // this.currentUser = updatedUser;
     }
 
     await this.saveMessage(updatedMsg);
@@ -344,7 +374,18 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   onEmojiRowMouseLeave(index: number): void {
-    this.updateSortedEmojis();
+    if (Object.keys(this.localEmojiStats).length > 0 || this.localRecentEmojis.length > 0) {
+      const updatedUser = {
+        ...this.currentUser,
+        emojiUsage: this.localEmojiStats,
+        recentEmojis: this.localRecentEmojis
+      };
+
+      this.userDataService.setCurrentUser(updatedUser);
+      this.currentUser = updatedUser;
+      this.updateSortedEmojis();
+    }
+
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 

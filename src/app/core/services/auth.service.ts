@@ -25,6 +25,9 @@ export class AuthService {
   user: any = {};
   emailVerified = false;
 
+  private authReadySubject = new BehaviorSubject<boolean>(false);
+  authReady$ = this.authReadySubject.asObservable();
+
   constructor() {
     this.users$ = this.firebase.getColRef('users');
     this.users$.subscribe((users: any) => {
@@ -46,25 +49,29 @@ export class AuthService {
   private async restoreAuthState(): Promise<void> {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
-        if (user?.displayName) {
+        this.userSubject.next(user);
+
+        if (user.displayName) {
           await this.restoreProviderAuth(user);
         } else {
-          await this.restoreEmailAuth(user)
-        };
+          await this.restoreEmailAuth(user);
+        }
+      } else {
+        this.userSubject.next(null);
       }
+
+      this.authReadySubject.next(true);
     });
   }
 
   async restoreProviderAuth(user: any): Promise<void> {
-    this.user = user;
-    this.userSubject.next(user);
     await this.userDataService.initCurrentUser();
   }
 
   async restoreEmailAuth(user: any): Promise<void> {
     if (user.email) {
       let userData = await this.firebase.searchUsersByEmail(user.email);
-      this.userSubject.next(userData[0]);
+      this.userSubject.next(user);
     }
   }
 

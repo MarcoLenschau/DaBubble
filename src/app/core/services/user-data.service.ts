@@ -1,9 +1,10 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, OnDestroy } from '@angular/core';
 import { FirebaseService } from './firebase.service';
+import { Firestore } from '@angular/fire/firestore';
 import { User } from '../models/user.model';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { deleteDoc } from '@angular/fire/firestore';
+import { Observable, BehaviorSubject, Subscription, combineLatest, of } from 'rxjs';
+import { map, filter, switchMap, shareReplay } from 'rxjs/operators';
+import { deleteDoc, collection, query, where, onSnapshot } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { MessageCacheService } from './message-cache.service';
 
@@ -14,25 +15,60 @@ export class UserDataService {
   private readonly collectionPath = 'users';
   private currentUserSubject = new BehaviorSubject<User>(this.createGuestUser());
   public currentUser$ = this.currentUserSubject.asObservable();
-  private authSubscription?: Subscription;
 
-  constructor(private firebaseService: FirebaseService, private injector: Injector, private messageCacheService: MessageCacheService,) {
-    this.authSubscription = this.authService.user$.subscribe(async (authUser) => {
-      if (!authUser) {
-        this.currentUserSubject.next(this.createGuestUser());
-        return;
-      }
-      const firestoreUsers = await this.firebaseService.searchUsersByEmail(authUser.email);
-      if (firestoreUsers.length > 0) {
-        this.currentUserSubject.next(this.mapToUser(firestoreUsers[0]));
-      } else {
-        this.currentUserSubject.next(this.createGuestUser());
-      }
-    });
+  constructor(private firestore: Firestore, private injector: Injector) {
+    const authService = this.authService;
+    const firebaseService = this.firebaseService;
+
+    combineLatest([
+      authService.user$,
+      authService.authReady$
+    ]).pipe(
+      filter(([_, ready]) => ready),
+      switchMap(([authUser]) => {
+        if (!authUser?.email) {
+          const guest = this.createGuestUser();
+          this.setCurrentUser(guest);
+          return of(guest);
+        }
+
+        const q = query(
+          collection(this.firestore, this.collectionPath),
+          where('email', '==', authUser.email)
+        );
+
+        return new Observable<User>(subscriber => {
+          const unsubscribe = onSnapshot(q, snapshot => {
+            const user = !snapshot.empty
+              ? this.mapToUser({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() })
+              : this.createGuestUser();
+
+            this.setCurrentUser(user);
+            subscriber.next(user);
+          }, error => {
+            console.error('onSnapshot currentUser fehlgeschlagen:', error);
+            const guest = this.createGuestUser();
+            this.setCurrentUser(guest);
+            subscriber.next(guest);
+          });
+
+          return () => unsubscribe();
+        });
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    ).subscribe(); // wichtig: aktiv halten
   }
 
   private get authService(): AuthService {
     return this.injector.get(AuthService);
+  }
+
+  private get firebaseService(): FirebaseService {
+    return this.injector.get(FirebaseService);
+  }
+
+  private get messageCacheService(): MessageCacheService {
+    return this.injector.get(MessageCacheService);
   }
 
   getCurrentUser(): User {
@@ -208,9 +244,14 @@ export class UserDataService {
       displayName: newName
     }));
   }
-
-  ngOnDestroy() {
-    this.authSubscription?.unsubscribe();
-  }
-
 }
+
+
+
+
+
+
+
+
+
+

@@ -160,3 +160,23 @@ function areReactionsEqual(a: Reaction[], b: Reaction[]): boolean {
   }
   return true;
 }
+
+export function areUsersEqual(a: User, b: User): boolean {
+  return a?.id === b?.id &&
+    a?.displayName === b?.displayName &&
+    a?.email === b?.email &&
+    a?.photoURL === b?.photoURL &&
+    arraysEqual(a?.recentEmojis ?? [], b?.recentEmojis ?? []) &&
+    objectsEqual(a?.emojiUsage ?? {}, b?.emojiUsage ?? {});
+}
+
+function arraysEqual(arr1: string[], arr2: string[]): boolean {
+  return arr1.length === arr2.length && arr1.every((v, i) => v === arr2[i]);
+}
+
+function objectsEqual(obj1: { [key: string]: number }, obj2: { [key: string]: number }): boolean {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  return keys1.every(key => obj1[key] === obj2[key]);
+}
