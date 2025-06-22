@@ -107,9 +107,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         filter(user => !!user && user.id !== 'default')
       )
     );
-
     this.currentUser = firstUser;
-
     this.updateSortedEmojis();
     this.initializeLocalEmojiData();
     this.subscribeToMessages();
