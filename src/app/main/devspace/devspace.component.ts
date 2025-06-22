@@ -30,8 +30,8 @@ export class DevspaceComponent {
   isMessageHovered: boolean = false;
 
   hoveredChannel: string | null = null;
-  activeChannel: any = null;
-  activeUser: any = null;
+  activeChannel: Channel | null = null;
+  activeUser: User | null = null;
   showAddChannel = false;
 
   isWorkspaceOpen: boolean = true;
@@ -47,10 +47,10 @@ export class DevspaceComponent {
     private firebase: FirebaseService,
     private channelDataService: ChannelDataService, public auth: AuthService, private userDataService: UserDataService,) {
     this.user$ = this.firebase.getColRef("users");
+    this.users = [];
     this.user$.forEach((users) => {
-      if (users.length > 0) {
-        this.users = users;
-      }
+    this.users = (users || []).filter(u => !!u && !!u.email);
+    console.log('Gefilterte Users:', this.users);
     });
     this.channels$ = this.channelDataService.getChannels();
     this.channels$.subscribe(channels => {
@@ -104,6 +104,7 @@ export class DevspaceComponent {
   }
 
   setActiveUser(user: any) {
+    if (!user || !user.email) return;
     this.userSelected.emit(user);
     this.activeUser = user;
     console.log('src/app/main/devspace/devspace.component.ts this.auth.user.email: ', this.auth.user.email);
@@ -117,7 +118,7 @@ export class DevspaceComponent {
   selectChannel(channel: any) {
     this.activeChannel = channel;
     this.activeUser = null;
-    this.channelSelected.emit(channel.id);
+    this.channelSelected.emit(channel);
     emitChannelContext(this.contextSelected, channel.id);
     this.closeThread();
   }
