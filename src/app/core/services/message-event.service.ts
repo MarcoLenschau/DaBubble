@@ -26,4 +26,9 @@ export class MessageEventService {
   get threadWindowScroll$(): Observable<boolean> {
     return this.threadWindowScrollSubject.asObservable();
   }
+
+  disableAutoScroll() {
+    this.notifyScrollIntent('message', false);
+    this.notifyScrollIntent('thread', false);
+  }
 }

@@ -1,23 +1,11 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  OnChanges,
-  OnInit,
-  ViewChildren,
-  ViewChild,
-  ElementRef,
-  QueryList,
-  OnDestroy,
-  SimpleChanges,
+  Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChildren, ViewChild, ElementRef, QueryList, OnDestroy, SimpleChanges,
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, firstValueFrom, take, filter } from 'rxjs';
+import { Subscription, firstValueFrom, filter } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
@@ -29,29 +17,10 @@ import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
+import { formatTime, formatDate, isNewDay, formatRelativeTimeSimple, formatRelativeDayLowercaseNoTime } from '../../../core/utils/date-utils';
+import { getUserById, getUserNames, formatUserNames, isOwnMessage, trackByMessageId, areUsersEqual, updateRepliesCountIfNeeded, setTooltipHoveredState } from '../../../core/utils/messages-utils';
 import {
-  formatTime,
-  formatDate,
-  isNewDay,
-  formatRelativeTimeSimple,
-  formatRelativeDayLowercaseNoTime
-} from '../../../core/utils/date-utils';
-import {
-  getUserById,
-  getUserNames,
-  formatUserNames,
-  isOwnMessage,
-  trackByMessageId,
-  areUsersEqual,
-} from '../../../core/utils/messages-utils';
-import {
-  getEmojiByName,
-  getEmojiByUnicode,
-  addEmojiToTextarea,
-  addEmojiToMessage,
-  getSortedEmojisForUser,
-  updateEmojiDataForUser,
-  applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton,
+  getEmojiByName, getEmojiByUnicode, addEmojiToTextarea, addEmojiToMessage, getSortedEmojisForUser, updateEmojiDataForUser, applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton,
 } from '../../../core/utils/emojis-utils';
 import { scrollToBottom } from '../../../core/utils/scroll-utils';
 
@@ -109,7 +78,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private localEmojiStats: { [emojiName: string]: number } = {};
   private localRecentEmojis: string[] = [];
 
-
   constructor(
     private userDataService: UserDataService,
     private messageDataService: MessageDataService,
@@ -140,7 +108,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       )
     );
 
-    // const firstUser = await firstValueFrom(this.userDataService.currentUser$);
     this.currentUser = firstUser;
 
     this.updateSortedEmojis();
@@ -168,7 +135,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.localEmojiStats = { ...this.currentUser.emojiUsage ?? {} };
   }
 
-
   onScroll(): void {
     const container = this.scrollContainer.nativeElement;
   }
@@ -185,15 +151,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (
-      this.isMessage &&
-      changes['messageContext'] &&
-      !changes['messageContext'].firstChange) {
+    if (this.isMessage && changes['messageContext'] && !changes['messageContext'].firstChange) {
       this.subscribeToMessages();
     }
 
     if (this.isThread && changes['starterMessage'] && this.starterMessage) {
-      // this.messageEventService.notifyScrollIntent('thread', true);
       this.setReplyToMessage(this.starterMessage);
     }
   }
@@ -247,28 +209,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private subscribeToThreadMessages(msg: Message): void {
     let isFirst = true;
     this.threadMessagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(loadedMessages => {
-
       this.filteredMessages = loadedMessages;
 
       if (!isFirst) {
-        this.updateRepliesCountIfNeeded(msg);
+        updateRepliesCountIfNeeded(msg, this.filteredMessages, this.messageDataService);
       }
       isFirst = false;
 
       this.updateStarterMessageFromLoaded(msg);
-
       this.scheduleAutoScrollAndMarkReady();
     });
-  }
-
-  private updateRepliesCountIfNeeded(msg: Message): void {
-    const newCount = this.filteredMessages.length - 1;
-    if (newCount !== msg.replies) {
-      msg.replies = newCount;
-      this.messageDataService.updateMessageFields(msg.id, { replies: newCount })
-        .catch(error =>
-          console.error('Error updating replies count:', error));
-    }
   }
 
   private updateStarterMessageFromLoaded(msg: Message): void {
@@ -323,15 +273,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  setTooltipHoveredState(index: number | null, userIds: string[] | null): void {
-    this.tooltipHoveredIndex = index;
-    if (index !== null && userIds !== null) {
-      const result = formatUserNames(this.users, userIds, this.currentUser);
-      this.formattedUserNames = result.text;
-      this.tooltipText = result.verb;
-    }
-  }
-
   toggleEmojiMenu(index: number): void {
     this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
   }
@@ -341,7 +282,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
-    this.disableAutoScroll();
+    this.messageEventService.disableAutoScroll();
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
@@ -355,11 +296,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
           ...this.localRecentEmojis.filter((e) => e !== emojiName)
         ];
       }
-
-
-      // const updatedUser = updateEmojiDataForUser(this.currentUser, emojiName);
-      // this.userDataService.setCurrentUser(updatedUser);
-      // this.currentUser = updatedUser;
     }
 
     await this.saveMessage(updatedMsg);
@@ -367,11 +303,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
 
       if (reaction) {
-        this.setTooltipHoveredState(reactionIndex, reaction.userIds);
+        this.setTooltipHoveredState(reactionIndex, reaction.userIds, this);
       } else {
-        this.setTooltipHoveredState(null, null);
+        this.setTooltipHoveredState(null, null, this);
       }
-
     }
   }
 
@@ -407,30 +342,15 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   getVisibleReactions(message: Message): Reaction[] {
-    return getVisibleReactions(
-      message,
-      !!this.showAllReactions[message.id],
-      this.viewMode,
-      this.isThread
-    );
+    return getVisibleReactions(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
   getHiddenReactionCount(message: Message): number {
-    return getHiddenReactionCount(
-      message,
-      !!this.showAllReactions[message.id],
-      this.viewMode,
-      this.isThread
-    );
+    return getHiddenReactionCount(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
   shouldShowCollapseButton(message: Message): boolean {
-    return shouldShowCollapseButton(
-      message,
-      this.showAllReactions,
-      this.viewMode,
-      this.isThread
-    );
+    return shouldShowCollapseButton(message, this.showAllReactions, this.viewMode, this.isThread);
   }
 
   toggleShowAll(messageId: string): void {
@@ -463,15 +383,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const updatedMessage = { ...msg, text: trimmed };
     this.messages[index] = { ...this.messages[index], text: trimmed };
     this.cancelEditing();
-    this.disableAutoScroll();
+    this.messageEventService.disableAutoScroll();
     this.messageDataService.updateMessage(updatedMessage).catch(err => {
       console.error('Error saving edited message:', err);
     });
-  }
-
-  disableAutoScroll() {
-    this.messageEventService.notifyScrollIntent('message', false);
-    this.messageEventService.notifyScrollIntent('thread', false);
   }
 
   formatTime = formatTime;
@@ -488,11 +403,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.textareaContent = addEmojiToTextarea(this.textareaContent, unicodeEmoji);
     this.updateSortedEmojis();
   };
-
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
   }
-
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
   trackByMessageId = trackByMessageId;
+  setTooltipHoveredState = setTooltipHoveredState;
 }

@@ -3,6 +3,7 @@ import { Message } from '../models/message.model';
 import { User } from '../models/user.model';
 import { Reaction } from '../interfaces/reaction.interface';
 import { MessageContext } from '../interfaces/message-context.interface';
+import { MessageDataService } from '../services/message-data.service';
 
 export function getUserById(users: User[], userId: string): User | undefined {
   return users.find((user) => user.id === userId);
@@ -179,4 +180,37 @@ function objectsEqual(obj1: { [key: string]: number }, obj2: { [key: string]: nu
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) return false;
   return keys1.every(key => obj1[key] === obj2[key]);
+}
+
+export function updateRepliesCountIfNeeded(
+  msg: Message,
+  filteredMessages: Message[],
+  messageDataService: MessageDataService
+): void {
+  const newCount = filteredMessages.length - 1;
+  if (newCount !== msg.replies) {
+    msg.replies = newCount;
+    messageDataService
+      .updateMessageFields(msg.id, { replies: newCount })
+      .catch(error => console.error('Error updating replies count:', error));
+  }
+}
+
+export function setTooltipHoveredState(
+  index: number | null,
+  userIds: string[] | null,
+  ctx: {
+    users: any[];
+    currentUser: any;
+    tooltipHoveredIndex: number | null;
+    formattedUserNames: string;
+    tooltipText: string;
+  }
+): void {
+  ctx.tooltipHoveredIndex = index;
+  if (index !== null && userIds !== null) {
+    const result = formatUserNames(ctx.users, userIds, ctx.currentUser);
+    ctx.formattedUserNames = result.text;
+    ctx.tooltipText = result.verb;
+  }
 }
