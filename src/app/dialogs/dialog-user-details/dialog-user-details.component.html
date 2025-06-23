@@ -19,8 +19,8 @@
       <img src="./assets/img/input/email.svg" alt="email" />
       <span>E-Mail Adresse</span>
     </div>
-    <a *ngIf="!user.emailVerified && !user.provider" (click)="sendMail();" class="send-button" [class.grey-send-button]="sendMailStatus">Bestätigen</a>
-    <img *ngIf="user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
+    <a *ngIf="!user.emailVerified || !user.provider " (click)="sendMail();" class="send-button" [class.grey-send-button]="sendMailStatus">Bestätigen</a>
+    <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
   <span *ngIf="!user.emailVerified && !user.provider" class="check-email">Bitte bestätigen sie ihre<br>Email Addresse !</span>
