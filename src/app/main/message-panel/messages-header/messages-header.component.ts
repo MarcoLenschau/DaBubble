@@ -2,7 +2,6 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../../core/models/message.model';
-import { FirebaseService } from '../../../core/services/firebase.service';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { User } from '../../../core/models/user.model';
 import { UserDataService } from '../../../core/services/user-data.service';
@@ -10,7 +9,6 @@ import { ChannelDataService } from '../../../core/services/channel-data.service'
 import { Channel } from '../../../core/models/channel.model';
 import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
 import {
-  emitContextSelected,
   emitDirectUserContext,
   emitChannelContext,
   emitMessageContextFromMessage,
@@ -18,7 +16,8 @@ import {
 import { Subscription, filter } from 'rxjs';
 import { ChannelMembersOverlayComponent } from './channel-members-overlay/channel-members-overlay.component';
 import { AddMemberOverlayComponent } from './add-member-overlay/add-member-overlay.component';
-import { UserProfileOverlayComponent } from './user-profile-overlay/user-profile-overlay.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
 
 @Component({
   selector: 'app-messages-header',
@@ -30,8 +29,7 @@ import { UserProfileOverlayComponent } from './user-profile-overlay/user-profile
     FormsModule,
     ChannelDetailsOverlayComponent,
     ChannelMembersOverlayComponent,
-    AddMemberOverlayComponent,
-    UserProfileOverlayComponent
+    AddMemberOverlayComponent
   ],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
@@ -55,7 +53,8 @@ export class MessagesHeaderComponent {
 
   constructor(
     private userDataService: UserDataService,
-    private channelDataService: ChannelDataService
+    private channelDataService: ChannelDataService,
+    private dialog: MatDialog
   ) { }
 
   textInput = '';
@@ -272,7 +271,9 @@ export class MessagesHeaderComponent {
   }
 
   openUserProfileOverlay() {
-    this.showUserProfileOverlay = true;
+    const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
+    dialogDetails.componentInstance.directMessage = true;
+    dialogDetails.componentInstance.user = this.activeUser;
   }
 
   closeUserProfileOverlay() {
