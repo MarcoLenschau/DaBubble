@@ -1,7 +1,7 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
-import { InputComponent } from '../../shared/input/input.component';
-import { RouterService } from '../../core/services/router.service';
-import { AuthService } from '../../core/services/auth.service';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { InputComponent } from '../../../shared/input/input.component';
+import { RouterService } from '../../../core/services/router.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 

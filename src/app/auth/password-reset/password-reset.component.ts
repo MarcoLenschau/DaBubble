@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
-import { InputComponent } from '../shared/input/input.component';
-import { ButtonComponent } from '../shared/button/button.component';
-import { AuthService } from '../core/services/auth.service';
+import { InputComponent } from '../../shared/input/input.component';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
