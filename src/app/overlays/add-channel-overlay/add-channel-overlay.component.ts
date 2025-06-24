@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InputComponent } from '../../../../app/shared/input/input.component';
-import { ChannelDataService } from '../../../core/services/channel-data.service';
-import { UserDataService } from '../../../core/services/user-data.service';
-import { Channel } from '../../../core/models/channel.model';
+import { InputComponent } from '../../shared/input/input.component';
+import { ChannelDataService } from '../../core/services/channel-data.service';
+import { UserDataService } from '../../core/services/user-data.service';
+import { Channel } from '../../core/models/channel.model';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
