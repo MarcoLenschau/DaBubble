@@ -25,6 +25,11 @@ export function messageBelongsToContext(msg: Message, cacheKey: string): boolean
     if (cacheKey.startsWith('direct:')) {
         const ids = cacheKey.substring('direct:'.length).split('-');
         if (!msg.isDirectMessage) return false;
+
+        if (ids[0] === ids[1]) {
+            return msg.userId === ids[0] && msg.receiverId === ids[0];
+        }
+
         return (
             (msg.userId === ids[0] && msg.receiverId === ids[1]) ||
             (msg.userId === ids[1] && msg.receiverId === ids[0])

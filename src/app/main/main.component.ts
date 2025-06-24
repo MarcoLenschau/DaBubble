@@ -12,6 +12,7 @@ import { MessageContext } from '../core/interfaces/message-context.interface';
 import { ViewMode } from '../core/enums/view-mode.enum';
 import { User } from '../core/models/user.model';
 import { Channel } from '../core/models/channel.model';
+import { areUsersEqual } from '../core/utils/messages-utils';
 
 @Component({
   selector: 'app-main',
@@ -110,7 +111,6 @@ export class MainComponent implements OnInit {
 
   onThreadClose() {
     this.showThread = false;
-    console.log("Close Output has reached MainComponent");
     if (this.viewMode === 'mobile') {
       this.showMessage = true;
     }
@@ -137,9 +137,9 @@ export class MainComponent implements OnInit {
     }
   }
 
-  onChannelSelected(channel: string) {
+  onChannelSelected(channel: Channel) {
     this.channels.forEach((channelFromBackend: any) => {
-      if (channelFromBackend.id === channel) {
+      if (channelFromBackend.id === channel.id) {
         this.activeChannel = channelFromBackend;
         this.activeUser = null;
       }
@@ -147,7 +147,16 @@ export class MainComponent implements OnInit {
   }
 
   onUserSelected(user: any) {
-    this.activeUser = user;
+    if (this.activeUser?.id === user?.id) {
+      return;
+    }
+    this.activeUser = { ...user };
+    this.activeChannel = null;
+
+    if (this.activeUser && areUsersEqual(this.activeUser, user)) {
+      return;
+    }
+    this.activeUser = { ...user };
     this.activeChannel = null;
   }
 

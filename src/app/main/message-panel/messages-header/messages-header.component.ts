@@ -39,8 +39,8 @@ import { UserProfileOverlayComponent } from './user-profile-overlay/user-profile
 export class MessagesHeaderComponent {
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() starterMessage?: Message;
-  @Input() activeChannel: any = {};
-  @Input() activeUser: any = null;
+  @Input() activeChannel: Channel | null = null;
+  @Input() activeUser: User | null = null;
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() searchResultSelected = new EventEmitter<Message>();
@@ -104,13 +104,14 @@ export class MessagesHeaderComponent {
     );
   }
 
-  get viewUser(): User {
-    if (!this.currentUser) {
-      return this.activeUser;
+  get viewUser(): User | null {
+    if (this.activeUser) {
+      if (!this.currentUser) return this.activeUser;
+      return this.activeUser.id === this.currentUser.id
+        ? this.currentUser
+        : this.activeUser;
     }
-    return this.activeUser.id === this.currentUser.id
-      ? this.currentUser
-      : this.activeUser;
+    return null;
   }
 
 
@@ -251,8 +252,10 @@ export class MessagesHeaderComponent {
   }
 
   loadMember() {
-    const members = JSON.parse(this.activeChannel.members);
-    return members.photoURL || './assets/img/profilepic/frederik.png';
+    if (this.activeChannel) {
+      const members = JSON.parse(this.activeChannel.members);
+      return members.photoURL || './assets/img/profilepic/frederik.png';
+    }
   }
 
   openChannelOverlay() {

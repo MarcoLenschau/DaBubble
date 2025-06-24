@@ -6,7 +6,7 @@
     <div class="message-header-content">
       <div class="message-header-content-text" (mouseenter)="arrowHover = true" (mouseleave)="arrowHover = false"
         (click)="activeChannel ? openChannelOverlay() : null">
-        <ng-container *ngIf="activeUser; else channelHeader">
+        <ng-container *ngIf="activeUser && viewUser; else channelHeader">
           <div class="header-user-info" (click)="openUserProfileOverlay()"
             style="cursor:pointer; display: flex; align-items: center;">
             <img class="header-user-avatar" [src]="viewUser.photoURL" alt="Profilbild"
@@ -104,7 +104,7 @@
 <app-channel-details-overlay *ngIf="showChannelOverlay" [channel]="activeChannel"
   (close)="closeChannelOverlay()"></app-channel-details-overlay>
 
-<app-channel-members-overlay *ngIf="showMembersOverlay" [members]="activeChannel.members"
+<app-channel-members-overlay *ngIf="showMembersOverlay && activeChannel" [members]="activeChannel.members"
   (close)="showMembersOverlay = false"></app-channel-members-overlay>
 
 <app-add-member-overlay *ngIf="showAddMemberOverlay" [channel]="activeChannel"

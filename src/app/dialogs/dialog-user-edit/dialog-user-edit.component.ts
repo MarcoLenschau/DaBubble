@@ -25,8 +25,6 @@ export class DialogUserEditComponent {
   }
 
   async userSave() {
-    console.log('user: ', this.user);
-
     const trimmedName = this.user.displayName?.trim();
     if (!trimmedName) return;
 
@@ -36,16 +34,10 @@ export class DialogUserEditComponent {
           filter(user => !!user && user.id !== 'default')
         )
       );
-      // await this.userDataService.updateUserName(this.user.id, trimmedName);
       if (trimmedName !== currentUser.displayName) {
         await this.userDataService.updateUserName(currentUser.id, trimmedName);
 
-        const updatedUser = await firstValueFrom(this.userDataService.currentUser$); // löschen
-        console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts: updatedUser: ', updatedUser);
       }
-      console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts:user: ', this.user);
-      console.log('src/app/dialogs/dialog-user-edit/dialog-user-edit.component.ts: Former currentUser: ', currentUser);
-
       this.dialogClose();
     } catch (err) {
       console.error('Error saving new username:', err);

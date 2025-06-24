@@ -118,9 +118,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
         distinctUntilChanged((a, b) => areUsersEqual(a, b))
       )
       .subscribe(user => {
-        console.log("🔁 **************************** currentUser changed:", user);
         this.currentUser = user;
-        console.log("Z153 this.currentUser: ", this.currentUser);
 
       });
     firstValueFrom(this.userDataService.getUsers()).then(users => {
@@ -148,7 +146,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.currentUserSubscription?.unsubscribe();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (this.isMessage && changes['messageContext'] && !changes['messageContext'].firstChange) {
       this.subscribeToMessages();
     }
@@ -160,14 +158,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
-
     this.messagesSubscription?.unsubscribe();
     this.messagesReady = false;
 
     const messageSource$ = this.messageDataService.getMessagesForContext(
       this.messageContext, this.currentUser.id
     );
-    console.log("Z184 this.currentUser: ", this.currentUser);
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       if (!Array.isArray(loadedMessages)) {
         this.messages = loadedMessages;
@@ -188,7 +184,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
     this.messagesReady = false;
-    console.log("Z205 this.currentUser: ", this.currentUser);
     await this.ensureThreadId(msg);
 
     this.threadMessagesSubscription?.unsubscribe();
@@ -247,7 +242,6 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   openThread(msg: Message) {
-    console.log("Z276 this.currentUser: ", this.currentUser);
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
   }
 

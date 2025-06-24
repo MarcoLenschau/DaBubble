@@ -58,36 +58,43 @@ export class MessageCacheService {
   async loadMessagesForContext(context: MessageContext, currentUserId: string): Promise<void> {
     const cacheKey = generateCacheKey(context, currentUserId);
 
-    if (this.messageCache.has(cacheKey)) {
-      this.messageSubject.next([...this.messageCache.get(cacheKey)!]);
-      return;
+    const cached = this.messageCache.get(cacheKey) ?? [];
+    this.messageSubject.next([...cached]);
+
+    if (!this.activeListeners.has(cacheKey)) {
+
+      this.registerLiveListener(cacheKey, () =>
+        this.createContextListener(context, currentUserId, cacheKey)
+      );
     }
 
-    const allMessages = this.messageCache.get('all') ?? [];
-    const filtered = filterMessagesByContext(allMessages, context, currentUserId);
-    this.messageCache.set(cacheKey, filtered);
-    this.messageSubject.next([...filtered]);
-
-    await this.removeLiveListener(cacheKey);
-    this.registerLiveListener(cacheKey, () => this.createContextListener(context, currentUserId, cacheKey));
+    if (!this.messageCache.has(cacheKey)) {
+      const allMessages = this.messageCache.get('all') ?? [];
+      const filtered = filterMessagesByContext(allMessages, context, currentUserId);
+      this.messageCache.set(cacheKey, filtered);
+      this.messageSubject.next([...filtered]);
+    }
   }
 
   async loadMessagesForThread(threadId: string): Promise<void> {
     const cacheKey = `thread:${threadId}`;
 
-    if (this.messageCache.has(cacheKey)) {
-      this.threadMessageSubject.next([...this.messageCache.get(cacheKey)!]);
-      return;
-    }
-
-    const allMessages = this.messageCache.get('all') ?? [];
-    const filtered = allMessages.filter(msg => msg.threadId === threadId);
-    this.messageCache.set(cacheKey, filtered);
-    this.threadMessageSubject.next([...filtered]);
+    const cached = this.messageCache.get(cacheKey) ?? [];
+    this.threadMessageSubject.next([...cached]);
 
     await this.removeLiveListener(cacheKey);
-    this.registerLiveListener(cacheKey, () => this.createThreadListener(threadId, cacheKey));
+    this.registerLiveListener(cacheKey, () =>
+      this.createThreadListener(threadId, cacheKey)
+    );
+
+    if (!this.messageCache.has(cacheKey)) {
+      const allMessages = this.messageCache.get('all') ?? [];
+      const filtered = allMessages.filter(msg => msg.threadId === threadId);
+      this.messageCache.set(cacheKey, filtered);
+      this.threadMessageSubject.next([...filtered]);
+    }
   }
+
 
   private registerLiveListener(
     cacheKey: string,
@@ -148,6 +155,7 @@ export class MessageCacheService {
 
     snapshot.docChanges().forEach(change => {
       const msg = mapDocToMessage(change.doc as any);
+
       const idxGlobal = global.findIndex(m => m.id === msg.id);
       if (change.type === 'added') {
         if (idxGlobal === -1) {
@@ -311,5 +319,4 @@ export class MessageCacheService {
       this.threadMessageSubject.next([...currentThreadMessages]);
     }
   }
-
 }

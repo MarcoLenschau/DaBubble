@@ -8,7 +8,8 @@
   <ng-container *ngIf="(isMessage)">
     <div class="message-padding-top"></div>
 
-    <ng-container *ngIf="activeChannel && activeChannel.createdById === currentUser?.id; else checkUser">
+    <ng-container
+      *ngIf="messageContext?.type === 'channel' && activeChannel && activeChannel.createdById === currentUser?.id; else checkUser">
       <div class="intro">
         <span class="intro-name"># {{ activeChannel.name }}</span>
 
@@ -21,7 +22,8 @@
     </ng-container>
 
     <ng-template #checkUser>
-      <ng-container *ngIf="activeUser && activeUser.id !== currentUser?.id; else selfUser">
+      <ng-container
+        *ngIf="messageContext?.type === 'direct' && messageContext?.receiverId !== currentUser?.id && activeUser && activeUser.id !== currentUser?.id; else selfUser">
         <div class="intro">
           <div class="intro-img-box">
             <img class="user-avatar" [src]="activeUser.photoURL" alt="Profilbild">
@@ -36,7 +38,8 @@
       </ng-container>
 
       <ng-template #selfUser>
-        <ng-container *ngIf="activeUser && activeUser?.id === currentUser?.id">
+        <ng-container
+          *ngIf="messageContext?.type === 'direct' && messageContext?.receiverId === currentUser?.id && activeUser && activeUser?.id === currentUser?.id">
           <div class="intro">
             <div class="intro-img-box">
               <img class="user-avatar" [src]="activeUser.photoURL" alt="Profilbild">

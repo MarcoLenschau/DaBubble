@@ -18,7 +18,7 @@ import { emitChannelContext, emitDirectUserContext } from '../../core/utils/mess
   styleUrl: './devspace.component.scss'
 })
 export class DevspaceComponent {
-  @Output() channelSelected = new EventEmitter<string>();
+  @Output() channelSelected = new EventEmitter<Channel>();
   @Output() userSelected = new EventEmitter<User>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() closeThreadWindow = new EventEmitter<void>();
@@ -49,8 +49,7 @@ export class DevspaceComponent {
     this.user$ = this.firebase.getColRef("users");
     this.users = [];
     this.user$.forEach((users) => {
-    this.users = (users || []).filter(u => !!u && !!u.email);
-    console.log('Gefilterte Users:', this.users);
+      this.users = (users || []).filter(u => !!u && !!u.email);
     });
     this.channels$ = this.channelDataService.getChannels();
     this.channels$.subscribe(channels => {
@@ -105,13 +104,13 @@ export class DevspaceComponent {
 
   setActiveUser(user: any) {
     if (!user || !user.email) return;
-    this.userSelected.emit(user);
-    this.activeUser = user;
-    console.log('src/app/main/devspace/devspace.component.ts this.auth.user.email: ', this.auth.user.email);
-    console.log('src/app/main/devspace/devspace.component.ts this.auth.user: ', this.auth.user);
-
+    // this.userSelected.emit(user);
+    // this.activeUser = { ...user };
+    // this.activeChannel = null;
+    this.activeUser = user.id === this.currentUser?.id ? this.currentUser : { ...user };
+    this.userSelected.emit(this.activeUser ?? undefined);
     this.activeChannel = null;
-    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, this.activeUser?.id ?? '');
     this.closeThread();
   }
 

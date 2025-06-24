@@ -43,7 +43,10 @@ export class UserDataService {
               ? this.mapToUser({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() })
               : this.createGuestUser();
 
-            this.setCurrentUser(user);
+            // this.setCurrentUser(user);
+            this.setCurrentUser(new User({ ...user }));
+
+
             subscriber.next(user);
           }, error => {
             console.error('onSnapshot currentUser fehlgeschlagen:', error);
@@ -75,13 +78,26 @@ export class UserDataService {
     return this.currentUserSubject.value;
   }
 
+  // public setCurrentUser(user: User): void {
+  //   const current = this.currentUserSubject.value;
+  //   if (this.isUserEqual(current, user)) {
+  //     return;
+  //   }
+  //   this.currentUserSubject.next(user);
+  // }
+
   public setCurrentUser(user: User): void {
+    if (!user) return;
+
+    const userCopy = new User({ ...user });
+
     const current = this.currentUserSubject.value;
-    if (this.isUserEqual(current, user)) {
+    if (this.isUserEqual(current, userCopy)) {
       return;
     }
-    this.currentUserSubject.next(user);
+    this.currentUserSubject.next(userCopy);
   }
+
 
   // public async initCurrentUser(): Promise<void> {
   //   const userDoc = await this.getCurrentUserDoc();
@@ -245,13 +261,4 @@ export class UserDataService {
     }));
   }
 }
-
-
-
-
-
-
-
-
-
 
