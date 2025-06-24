@@ -5,7 +5,6 @@ import { Observable, firstValueFrom, BehaviorSubject } from 'rxjs';
 import { FirebaseService } from './firebase.service';
 import { RouterService } from './router.service';
 import { UserDataService } from './user-data.service';
-import { doc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -182,19 +181,6 @@ export class AuthService {
     );
     if (!firestoreUser) {
       throw new Error('User wurde in Firestore nicht gefunden.');
-    }
-  }
-
-  validateEmail(email: string): Boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  validateError(element: any, action = "add"): void {
-    if (action === "add") {
-      element.inputRef.nativeElement.classList.add('error');
-    } else {
-      element.inputRef.nativeElement.classList.remove('error');
     }
   }
 

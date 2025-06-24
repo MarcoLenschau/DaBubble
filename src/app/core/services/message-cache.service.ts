@@ -14,10 +14,10 @@ import {
   DocumentData,
   Unsubscribe
 } from '@angular/fire/firestore';
-import { detectRelevantChanges, } from '../utils/messages-utils';
+import { detectRelevantChanges, } from '../utils/messages.utils';
 import {
   filterMessagesByContext, messageBelongsToContext, mapDocToMessage, generateCacheKey, directQueryConditions, messageBelongsToThread,
-} from '../utils/message-cache-utils';
+} from '../utils/message-cache.utils';
 
 @Injectable({
   providedIn: 'root'

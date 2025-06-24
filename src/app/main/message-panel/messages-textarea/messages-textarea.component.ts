@@ -19,7 +19,7 @@ import { Channel } from '../../../core/models/channel.model';
 import { User } from '../../../core/models/user.model';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
-import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis-utils';
+import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis.utils';
 import { FirebaseService } from '../../../core/services/firebase.service';
 
 @Component({

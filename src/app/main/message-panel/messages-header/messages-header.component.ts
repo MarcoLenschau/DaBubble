@@ -7,26 +7,17 @@ import { User } from '../../../core/models/user.model';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { ChannelDataService } from '../../../core/services/channel-data.service';
 import { Channel } from '../../../core/models/channel.model';
-import { emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages-utils';
+import { emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages.utils';
 import { Subscription, filter } from 'rxjs';
 import { ChannelMembersOverlayComponent } from '../../../overlays/channel-members-overlay/channel-members-overlay.component';
 import { AddMemberOverlayComponent } from '../../../overlays/add-member-overlay/add-member-overlay.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
-import { ChannelDetailsOverlayComponent } from './channel-details-overlay/channel-details-overlay.component';
 
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [
-    NgIf,
-    CommonModule,
-    NgFor,
-    FormsModule,
-    ChannelDetailsOverlayComponent,
-    ChannelMembersOverlayComponent,
-    AddMemberOverlayComponent
-  ],
+  imports: [ NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent ],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })

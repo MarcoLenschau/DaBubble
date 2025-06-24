@@ -12,7 +12,7 @@ import { MessageContext } from '../core/interfaces/message-context.interface';
 import { ViewMode } from '../core/enums/view-mode.enum';
 import { User } from '../core/models/user.model';
 import { Channel } from '../core/models/channel.model';
-import { areUsersEqual } from '../core/utils/messages-utils';
+import { areUsersEqual } from '../core/utils/messages.utils';
 
 @Component({
   selector: 'app-main',

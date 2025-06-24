@@ -3,6 +3,7 @@ import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { validateEmail, validateError } from '../../core/utils/message-validate.utils';
 
 @Component({
   selector: 'app-password-reset',
@@ -39,8 +40,8 @@ export class PasswordResetComponent {
   setValue(eventValue: string){
     this.email = eventValue;
   }
-
+  
   validate(event: any) {
-    this.auth.validateEmail(event) ? this.auth.validateError(this.emailRef, "remove") : this.auth.validateError(this.emailRef);
+    validateEmail(event) ? validateError(this.emailRef, "remove") : validateError(this.emailRef);
   }
 }

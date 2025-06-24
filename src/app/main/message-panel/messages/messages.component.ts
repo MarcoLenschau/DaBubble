@@ -17,11 +17,11 @@ import { Channel } from '../../../core/models/channel.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
-import { formatTime, formatDate, isNewDay, formatRelativeTimeSimple, formatRelativeDayLowercaseNoTime } from '../../../core/utils/date-utils';
-import { getUserById, getUserNames, formatUserNames, isOwnMessage, trackByMessageId, areUsersEqual, updateRepliesCountIfNeeded, setTooltipHoveredState } from '../../../core/utils/messages-utils';
+import { formatTime, formatDate, isNewDay, formatRelativeTimeSimple, formatRelativeDayLowercaseNoTime } from '../../../core/utils/date.utils';
+import { getUserById, getUserNames, formatUserNames, isOwnMessage, trackByMessageId, areUsersEqual, updateRepliesCountIfNeeded, setTooltipHoveredState } from '../../../core/utils/messages.utils';
 import {
   getEmojiByName, getEmojiByUnicode, addEmojiToTextarea, addEmojiToMessage, getSortedEmojisForUser, updateEmojiDataForUser, applyTooltipOverflowAdjustment, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton,
-} from '../../../core/utils/emojis-utils';
+} from '../../../core/utils/emojis.utils';
 import { scrollToBottom } from '../../../core/utils/scroll-utils';
 
 @Component({

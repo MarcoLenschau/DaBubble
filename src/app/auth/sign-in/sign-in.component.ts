@@ -5,7 +5,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { AuthService } from '../../core/services/auth.service';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { UserDataService } from '../../core/services/user-data.service';
-import { deleteLocalStorage } from '../../core/utils/auth-utils';
+import { deleteLocalStorage } from '../../core/utils/auth.utils';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Input } from '@angular/core';
-import { ChannelDataService } from '../../../../core/services/channel-data.service';
+import { ChannelDataService } from '../../core/services/channel-data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
