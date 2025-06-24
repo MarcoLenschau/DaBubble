@@ -62,3 +62,17 @@
     color: gray !important;
     cursor: no-drop;
 }
+
+.profile-message-btn {
+  margin-top: 16px;
+  background: $purple-1;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}

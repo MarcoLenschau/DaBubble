@@ -23,5 +23,8 @@
     <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
-  <span *ngIf="!user.emailVerified && !user.provider" class="check-email">Bitte bestätigen sie ihre<br>Email Addresse !</span>
+  <button *ngIf="directMessage" class="profile-message-btn">
+    <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon"/>
+    Nachricht
+  </button>
 </div>
