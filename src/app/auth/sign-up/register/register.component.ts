@@ -4,6 +4,7 @@ import { RouterService } from '../../../core/services/router.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { validateEmail, validateError } from '../../../core/utils/message-validate.utils';
 
 @Component({
   selector: 'app-register',
@@ -47,15 +48,15 @@ export class RegisterComponent {
 
   validate(event: any, type: string) {
     if (type === 'name') {
-      event.length === 0 ? this.auth.validateError(this.name) : this.auth.validateError(this.name, "remove");
+      event.length === 0 ? validateError(this.name) : validateError(this.name, "remove");
     }else if (type === 'email') { 
-      this.auth.validateEmail(event) ? this.auth.validateError(this.email, "remove") : this.auth.validateError(this.email);
+      validateEmail(event) ? validateError(this.email, "remove") : validateError(this.email);
     } else if (type === 'password') {
       this.validatePassword(event);
     }
   }
   
   validatePassword(event: any) {
-    event.length < 6 ? this.auth.validateError(this.password) : this.auth.validateError(this.password, "remove");
+    event.length < 6 ? validateError(this.password) : validateError(this.password, "remove");
   }
 }

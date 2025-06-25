@@ -101,9 +101,6 @@
 </div>
 
 <!-- Overlays -->
-<app-channel-details-overlay *ngIf="showChannelOverlay" [channel]="activeChannel"
-  (close)="closeChannelOverlay()"></app-channel-details-overlay>
-
 <app-channel-members-overlay *ngIf="showMembersOverlay && activeChannel" [members]="activeChannel.members"
   (close)="showMembersOverlay = false"></app-channel-members-overlay>
 

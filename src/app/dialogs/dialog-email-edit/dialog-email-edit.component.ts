@@ -2,8 +2,8 @@ import { Component, inject, ViewChild } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { InputComponent } from "../../shared/input/input.component";
 import { ButtonComponent } from "../../shared/button/button.component";
-import { EmailAuthProvider, getAuth, onAuthStateChanged, reauthenticateWithCredential, sendEmailVerification } from '@angular/fire/auth';
-
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential } from '@angular/fire/auth';
+import { validateEmail, validateError } from '../../core/utils/message-validate.utils';
 @Component({
   selector: 'app-dialog-email-edit',
   imports: [InputComponent, ButtonComponent],
@@ -26,7 +26,7 @@ export class DialogEmailEditComponent {
   }
   
   validate(event: any) {
-    this.auth.validateEmail(event) ? this.auth.validateError(this.email, "remove") : this.auth.validateError(this.email);
+    validateEmail(event) ? validateError(this.email, "remove") : validateError(this.email);
   }
 
   setValue(eventValue: string, type: string){
