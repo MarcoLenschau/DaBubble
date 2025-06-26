@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChildren, ViewChild, ElementRef, QueryList, 
-  OnDestroy, SimpleChanges } from '@angular/core';
+import {
+  Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChildren, ViewChild, ElementRef, QueryList,
+  OnDestroy, SimpleChanges
+} from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, firstValueFrom, filter } from 'rxjs';
@@ -18,10 +20,14 @@ import { MessageContext } from '../../../core/interfaces/message-context.interfa
 import { Emoji, EMOJIS } from '../../../core/interfaces/emojis.interface';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { formatTime, formatDate, isNewDay, formatRelativeTimeSimple, formatRelativeDayLowercaseNoTime } from '../../../core/utils/date.utils';
-import { getUserById, getUserNames, formatUserNames, isOwnMessage, trackByMessageId, areUsersEqual, updateRepliesCountIfNeeded, 
-  setTooltipHoveredState } from '../../../core/utils/messages.utils';
-import { getEmojiByName, getEmojiByUnicode, addEmojiToTextarea, addEmojiToMessage, getSortedEmojisForUser, applyTooltipOverflowAdjustment, 
-  getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton } from '../../../core/utils/emojis.utils';
+import {
+  getUserById, getUserNames, formatUserNames, isOwnMessage, trackByMessageId, areUsersEqual, updateRepliesCountIfNeeded,
+  setTooltipHoveredState
+} from '../../../core/utils/messages.utils';
+import {
+  getEmojiByName, getEmojiByUnicode, addEmojiToTextarea, addEmojiToMessage, getSortedEmojisForUser, applyTooltipOverflowAdjustment,
+  getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton
+} from '../../../core/utils/emojis.utils';
 import { scrollToBottom } from '../../../core/utils/scroll.utils';
 
 @Component({
