@@ -247,6 +247,10 @@ export class UserDataService {
 
     await this.firebaseService.updateUser(userId, { displayName: newName });
     await this.firebaseService.updateUserNameInMessages(userId, newName);
+    const oldCtx = this.messageCacheService.getCurrentContext();
+    if (oldCtx) {
+      await this.messageCacheService.loadMessagesForContext(oldCtx, userId, 'updateUserNameInCache: reload after name update');
+    }
 
     this.messageCacheService.updateUserNameInCache(userId, newName);
 

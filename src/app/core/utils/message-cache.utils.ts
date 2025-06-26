@@ -11,8 +11,9 @@ export function generateCacheKey(context: MessageContext, currentUserId?: string
     if (context.type === 'channel') {
         return `channel:${context.id}`;
     } else {
-        const ids = [currentUserId || '', context.receiverId || ''].sort();
-        return `direct:${ids[0]}-${ids[1]}`;
+        const a = currentUserId || '';
+        const b = context.receiverId || '';
+        return `direct:${[a, b].sort().join('-')}`;
     }
 }
 
@@ -67,6 +68,27 @@ export function directQueryConditions(userA: string, userB: string) {
         orderBy('timestamp', 'asc')
     ];
 }
+
+export function extractContextFromKey(key: string): MessageContext {
+    if (key.startsWith('channel:')) {
+        return { type: 'channel', id: key.split(':')[1] };
+    }
+    if (key.startsWith('direct:')) {
+        const ids = key.split(':')[1].split('-');
+        return { type: 'direct', id: '', receiverId: ids[1] };
+    }
+    return { type: 'channel', id: '' };
+}
+
+
+// export function extractUserIdFromKey(key: string): string | undefined {
+//     if (key.startsWith('direct:')) {
+//         const ids = key.split(':')[1].split('-');
+//         return ids[0];
+//     }
+//     return undefined;
+// }
+
 
 export function mapDocToMessage(doc: any): Message {
     const data = doc.data() as any;

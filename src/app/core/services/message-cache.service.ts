@@ -28,6 +28,8 @@ export class MessageCacheService {
   private messageSubject = new BehaviorSubject<Message[]>([]);
   private threadMessageSubject = new BehaviorSubject<Message[]>([]);
   private activeListeners = new Map<string, Unsubscribe>();
+  private currentContextKey: string | null = null;
+  public currentContextObj: MessageContext | null = null;
 
   constructor(private firestore: Firestore) { }
 
@@ -39,6 +41,13 @@ export class MessageCacheService {
     return this.threadMessageSubject.asObservable();
   }
 
+  public getCurrentContext(): MessageContext | null {
+    return this.currentContextObj;
+  }
+
+  public getCurrentContextKey(): string | null {
+    return this.currentContextKey;
+  }
 
   async initInitialMessageCache(): Promise<void> {
     const q = query(
@@ -55,26 +64,29 @@ export class MessageCacheService {
     this.messageCache.set('all', allMessages);
   }
 
-  async loadMessagesForContext(context: MessageContext, currentUserId: string): Promise<void> {
+  async loadMessagesForContext(context: MessageContext, currentUserId: string, reason: string = 'unknown'): Promise<void> {
     const cacheKey = generateCacheKey(context, currentUserId);
 
-    const cached = this.messageCache.get(cacheKey) ?? [];
-    this.messageSubject.next([...cached]);
+    if (this.currentContextKey && this.currentContextKey !== cacheKey) {
+      this.removeLiveListener(this.currentContextKey);
+    }
+
+    this.currentContextKey = cacheKey;
+    this.currentContextObj = context;
+
+    const allMessages = this.messageCache.get('all') ?? [];
+
+    const filtered = filterMessagesByContext(allMessages, context, currentUserId);
+    this.messageCache.set(cacheKey, filtered);
+    this.messageSubject.next([...filtered]);
 
     if (!this.activeListeners.has(cacheKey)) {
-
       this.registerLiveListener(cacheKey, () =>
         this.createContextListener(context, currentUserId, cacheKey)
       );
     }
-
-    if (!this.messageCache.has(cacheKey)) {
-      const allMessages = this.messageCache.get('all') ?? [];
-      const filtered = filterMessagesByContext(allMessages, context, currentUserId);
-      this.messageCache.set(cacheKey, filtered);
-      this.messageSubject.next([...filtered]);
-    }
   }
+
 
   async loadMessagesForThread(threadId: string): Promise<void> {
     const cacheKey = `thread:${threadId}`;
@@ -82,7 +94,7 @@ export class MessageCacheService {
     const cached = this.messageCache.get(cacheKey) ?? [];
     this.threadMessageSubject.next([...cached]);
 
-    await this.removeLiveListener(cacheKey);
+    this.removeLiveListener(cacheKey);
     this.registerLiveListener(cacheKey, () =>
       this.createThreadListener(threadId, cacheKey)
     );
@@ -95,26 +107,40 @@ export class MessageCacheService {
     }
   }
 
-
-  private registerLiveListener(
-    cacheKey: string,
-    setupFn: () => Unsubscribe
-  ): void {
+  public registerLiveListener(cacheKey: string, createUnsub: () => (() => void | Promise<void>)): void {
     if (this.activeListeners.has(cacheKey)) {
       return;
     }
 
-    const unsubscribe = setupFn();
-    this.activeListeners.set(cacheKey, unsubscribe);
-  }
-
-  public async removeLiveListener(cacheKey: string): Promise<void> {
-    const unsub = this.activeListeners.get(cacheKey);
-    if (unsub) {
-      unsub();
-      this.activeListeners.delete(cacheKey);
+    try {
+      const unsub = createUnsub();
+      this.activeListeners.set(cacheKey, unsub);
+    } catch (err) {
+      console.error('[CacheService] Fehler bei registerLiveListener für key=', cacheKey, err);
     }
   }
+
+  public removeLiveListener(cacheKey: string): void {
+    const unsub = this.activeListeners.get(cacheKey);
+
+    if (!unsub) {
+      return;
+    }
+
+    try {
+      const result = unsub();
+      Promise.resolve(result)
+        .then(() => {
+          this.activeListeners.delete(cacheKey);
+        })
+        .catch((err) => {
+          console.error('[CacheService] Fehler beim Entfernen des LiveListeners für key=', cacheKey, err);
+        });
+    } catch (err) {
+      console.error('[CacheService] SYNC Fehler bei unsub() für key=', cacheKey, err);
+    }
+  }
+
 
   private createContextListener(
     context: MessageContext,
@@ -147,6 +173,10 @@ export class MessageCacheService {
   }
 
   private handleDocChanges(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
+    if (!this.activeListeners.has(cacheKey)) {
+      return;
+    }
+
     let global = this.messageCache.get('all') ?? [];
     let globalChanged = false;
 
@@ -211,7 +241,10 @@ export class MessageCacheService {
     }
     if (contextChanged) {
       this.messageCache.set(cacheKey, currentContextMessages);
-      this.messageSubject.next([...currentContextMessages]);
+
+      if (cacheKey === this.currentContextKey) {
+        this.messageSubject.next([...currentContextMessages]);
+      }
     }
   }
 
@@ -288,22 +321,17 @@ export class MessageCacheService {
         updated = true;
       }
     });
-    if (!updated) return;
+    if (!updated) {
+      return;
+    }
+    this.messageCache.set('all', allMessages);
 
     this.messageCache.set('all', allMessages);
 
-    const currentMessages = this.messageSubject.getValue();
-    let visibleChanged = false;
-    currentMessages.forEach(msg => {
-      if (msg.userId === userId && msg.name !== newName) {
-        msg.name = newName;
-        visibleChanged = true;
-      }
-    });
+    const ctx = this.currentContextObj;
+    if (ctx && this.currentContextKey) {
 
-    if (visibleChanged) {
-      // this.messageCache.set(this.currentContextCacheKey, currentMessages); // optional
-      this.messageSubject.next([...currentMessages]);
+      this.loadMessagesForContext(ctx, userId, 'from updateUserNameInCache');
     }
 
     const currentThreadMessages = this.threadMessageSubject.getValue();
@@ -318,5 +346,11 @@ export class MessageCacheService {
     if (threadChanged) {
       this.threadMessageSubject.next([...currentThreadMessages]);
     }
+  }
+
+  clearCurrentContext(): void {
+    this.currentContextKey = null;
+    this.currentContextObj = null;
+    this.messageSubject.next([]);
   }
 }

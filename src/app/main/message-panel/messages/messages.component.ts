@@ -6,6 +6,7 @@ import { Subscription, firstValueFrom, filter } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
+import { FirebaseService } from '../../../core/services/firebase.service';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
 import { MessageEventService } from '../../../core/services/message-event.service';
@@ -79,6 +80,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
   constructor(
     private userDataService: UserDataService,
+    private firebaseService: FirebaseService,
     private messageDataService: MessageDataService,
     private messageEventService: MessageEventService,
     private dialog: MatDialog,
@@ -145,8 +147,31 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.currentUserSubscription?.unsubscribe();
   }
 
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (this.isMessage && changes['messageContext'] && !changes['messageContext'].firstChange) {
+  //     this.subscribeToMessages();
+  //   }
+
+  //   if (this.isThread && changes['starterMessage'] && this.starterMessage) {
+  //     this.setReplyToMessage(this.starterMessage);
+  //   }
+  // }
+
+  private previousContextJson = '';
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.isMessage && changes['messageContext'] && !changes['messageContext'].firstChange) {
+    if (Array.isArray(this.messages)) { //LÖSCHEN
+      console.log('[MessagesComponent][UI] rendering', this.messages.length, 'messages');
+    } else { //LÖSCHEN
+      console.log('[MessagesComponent][UI] rendering: messages ist nicht definiert oder kein Array', this.messages);
+    } //LÖSCHEN
+
+    const currentJson = JSON.stringify(this.messageContext ?? {});
+    if (
+      this.isMessage &&
+      currentJson !== this.previousContextJson
+    ) {
+      this.previousContextJson = currentJson;
       this.subscribeToMessages();
     }
 
@@ -154,8 +179,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       this.setReplyToMessage(this.starterMessage);
     }
   }
-
   private subscribeToMessages(): void {
+    console.log('[MessagesComponent] subscribeToMessages with context:', this.messageContext);
+
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
     this.messagesReady = false;
@@ -165,10 +191,13 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     );
     this.messagesSubscription = messageSource$.subscribe((loadedMessages) => {
       if (!Array.isArray(loadedMessages)) {
-        this.messages = loadedMessages;
+        console.warn('[MessagesComponent] WARNING: loadedMessages ist kein Array:', loadedMessages);
+        this.messages = [];
         this.messagesReady = true;
         return;
       }
+
+      console.log('[MessagesComponent][UI] rendering', loadedMessages.length, 'messages');
       this.messages = loadedMessages;
 
       setTimeout(() => {
@@ -305,7 +334,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return msg.reactions.some((r) => r.emojiName === emojiName && r.userIds.includes(userId));
   }
 
-  onEmojiRowMouseLeave(index: number): void {
+  async onEmojiRowMouseLeave(index: number): Promise<void> {
     if (Object.keys(this.localEmojiStats).length > 0 || this.localRecentEmojis.length > 0) {
       const updatedUser = {
         ...this.currentUser,
@@ -314,6 +343,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       };
 
       this.userDataService.setCurrentUser(updatedUser);
+      await this.firebaseService.updateUser(this.currentUser.id, {
+        recentEmojis: this.localRecentEmojis,
+        emojiUsage: this.localEmojiStats
+      });
+
       this.currentUser = updatedUser;
       this.updateSortedEmojis();
     }

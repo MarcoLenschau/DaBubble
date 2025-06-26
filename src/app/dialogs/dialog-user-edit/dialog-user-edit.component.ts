@@ -36,7 +36,6 @@ export class DialogUserEditComponent {
       );
       if (trimmedName !== currentUser.displayName) {
         await this.userDataService.updateUserName(currentUser.id, trimmedName);
-
       }
       this.dialogClose();
     } catch (err) {

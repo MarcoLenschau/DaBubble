@@ -70,7 +70,7 @@ export class MessageDataService {
 
   getMessagesForContext(context: MessageContext, currentUserId: string): Observable<Message[]> {
     const load$ = from(
-      this.messageCacheService.loadMessagesForContext(context, currentUserId)
+      this.messageCacheService.loadMessagesForContext(context, currentUserId, 'MessageDataService: regular load')
     );
 
     return load$.pipe(
