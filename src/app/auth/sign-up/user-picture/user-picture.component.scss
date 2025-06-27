@@ -1,6 +1,6 @@
-@import "../../shared/styles/color.scss";
-@import "../../shared/styles/mix-in.scss";
-@import "../../shared/styles/flexbox.scss";
+@import "../../../shared/styles/color.scss";
+@import "../../../shared/styles/mix-in.scss";
+@import "../../../shared/styles/flexbox.scss";
 
 div {
     @include dFlex($jc: none, $ai: none);
