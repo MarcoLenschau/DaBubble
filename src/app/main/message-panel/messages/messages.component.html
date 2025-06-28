@@ -100,7 +100,9 @@
             {{ msg.text }}
 
           </p>
-          <ng-container *ngIf="msg.audio"><audio [src]="msg.audio" controls></audio></ng-container>
+          <ng-container *ngIf="msg.audio">
+            <app-audio-message [audio]="msg.audio"></app-audio-message>
+          </ng-container>
           <div *ngIf="editingMessageId === msg.id" class="edit-container">
             <div class="edit-box">
               <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."

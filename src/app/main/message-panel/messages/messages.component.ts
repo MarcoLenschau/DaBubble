@@ -30,11 +30,12 @@ import {
 } from '../../../core/utils/emojis.utils';
 import { scrollToBottom } from '../../../core/utils/scroll.utils';
 import { SingleMessageComponent } from "./single-message/single-message.component";
+import { AudioMessageComponent } from "./audio-message/audio-message.component";
 
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgClass, SingleMessageComponent],
+  imports: [CommonModule, FormsModule, NgClass, SingleMessageComponent, AudioMessageComponent],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.scss',
 })

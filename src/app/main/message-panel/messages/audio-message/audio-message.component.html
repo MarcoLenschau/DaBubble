@@ -1,0 +1,7 @@
+<div class="audio-player">
+  <button (click)="togglePlay()" class="play-button">
+    <span *ngIf="!isPlaying">▶️</span>
+    <span *ngIf="isPlaying">⏸️</span>
+  </button>
+  <audio #audioRef [src]="audio"></audio>
+</div>

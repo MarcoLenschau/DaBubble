@@ -1,0 +1,12 @@
+.audio-player {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 148px;
+    height: 48px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    .play-button {
+        width: 32px;
+        margin: 20px;
+    }
+}
