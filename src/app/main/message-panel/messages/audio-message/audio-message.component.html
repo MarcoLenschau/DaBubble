@@ -1,7 +1,17 @@
 <div class="audio-player">
   <button (click)="togglePlay()" class="play-button">
-    <span *ngIf="!isPlaying">▶️</span>
-    <span *ngIf="isPlaying">⏸️</span>
+    <img *ngIf="!isPlaying" src="/assets/img/audio-message/play-button.png">
+    <img *ngIf="isPlaying" src="/assets/img/audio-message/pause-button.png">
   </button>
-  <audio #audioRef [src]="audio"></audio>
+  <div class="time-container">
+    <div class="time-info">
+      <span>{{ formatTime(currentTime) }}</span>
+      <span>/</span>
+      <span>{{ formatTime(duration) }}</span>
+    </div>
+    <div class="progress-bar" (click)="seek($event)">
+      <div class="progress" [style.width.%]="getProgress()"></div>
+    </div>
+  </div>
+  <audio #audioRef [src]="audio" (timeupdate)="onTimeUpdate()" (ended)="onEnded()"></audio>
 </div>
