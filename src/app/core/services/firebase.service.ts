@@ -115,22 +115,12 @@ export class FirebaseService {
     }
   }
   
-
-  async addAudioMessage(data: any) {
+  async addAudioMessage(data: any, receiverId: string): Promise<void> {
     const messageCollection = this.getDocRef('messages');
     const messageRef = doc(messageCollection);
     const audioBlob = data.get('audio');
     const base64: any = await this.blobToBase64(audioBlob);
-    await setDoc(messageRef, this.getCleanAudioMessage(base64));
-  }
-
-  getCleanAudioMessage(base64: string) {
-    const auth = getAuth();
-    return {
-      audio: base64,
-      timestamp: Date.now(),
-      from: auth.currentUser?.email
-    };
+    await setDoc(messageRef, this.getCleanAudioMessage(base64, true, receiverId));
   }
 
   blobToBase64(blob: Blob): Promise<string> {
@@ -140,5 +130,17 @@ export class FirebaseService {
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
+  }
+
+  getCleanAudioMessage(base64: string, directMessage = false, receiverId: string) {
+    const auth = getAuth();
+    return {
+      audio: base64,
+      timestamp: Date.now(),
+      userId: auth.currentUser?.displayName?.toLowerCase(),
+      name: auth.currentUser?.displayName,
+      isDirectMessage: directMessage,
+      receiverId: receiverId
+    };
   }
 }

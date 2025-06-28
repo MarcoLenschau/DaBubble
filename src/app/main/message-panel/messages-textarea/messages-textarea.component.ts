@@ -1,12 +1,4 @@
-import {
-  Component,
-  Input,
-  ViewChild,
-  ElementRef,
-  OnInit,
-  OnDestroy,
-  inject,
-} from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, filter } from 'rxjs';
@@ -154,7 +146,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     };
   }
 
-
   toggleUserDropdown(event: MouseEvent): void {
     this.showUserDropdown = !this.showUserDropdown;
     this.showMentionDropdown = false;
@@ -256,7 +247,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     }
   }
 
-
   private createMessage(text: string): Message {
     const threadId = this.findThreadId();
     const channelId = this.findChannelId();
@@ -326,18 +316,24 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.saveAudioMessage(blob);
   }
 
-  createAudioMessage(blob: any) {
+  createAudioMessage(blob: any, element = ".thread-messages") {
     const url = URL.createObjectURL(blob);
     const audio = document.createElement('audio');
     audio.src = url;
     audio.controls = true;
-    document.querySelector(".thread-messages")?.appendChild(audio);
+    document.querySelector(element)?.appendChild(audio);
   }
 
   async saveAudioMessage(blob: any) {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
-    this.firebase.addAudioMessage(audioData);
+    if (this.messageContext) {
+      if (this.messageContext.receiverId) {
+        this.firebase.addAudioMessage(audioData, this.messageContext.receiverId);
+      } else if (this.messageContext.id) {
+        this.firebase.addAudioMessage(audioData, this.messageContext.id);
+      }
+    }
   }
 
   async startRecord() {
@@ -356,4 +352,3 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     return new Blob(this.chunks, { type: 'audio/webm' });
   }
 }
-
