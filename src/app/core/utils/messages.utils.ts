@@ -64,6 +64,7 @@ export function createTempMessageId(username: string): string {
 }
 
 export function buildNewMessage(
+  audio: string,
   text: string,
   currentUser: User,
   threadId: string,
@@ -71,6 +72,7 @@ export function buildNewMessage(
 ): Message {
   const isDirect = !channelId;
   return {
+    audio: audio,
     id: createTempMessageId(currentUser.displayName),
     name: currentUser.displayName,
     timestamp: Date.now(),

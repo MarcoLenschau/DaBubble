@@ -80,6 +80,7 @@ export class MessageDataService {
 
   private getCleanJson(message: Message): any {
     return {
+      audio: message.audio ?? '',
       id: message.id,
       name: message.name,
       text: message.text,

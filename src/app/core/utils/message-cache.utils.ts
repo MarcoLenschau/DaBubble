@@ -93,6 +93,7 @@ export function extractContextFromKey(key: string): MessageContext {
 export function mapDocToMessage(doc: any): Message {
     const data = doc.data() as any;
     return new Message({
+        audio: data.audio ?? '',
         id: doc.id,
         name: data.name,
         text: data.text,
