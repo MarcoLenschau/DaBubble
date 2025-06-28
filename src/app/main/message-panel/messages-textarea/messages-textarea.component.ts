@@ -13,6 +13,7 @@ import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis.utils';
 import { FirebaseService } from '../../../core/services/firebase.service';
+import { MessageAudioService } from '../../../core/services/message-audio.service';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -33,20 +34,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
-
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
   currentUser!: User;
-
-  // For audio messages
-  recorder: any = {};
-  stream: any = {};
-  record = false;
-  chunks: any = [];
-  audioInSeconds = {};
-
   // User & Mention-Funktion
   allUsers: User[] = [];
   filteredMentionUsers: User[] = [];
@@ -54,11 +46,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   showUserDropdown = false;
   mentionQuery = '';
   mentionBoxPosition = { top: 0, left: 0 };
-
   private firebase = inject(FirebaseService);
   private messageDataService = inject(MessageDataService);
   private userDataService = inject(UserDataService);
   private messageEventService = inject(MessageEventService);
+  public messageAudio = inject(MessageAudioService);
   private currentUserSubscription?: Subscription;
 
   get isThread(): boolean {
@@ -71,7 +63,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     document.addEventListener('click', this.handleClickOutside);
-
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;
     });
@@ -157,21 +148,16 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const mentionText = `@${user.displayName} `;
     const editable = this.editableDiv.nativeElement;
     editable.focus();
-
     const range = document.createRange();
     range.selectNodeContents(editable);
     range.collapse(false);
-
     const textNode = document.createTextNode(mentionText);
     range.insertNode(textNode);
-
     const sel = window.getSelection();
     sel?.removeAllRanges();
     sel?.addRange(range);
-
     this.textInput = editable.innerText;
     this.showUserDropdown = false;
-
     this.messageContext = {
       type: 'direct',
       id: this.currentUser.id,
@@ -200,10 +186,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     editable.focus();
     document.execCommand('insertText', false, unicodeEmoji);
     this.textInput = editable.innerText;
-
     updateEmojiDataForUser({ id: 'current-user' } as any, unicodeEmoji);
     this.updateSortedEmojis();
-
     this.mainEmojiMenuOpen = false;
   }
 
@@ -216,10 +200,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   private handleClickOutside = (event: MouseEvent): void => {
     const target = event.target as HTMLElement;
-
     const clickedInsidePicker = this.emojiPicker?.nativeElement?.contains(target);
     const clickedOnInput = this.editableDiv?.nativeElement?.contains(target);
-
     if (!clickedInsidePicker && !clickedOnInput) {
       this.mainEmojiMenuOpen = false;
       this.showMentionDropdown = false;
@@ -230,13 +212,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   async sendMessage(): Promise<void> {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
-
     this.messageEventService.notifyScrollIntent(this.mode, true);
     if (this.mode == 'thread') {
       this.messageEventService.notifyScrollIntent('message', false);
     }
     const message = this.createMessage(text);
-
     try {
       await this.messageDataService.addMessage(message);
       await this.updateStarterMessage();
@@ -287,7 +267,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     });
   }
 
-  async updateStarterMessage() {
+  async updateStarterMessage(): Promise<void> {
     if (this.mode === 'thread' && this.starterMessage) {
       await this.messageDataService.updateMessageFields(this.starterMessage.id, {
         // replies: this.starterMessage.replies,
@@ -301,30 +281,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.editableDiv.nativeElement.innerHTML = '';
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.chatDiv.nativeElement.focus();
   }
 
-  async sendAudioMessage() {
-    let blob = await this.recordStop(this.recorder, this.stream);
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.onloadedmetadata = () => {
-      this.audioInSeconds = Math.round(audio.duration);
-    };
-    this.createAudioMessage(blob);
-    this.saveAudioMessage(blob);
-  }
-
-  createAudioMessage(blob: any, element = ".thread-messages") {
-    const url = URL.createObjectURL(blob);
-    const audio = document.createElement('audio');
-    audio.src = url;
-    audio.controls = true;
-    document.querySelector(element)?.appendChild(audio);
-  }
-
-  async saveAudioMessage(blob: any) {
+  async saveAudioMessage(blob: any): Promise<void> {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
     if (this.messageContext) {
@@ -336,19 +297,14 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     }
   }
 
-  async startRecord() {
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    this.recorder = new MediaRecorder(this.stream);
-    this.recorder.ondataavailable = (e: any) => this.chunks.push(e.data);
-    this.recorder.start();
-    this.record = true;
-  }
-
-  async recordStop(recorder: any, stream: any) {
-    recorder.stop();
-    await new Promise(r => recorder.onstop = r);
-    stream.getTracks().forEach((t: any) => t.stop());
-    this.record = false;
-    return new Blob(this.chunks, { type: 'audio/webm' });
+  async sendAudioMessage(): Promise<void> {
+    let blob = await this.messageAudio.recordStop(this.messageAudio.recorder, this.messageAudio.stream);
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onloadedmetadata = () => {
+      this.messageAudio.audioInSeconds = Math.round(audio.duration);
+    };
+    this.messageAudio.createAudioMessage(blob);
+    this.saveAudioMessage(blob);
   }
 }

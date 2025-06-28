@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { getAuth } from '@angular/fire/auth';
-import { Firestore, collection, collectionData, doc, addDoc, updateDoc, getDocs, getDoc, query, where, setDoc, onSnapshot, DocumentReference, writeBatch } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { Firestore, collection, collectionData, doc, updateDoc, getDocs, query, where, setDoc, writeBatch } from '@angular/fire/firestore';
+import { MessageAudioService } from './message-audio.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseService {
-  constructor(private firebase: Firestore) { }
+  private messageAudio = inject(MessageAudioService);
+  private firebase = inject(Firestore);
 
   getDocRef(docRef: string) {
     return collection(this.firebase, docRef);
@@ -98,7 +98,7 @@ export class FirebaseService {
     let batch = writeBatch(this.firebase);
     let batchCount = 0;
     const batchLimit = 500;
-
+    
     for (const docSnap of snapshot.docs) {
       batch.update(docSnap.ref, { name: newName });
       batchCount++;
@@ -119,28 +119,7 @@ export class FirebaseService {
     const messageCollection = this.getDocRef('messages');
     const messageRef = doc(messageCollection);
     const audioBlob = data.get('audio');
-    const base64: any = await this.blobToBase64(audioBlob);
-    await setDoc(messageRef, this.getCleanAudioMessage(base64, true, receiverId));
-  }
-
-  blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  getCleanAudioMessage(base64: string, directMessage = false, receiverId: string) {
-    const auth = getAuth();
-    return {
-      audio: base64,
-      timestamp: Date.now(),
-      userId: auth.currentUser?.displayName?.toLowerCase(),
-      name: auth.currentUser?.displayName,
-      isDirectMessage: directMessage,
-      receiverId: receiverId
-    };
+    const base64: any = await this.messageAudio.blobToBase64(audioBlob);
+    await setDoc(messageRef, this.messageAudio.getCleanAudioMessage(base64, receiverId));
   }
 }
