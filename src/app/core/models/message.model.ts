@@ -1,6 +1,7 @@
 import { Reaction } from '../interfaces/reaction.interface';
 
 export class Message {
+  audio?: string;
   id: string = '';
   name: string = '';
   timestamp: number = Date.now();
@@ -17,6 +18,7 @@ export class Message {
 
   constructor(data?: Partial<Message>) {
     if (data) {
+      this.audio = data.audio ?? this.audio;
       this.id = data.id ?? this.id;
       this.name = data.name ?? this.name;
       this.timestamp = data.timestamp ?? this.timestamp;
