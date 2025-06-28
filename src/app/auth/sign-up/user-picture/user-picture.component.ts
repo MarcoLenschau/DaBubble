@@ -22,9 +22,12 @@ export class UserPictureComponent {
 
   async registerUser() {
     this.user.photoURL = "./assets/img/profilepic/" + this.currentProfilePicutre;
-    const user: any = await this.firebase.searchUsersByEmail(this.user.email);
-    this.firebase.updateUser(user.id, this.user).then(() => {
+    const user = await this.firebase.searchUsersByEmail(this.user.email);
+    this.firebase.updateUser(user[0].id, this.user)
+    .then(() => {
       this.router.switchRoute("");
+    }).catch((err) => {
+      console.log(err)
     }); 
   }
 
