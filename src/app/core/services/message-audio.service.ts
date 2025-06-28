@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { getAuth } from '@angular/fire/auth';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -76,14 +77,53 @@ export class MessageAudioService {
    * @param {string} [receiverId=""] - The ID of the message receiver.
    * @return {Object} An object containing the audio message data including timestamp, sender, and receiver information.
    */
-  getCleanAudioMessage(base64: string, receiverId = ""): {} {
+
+  // Original-Code:
+
+  // getCleanAudioMessage(base64: string, receiverId = ""): {} {
+  //   const auth = getAuth();
+  //   return {
+  //     audio: base64,
+  //     timestamp: Date.now(),
+  //     userId: auth.currentUser?.displayName?.toLowerCase(),
+  //     name: auth.currentUser?.displayName,
+  //     receiverId: receiverId
+  //   };
+  // }
+
+  getCleanDirectAudioMessage(base64: string, id = "", user: User): {} {
     const auth = getAuth();
     return {
       audio: base64,
       timestamp: Date.now(),
-      userId: auth.currentUser?.displayName?.toLowerCase(),
-      name: auth.currentUser?.displayName,
-      receiverId: receiverId
+      name: user.displayName,
+      text: '',
+      userId: user.id,
+      receiverId: id,
+      isDirectMessage: true,
+      // id
+      // threadId,
+      channelId: '',
+      reactions: {},
+      replies: 0,
+    };
+  }
+
+  getCleanChannelAudioMessage(base64: string, id = "", user: User): {} {
+    const auth = getAuth();
+    return {
+      audio: base64,
+      timestamp: Date.now(),
+      name: user.displayName,
+      text: '',
+      userId: user.id,
+      receiverId: '',
+      isDirectMessage: false,
+      // id
+      // threadId,
+      channelId: id,
+      reactions: {},
+      replies: 0,
     };
   }
 }

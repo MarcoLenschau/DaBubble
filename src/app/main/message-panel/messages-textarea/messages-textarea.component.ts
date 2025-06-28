@@ -285,17 +285,36 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.chatDiv.nativeElement.focus();
   }
 
+  // Original-Code:
+
+  // async saveAudioMessage(blob: any): Promise<void> {
+  //   const audioData = new FormData();
+  //   audioData.append('audio', blob, 'message.webm');
+  //   if (this.messageContext) {
+  //     if (this.messageContext.receiverId) {
+  //       this.firebase.addAudioMessage(audioData, this.messageContext.receiverId);
+  //     } else if (this.messageContext.id) {
+  //       this.firebase.addAudioMessage(audioData, this.messageContext.id);
+  //     }
+  //   }
+  // }
+
+
   async saveAudioMessage(blob: any): Promise<void> {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
     if (this.messageContext) {
       if (this.messageContext.receiverId) {
-        this.firebase.addAudioMessage(audioData, this.messageContext.receiverId);
+        this.firebase.addDirectAudioMessage(audioData, this.messageContext.receiverId, this.currentUser);
       } else if (this.messageContext.id) {
-        this.firebase.addAudioMessage(audioData, this.messageContext.id);
+        this.firebase.addChannelAudioMessage(audioData, this.messageContext.id, this.currentUser);
       }
     }
   }
+
+
+
+
 
   async sendAudioMessage(): Promise<void> {
     let blob = await this.messageAudio.recordStop(this.messageAudio.recorder, this.messageAudio.stream);

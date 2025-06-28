@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, doc, updateDoc, getDocs, query, where, setDoc, writeBatch } from '@angular/fire/firestore';
 import { MessageAudioService } from './message-audio.service';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -79,7 +80,7 @@ export class FirebaseService {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
-  
+
   async updateUserState(user: any, state: boolean) {
     const docRef = doc(this.firebase, 'users', user.id);
     await updateDoc(docRef, { state: state });
@@ -98,7 +99,7 @@ export class FirebaseService {
     let batch = writeBatch(this.firebase);
     let batchCount = 0;
     const batchLimit = 500;
-    
+
     for (const docSnap of snapshot.docs) {
       batch.update(docSnap.ref, { name: newName });
       batchCount++;
@@ -114,12 +115,30 @@ export class FirebaseService {
       await batch.commit();
     }
   }
-  
-  async addAudioMessage(data: any, receiverId: string): Promise<void> {
+
+  // Original-Code:
+
+  // async addAudioMessage(data: any, receiverId: string): Promise<void> {
+  //   const messageCollection = this.getDocRef('messages');
+  //   const messageRef = doc(messageCollection);
+  //   const audioBlob = data.get('audio');
+  //   const base64: any = await this.messageAudio.blobToBase64(audioBlob);
+  //   await setDoc(messageRef, this.messageAudio.getCleanAudioMessage(base64, receiverId));
+  // }
+
+  async addDirectAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
     const messageCollection = this.getDocRef('messages');
     const messageRef = doc(messageCollection);
     const audioBlob = data.get('audio');
     const base64: any = await this.messageAudio.blobToBase64(audioBlob);
-    await setDoc(messageRef, this.messageAudio.getCleanAudioMessage(base64, receiverId));
+    await setDoc(messageRef, this.messageAudio.getCleanDirectAudioMessage(base64, receiverId, user));
+  }
+
+  async addChannelAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
+    const messageCollection = this.getDocRef('messages');
+    const messageRef = doc(messageCollection);
+    const audioBlob = data.get('audio');
+    const base64: any = await this.messageAudio.blobToBase64(audioBlob);
+    await setDoc(messageRef, this.messageAudio.getCleanChannelAudioMessage(base64, receiverId, user));
   }
 }
