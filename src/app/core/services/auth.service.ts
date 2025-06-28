@@ -159,14 +159,14 @@ export class AuthService {
     }
   }
 
-  async register(name: string, email: string, password: string, photoURL: string): Promise<User | null> {
-    return this.createUserWithEmail(email, password, name, photoURL)
+  async register(email: string, password: string): Promise<User | null> {
+    return this.createUserWithEmail(email, password)
       .catch(() => null);
   }
 
-  async createUserWithEmail(email: string, password: string, name: string, photoURL: string): Promise<User> {
+  async createUserWithEmail(email: string, password: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
-    let user: any = { ...result.user, photoURL };
+    let user: any = { ...result.user };
     user = this.firebase.toObj(user, false, false);
     await this.firebase.addUser(user, false);
     await this.saveCurrentUser(user);

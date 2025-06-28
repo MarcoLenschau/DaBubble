@@ -28,7 +28,13 @@ export class RegisterComponent {
   }
 
   registerUser() {
-    this.sendData();
+    this.auth.register(this.user.email, this.user.password).then(user => {
+      if (user) {
+        this.sendData();
+      } else {
+        console.log("error");
+      }
+    });
   }
 
   setValue(eventValue: string, type: string) {

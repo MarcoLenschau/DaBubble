@@ -3,6 +3,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { RouterService } from '../../../core/services/router.service';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 @Component({
   selector: 'app-user-picture',
@@ -15,18 +16,16 @@ export class UserPictureComponent {
   @Output() dataReady = new EventEmitter<boolean>();
   currentProfilePicutre = "profile.svg"; 
   profilePicture = [ "elias", "elise", "frederik", "noah", "sofia", "steffen" ];
-  private auth = inject(AuthService);
+  private firebase = inject(FirebaseService);
   private router = inject(RouterService);
 
-  registerUser() {
-    const filename = "./assets/img/profilepic/" + this.currentProfilePicutre;
-    this.auth.register(this.user.displayName, this.user.email, this.user.password, filename).then(user => {
-      if (user) {
-        this.router.switchRoute("message");
-      } else {
-        this.sendData();
-      }
-    });
+
+  async registerUser() {
+    this.user.photoURL = "./assets/img/profilepic/" + this.currentProfilePicutre;
+    const user: any = await this.firebase.searchUsersByEmail(this.user.email);
+    this.firebase.updateUser(user.id, this.user).then(() => {
+      this.router.switchRoute("");
+    }); 
   }
 
   selectPicture(picture: any) {
