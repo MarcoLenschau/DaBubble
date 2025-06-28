@@ -1,156 +1,91 @@
-@import "./../../../shared/styles/mix-in.scss";
-@import "./../../../shared/styles/color.scss";
-@import "./../../../shared/styles/breakpoint.scss";
+@import "./../../../../shared/styles/mix-in.scss";
+@import "./../../../../shared/styles/color.scss";
+@import "./../../../../shared/styles/breakpoint.scss";
 
-* {
-  margin: 0;
+.message-img {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 50%;
+  background-color: $purple-2;
 }
 
-:host {
-  width: 100%;
-  flex-grow: 1;
-  overflow-y: auto;
-  // padding-top: 22px;
-}
-
-
-.date-divider {
-  padding: 12px 35px 0;
-  width: 100%;
-  @include dFlex($jc: center, $ai: center, $g: 0px, $f: row);
-  @include text-style(18px, 400, $black);
-}
-
-.date-text {
-  padding: 5px 15px;
-  border: 1px solid $light-purple;
-  border-radius: 30px;
-}
-
-.date-line {
+.message-body {
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
+  min-width: 0;
   flex: 1;
-  height: 1px;
-  background-color: $light-purple;
+
+  .message-body-header {
+    @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+
+    h4 {
+      @include text-style(18px, 700, $black);
+      flex-shrink: 1;
+      min-width: 0;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2; 
+      line-clamp: 2;           
+      overflow: hidden;
+      word-break: break-word;           
+      overflow-wrap: break-word;        
+      text-overflow: ellipsis;          
+      max-width: 100%;
+      line-height: 1.2;
+
+      &:hover {
+        cursor: pointer;
+        color: $purple-1;
+      }
+    }
+
+    p {
+      @include text-style(14px, 400, $text-gray);
+      width: 64px;
+      cursor: default;
+    }
+  }
+
+  .own-message-body-header {
+    @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row-reverse);
+  }
 }
 
+.own-message-body {
+  @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
+}
 
-.thread-padding-top {
+.message-wrapper {
+  position: relative;
   width: 100%;
-  height: 5px;
+  padding: 12px 40px 16px;
 }
 
-.message-padding-top {
-  flex: 1 0 auto;
+.hover-message-wrapper {
+  background-color: $grey;
+  @include transition();
+
+  &.not-own-message {
+    .thread-message-text {
+      background-color: $white;
+      @include transition();
+    }
+  }
 }
 
-.thread-messages {
-  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
-  height: 100%;
-  flex: 1 1 auto;
-  opacity: 0;
-  
-  &.ready {
-    opacity: 1;
-  }
-/////////////////////////////////////////////////////////////////// // In SingleMessageComponent: Start
-  
-  .message-img {
-    width: 70px;
-    height: 70px;
-    flex-shrink: 0;
-    object-fit: cover;
-    border-radius: 50%;
-
-    background-color: $purple-2;
-  }
-
-  .message-body {
-    @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
-    min-width: 0;
-    flex: 1; 
-
-    .message-body-header {
-      @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
-
-      h4 {
-        @include text-style(18px, 700, $black);
-        flex-shrink: 1;
-        min-width: 0;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2; 
-        line-clamp: 2;           
-        overflow: hidden;
-        word-break: break-word;           
-        overflow-wrap: break-word;        
-        text-overflow: ellipsis;          
-        max-width: 100%;
-        line-height: 1.2;
-
-        &:hover {
-          cursor: pointer;
-          color: $purple-1;
-        }
-      }
-
-      p {
-        @include text-style(14px, 400, $text-gray);
-        width: 64px;
-        cursor: default;
-      }
-    }
-
-    .own-message-body-header {
-      @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row-reverse);
-    }
-  }
-
-  .own-message-body {
-    @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
-  }
-
-  .message-wrapper {
-    position: relative;
-
-    width: 100%;
-    padding: 12px 40px 16px;
-  }
-
-  .hover-message-wrapper {
-    background-color: $grey;
-    @include transition();
-
-    &.not-own-message {
-      .thread-message-text {
-        background-color: $white;
-        @include transition();
-      }
-    }
-  }
-
-  .hover-thread-message {
-    width: 100%;
-  }
-
-  .hover-own-message {
-    width: 100%;
-  }
-
-  .thread-message {
-    width: 100%;
-    @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
-  }
-
-/////////////////////////////////////////////////////////////////// // In SingleMessageComponent: Ende
-
-
-
-
+.hover-thread-message {
+  width: 100%;
 }
 
+.hover-own-message {
+  width: 100%;
+}
 
-
-/////////////////////////////////////////////////////////////////// // In SingleMessageComponent: Start
+.thread-message {
+  width: 100%;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
+}
 
 .own-message {
   width: 100%;
@@ -545,88 +480,15 @@
   background-color: #3d4be0;
 }
 
-/////////////////////////////////////////////////////////////////// // In SingleMessageComponent: Ende
-/// 
-/// 
 
-
-.intro {
-  font-family: 'Nunito', sans-serif;
-  padding: 0 40px 32px;
-  @include dFlex($jc: flex-end, $ai: flex-start, $g: 10px, $f: column);
-}
-
-.intro-img-box {
-  @include dFlex($jc: flex-start, $ai: flex-end, $g: 25px, $f: row);
-}
-
-.user-avatar {
-  width:100px; 
-  height:100px; 
-  border-radius:50%; 
-}
-
-.intro-name {
-  @include text-style(24px, 700, $black);
-        font-family: 'Nunito', sans-serif;
-}
-
-.intro-channel-text {
-  @include text-style(20px, 400, $black);
-}
-
-.intro-text {
-  @include text-style(20px, 400, $text-gray);
-}
-
-.intro-channel-text .purple-color, .intro-text .purple-color {
-  color: $purple-3;
-}
-
-.intro-text .bold {
-  font-weight: 700;
-}
-
-
-@media (max-width: $tablet-md) {
-
-  .thread-reactions,  
-  .message-reactions {
-    max-width: 75%;
-  }
-}
-
-@media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
-  .thread-messages .message-wrapper, .date-divider {
-    padding-left: 3vw;
-    padding-right: 3vw;
-  }
-}
-
-@media (max-width: $mobile-xl) {
-
-  .thread-message-text,
-  .thread-message-text.own-message-text {
-    font-size: 17px;
-  }
-
-  .empty-messages-name {
-    font-size: 20px;
-  }
-
-  .user-avatar {
-    width:88px; 
-    height:88px;
-  }
-}
 
 @media (max-width: $mobile-md) {
-  .thread-messages .message-wrapper, .date-divider { // message-wrapper: In SingleMessageComponent
+  .message-wrapper {
     padding-left: 5vw;
     padding-right: 5vw;
   }
 
-  .thread-messages .message-img { // In SingleMessageComponent
+  .message-img {
     width: 60px;
     height: 60px;
   }
@@ -637,18 +499,18 @@
     font-size: 16px;
   }
 
-  .thread-messages .message-img {
+  .message-img {
     width: 50px;
     height: 50px;
   }
 }
 
 @media (max-width: $mobile-xs) { // In SingleMessageComponent
-  .thread-messages .thread-message, .own-message {
+  .thread-message, .own-message {
     gap: 16px
   }
 
-  .thread-messages .message-body .message-body-header, .thread-messages .message-body .own-message-body-header {
+  .message-body .message-body-header, .message-body .own-message-body-header {
     gap: 8px
   }
 
@@ -658,11 +520,11 @@
 }
 
 @media (max-width: $mobile-xxs) { // In SingleMessageComponent
-  .thread-messages .message-body .message-body-header  {
+  .message-body .message-body-header  {
         @include dFlex($jc: flex-start, $ai: flex-start, $g: 2px, $f: column);
   }
    
-  .thread-messages.own-message-body .own-message-body-header {
+  .own-message-body .own-message-body-header {
         @include dFlex($jc: flex-start, $ai: flex-start, $g: 2px, $f: column-reverse);
   } 
 }

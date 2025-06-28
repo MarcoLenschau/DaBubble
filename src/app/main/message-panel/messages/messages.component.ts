@@ -1,13 +1,13 @@
 import {
   Component, Input, Output, EventEmitter, OnChanges, OnInit, ViewChildren, ViewChild, ElementRef, QueryList,
-  OnDestroy, SimpleChanges
+  OnDestroy, SimpleChanges, HostListener
 } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, firstValueFrom, filter } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
+import { MatDialog } from '@angular/material/dialog'; // In SingleMessageComponent
+import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component'; // In SingleMessageComponent
 import { FirebaseService } from '../../../core/services/firebase.service';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { MessageDataService } from '../../../core/services/message-data.service';
@@ -29,11 +29,12 @@ import {
   getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton
 } from '../../../core/utils/emojis.utils';
 import { scrollToBottom } from '../../../core/utils/scroll.utils';
+import { SingleMessageComponent } from "./single-message/single-message.component";
 
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgClass],
+  imports: [CommonModule, FormsModule, NgClass, SingleMessageComponent],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.scss',
 })
@@ -59,9 +60,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   channels: Channel[] = [];
   emojis: Emoji[] = EMOJIS;
   sortedEmojis: Emoji[] = [];
-  emojiMenuOpen: boolean[] = [];
+  emojiMenuOpen: boolean[] = []; // In SingleMessageComponent
   filteredMessages: Message[] = [];
-  hoveredIndex: number | null = null;
+  hoveredIndex: number | null = null; // In SingleMessageComponent
+  openEmojiIndex: number | null = null; // Bleibt
   tooltipHoveredIndex: number | null = null;
   formattedUserNames: string = '';
   tooltipText: string = '';
@@ -71,8 +73,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   replyToMessage: Message | null = null;
   threadId: string = '';
   channelId: string = '';
-  editingMessageId: string | null = null;
-  editedText: string = '';
+  editingMessageId: string | null = null; // In SingleMessageComponent
+  editedText: string = ''; // In SingleMessageComponent
   messagesReady = false;
   showAllReactions: { [messageId: string]: boolean } = {};
 
@@ -89,7 +91,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     private firebaseService: FirebaseService,
     private messageDataService: MessageDataService,
     private messageEventService: MessageEventService,
-    private dialog: MatDialog,
+    private dialog: MatDialog, // In SingleMessageComponent
   ) {
     this.messageEventService.messageWindowScroll$.subscribe(scroll => {
       this.shouldScrollAfterUpdate = scroll;
@@ -275,11 +277,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     await this.messageDataService.updateMessage(msg);
   }
 
-  openThread(msg: Message) {
+  openThreadOldVersion(msg: Message) { // LÖSCHEN
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
   }
 
-  openUserDialog(userId?: string): void {
+  openThread(event: { starterMessage: Message; userId: string }) { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
+    this.threadStart.emit(event);
+  }
+
+
+  openUserDialog(userId?: string): void { // In SingleMessageComponent
     if (!userId) return;
     const user = this.getUserById(userId);
     if (user) {
@@ -292,19 +299,34 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.threadMessagesSubscription?.unsubscribe();
   }
 
-  setHoverState(index: number | null) {
+  setHoverState(index: number | null) { // In SingleMessageComponent
     this.hoveredIndex = index;
     if (index === null) {
       this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
     }
   }
 
-  toggleEmojiMenu(index: number): void {
+  toggleEmojiMenu(index: number): void { // In SingleMessageComponent
     this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
   }
 
-  closeEmojiRow(event: MouseEvent): void {
+  onEmojiToggle(i: number): void { // Bleibt
+    this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
+  }
+
+  closeEmojiRow(event: MouseEvent): void { // In SingleMessageComponent
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:touchstart', ['$event'])
+
+  onDocumentClick(event: MouseEvent | TouchEvent): void {
+    this.openEmojiIndex = null;
+  }
+
+  onMessageTouch(i: number): void { // Bleibt
+    this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
   }
 
   async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
@@ -340,7 +362,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     return msg.reactions.some((r) => r.emojiName === emojiName && r.userIds.includes(userId));
   }
 
-  async onEmojiRowMouseLeave(index: number): Promise<void> {
+  async onEmojiRowMouseLeave(index: number): Promise<void> { // In SingleMessageComponent
     if (Object.keys(this.localEmojiStats).length > 0 || this.localRecentEmojis.length > 0) {
       const updatedUser = {
         ...this.currentUser,
@@ -360,6 +382,28 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
 
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
+
+
+  onEmojiUsageChanged(event: { usage: any; recent: string[] }) { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
+    this.localEmojiStats = event.usage;
+    this.localRecentEmojis = event.recent;
+
+    const updatedUser = {
+      ...this.currentUser,
+      emojiUsage: this.localEmojiStats,
+      recentEmojis: this.localRecentEmojis
+    };
+
+    this.userDataService.setCurrentUser(updatedUser);
+    this.firebaseService.updateUser(this.currentUser.id, {
+      emojiUsage: this.localEmojiStats,
+      recentEmojis: this.localRecentEmojis
+    });
+
+    this.currentUser = updatedUser;
+    this.updateSortedEmojis();
+  }
+
 
   onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) {
     const wrapper = event.currentTarget as HTMLElement;
@@ -388,23 +432,23 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.showAllReactions[messageId] = !this.showAllReactions[messageId];
   }
 
-  editMenuOpenIndex: number | null = null;
+  editMenuOpenIndex: number | null = null; // In SingleMessageComponent
 
-  toggleEditMenu(index: number): void {
+  toggleEditMenu(index: number): void { // In SingleMessageComponent
     this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
   }
 
-  startEditing(msg: Message): void {
+  startEditing(msg: Message): void { // In SingleMessageComponent
     this.editingMessageId = msg.id;
     this.editedText = msg.text;
   }
 
-  cancelEditing(): void {
+  cancelEditing(): void { // In SingleMessageComponent
     this.editingMessageId = null;
     this.editedText = '';
   }
 
-  saveEditedMessage(msg: Message, index: number): void {
+  saveEditedMessage(msg: Message, index: number): void { // In SingleMessageComponent
     const trimmed = this.editedText.trim();
     if (!trimmed || trimmed === msg.text) {
       this.cancelEditing();
@@ -420,13 +464,23 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  formatTime = formatTime;
+  onMessageEdited({ index, newText, isThread }: { index: number; newText: string; isThread: boolean }): void { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
+    if (isThread) {
+      this.filteredMessages[index].text = newText;
+    } else {
+      this.messages[index].text = newText;
+    }
+  }
+
+
+
+  formatTime = formatTime; // In SingleMessageComponent
   formatDate = formatDate;
   isNewDay = isNewDay;
-  formatRelativeTimeSimple = formatRelativeTimeSimple;
+  formatRelativeTimeSimple = formatRelativeTimeSimple; // In SingleMessageComponent
   formatRelativeDayLowercaseNoTime = formatRelativeDayLowercaseNoTime;
   getUserNames = (userIds: string[]) => getUserNames(this.users, userIds, this.currentUser);
-  getUserById = (userId: string) => getUserById(this.users, userId);
+  getUserById = (userId: string) => getUserById(this.users, userId);// In SingleMessageComponent
   formatUserNames = (userIds: string[]) => formatUserNames(this.users, userIds, this.currentUser);
   getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
   getEmojiByUnicode = (unicode: string) => getEmojiByUnicode(this.emojis, unicode);
@@ -437,7 +491,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   updateSortedEmojis(): void {
     this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
   }
-  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id);
+  isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id); // In SingleMessageComponent
   trackByMessageId = trackByMessageId;
   setTooltipHoveredState = setTooltipHoveredState;
 }
