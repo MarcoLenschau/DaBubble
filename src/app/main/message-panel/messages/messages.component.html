@@ -95,10 +95,9 @@
           </div>
 
           <!-- Nachricht oder Bearbeitungsfeld -->
-          <p class="thread-message-text" *ngIf="editingMessageId !== msg.id"
+          <p class="thread-message-text" *ngIf="!msg.audio && editingMessageId !== msg.id"
             [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
             {{ msg.text }}
-
           </p>
           <ng-container *ngIf="msg.audio">
             <app-audio-message [audio]="msg.audio"></app-audio-message>
@@ -178,7 +177,7 @@
           </ng-container>
 
           <!-- Drei Punkte Menü für eigene Nachricht -->
-          <ng-container *ngIf="isOwnMessage(msg)">
+          <ng-container *ngIf="!msg.audio && isOwnMessage(msg)">
             <div class="toggle-icon-wrapper">
               <div class="toggle-icon" (click)="toggleEditMenu(i)">
                 <img src="assets/img/message-icons/option.svg" class="default" />
@@ -238,7 +237,7 @@
     <app-single-message [currentUser]="currentUser" [msg]="msg" [i]="i" [users]="users" [isThread]="isThread"
       [messages]="messages" [isMessage]="isMessage" (messageEdited)="onMessageEdited($event)"
       (threadStart)="openThread($event)" (emojiUsageChanged)="onEmojiUsageChanged($event)" [sortedEmojis]="sortedEmojis"
-      [viewMode]="viewMode" [openEmojiIndex]="openEmojiIndex" (touchOnMessage)="onMessageTouch(i)">
+      [emojis]="emojis" [viewMode]="viewMode">
       <p>SingleMessageComponent</p>
     </app-single-message>
 

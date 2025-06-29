@@ -43,6 +43,10 @@
   flex: 1 0 auto;
 }
 
+app-single-message {
+  width: 100%;
+}
+
 .thread-messages {
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: column);
   height: 100%;

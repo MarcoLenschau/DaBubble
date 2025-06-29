@@ -2,7 +2,8 @@
     'hover-thread-message not-own-message': !isOwnMessage(msg),
     'hover-own-message': isOwnMessage(msg),
     'hover-message-wrapper': hovered
-  }" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" (touchstart)="onTouchStart()">
+  }" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" (touchstart)="onTouchStart()"
+  (click)="closeEmojiMenu()">
 
   <div class="message-flex-box" [ngClass]="{
   'thread-message': !isOwnMessage(msg),
@@ -18,11 +19,13 @@
       </div>
 
       <!-- Nachricht oder Bearbeitungsfeld -->
-      <p class="thread-message-text" *ngIf="editingMessageId !== msg.id"
+      <p class="thread-message-text" *ngIf="!msg.audio && editingMessageId !== msg.id"
         [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
         {{ msg.text }}
       </p>
-
+      <ng-container *ngIf="msg.audio">
+        <app-audio-message [audio]="msg.audio"></app-audio-message>
+      </ng-container>
       <div *ngIf="editingMessageId === msg.id" class="edit-container">
         <div class="edit-box">
           <textarea [(ngModel)]="editedText" class="edit-textarea" rows="2" placeholder="Nachricht bearbeiten..."
@@ -64,9 +67,10 @@
       <!-- Bitte nicht löschen! -->
 
 
-      <!-- <ng-container *ngIf="isThread && emojiMenuOpen">
+      <ng-container *ngIf="isThread && emojiMenuOpen">
         <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
-          (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
+          (click)="handleEmojiClick(emoji.name, msg)" (touchstart)="handleEmojiTouch(emoji.name, msg, $event)"
+          title="{{ emoji.name }}">
           {{ emoji.unicode }}
         </span>
       </ng-container>
@@ -77,43 +81,43 @@
           (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
           {{ emoji.unicode }}
         </span>
-        <ng-container *ngIf="emojiMenuOpen[i]">
+        <ng-container *ngIf="emojiMenuOpen">
           <span *ngFor="let emoji of sortedEmojis.slice(2)" class="emoji-icon top-emojis"
             (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
             {{ emoji.unicode }}
           </span>
         </ng-container>
-      </ng-container> -->
+      </ng-container>
 
       <!-- Reaktion hinzufügen -->
 
-      <!-- <div class="toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
+      <div class="toggle-icon" (click)="toggleEmojiMenu(); $event.stopPropagation()">
         <img src="assets/img/message-icons/add-reaction.svg" class="default" />
         <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
-      </div> -->
+      </div>
 
       <!-- Thread öffnen -->
 
-      <!-- <ng-container *ngIf="isMessage">
-        <div class="toggle-icon" (click)="openThreadOldVersion(msg)">
+      <ng-container *ngIf="isMessage">
+        <div class="toggle-icon" (click)="openThread(msg)">
           <img src="assets/img/message-icons/answer.svg" class="default" />
           <img src="assets/img/message-icons/answer-hover.svg" class="hover" />
         </div>
-      </ng-container> -->
+      </ng-container>
 
       <!-- Drei Punkte Menü für eigene Nachricht -->
 
-      <ng-container *ngIf="isOwnMessage(msg)">
+      <ng-container *ngIf="!msg.audio && isOwnMessage(msg)">
         <div class="toggle-icon-wrapper">
           <div class="toggle-icon" (click)="toggleEditMenu(i)">
             <img src="assets/img/message-icons/option.svg" class="default" />
             <img src="assets/img/message-icons/option-hover.svg" class="hover" />
           </div>
 
-          <!-- <div class="edit-menu" *ngIf="editMenuOpenIndex === i"
+          <div class="edit-menu" *ngIf="editMenuOpenIndex === i"
             (click)="handleEditClick(msg, i); $event.stopPropagation()">
             Nachricht bearbeiten
-          </div> -->
+          </div>
         </div>
       </ng-container>
     </div>
@@ -121,7 +125,42 @@
 
   </div>
   <!-- Reaktionen -->
+  <div class="reactions" *ngIf="msg.reactions?.length" [ngClass]="{
+      'thread-reactions': isThread,
+      'message-reactions': isMessage,
+      'reactions-right-aligned': isOwnMessage(msg),
+      'reactions-left-aligned': !isOwnMessage(msg), 'expanded': showAllReactions[msg.id]
+    }">
+    <div *ngFor="let reaction of getVisibleReactions(msg); let j = index" class="bottom-emoji-wrapper" [ngClass]="{
+   'selected': userHasReactedToEmoji(msg, reaction.emojiName, currentUser.id)
+  }" (click)="handleEmojiClick(reaction.emojiName, msg, j)"
+      (mouseenter)="setTooltipHoveredState(j, reaction.userIds, this); onMouseEnterEmojiWrapper($event, j)"
+      (mouseleave)="setTooltipHoveredState(null, null, this)">
+      <span class="bottom-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
+      <span class="count">{{ reaction.userIds.length }}</span>
 
+      <div *ngIf="tooltipHoveredIndex == j" #emojiTooltip class="bottom-emoji-tooltip">
+        <span class="tooltip-emoji">{{ getEmojiByName(reaction.emojiName)?.unicode }}</span>
+        <div>
+          <p class="tooltip-names">{{ formattedUserNames }}</p>
+          <p class="tooltip-text">{{ tooltipText }} reagiert</p>
+        </div>
+      </div>
+    </div>
+    <button class="emojis-shown-btn" *ngIf="!showAllReactions[msg.id] && getHiddenReactionCount(msg) > 0"
+      (click)="toggleShowAll(msg.id)">
+      +{{ getHiddenReactionCount(msg) }} weitere
+    </button>
+
+    <button class="emojis-shown-btn" *ngIf="shouldShowCollapseButton(msg)" (click)="toggleShowAll(msg.id)">
+      Weniger anzeigen
+    </button>
+
+    <div class="reduce-gap bottom-toggle-icon" (click)="toggleEmojiMenu(); $event.stopPropagation()">
+      <img src="assets/img/message-icons/add-reaction.svg" class="default" />
+      <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
+    </div>
+  </div>
 
 
 

@@ -2,6 +2,10 @@
 @import "./../../../../shared/styles/color.scss";
 @import "./../../../../shared/styles/breakpoint.scss";
 
+* {
+  margin: 0;
+}
+
 .message-img {
   width: 70px;
   height: 70px;

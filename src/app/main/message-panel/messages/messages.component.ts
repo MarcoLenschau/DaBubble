@@ -65,9 +65,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   filteredMessages: Message[] = [];
   hoveredIndex: number | null = null; // In SingleMessageComponent
   openEmojiIndex: number | null = null; // Bleibt
-  tooltipHoveredIndex: number | null = null;
-  formattedUserNames: string = '';
-  tooltipText: string = '';
+  tooltipHoveredIndex: number | null = null;// In SingleMessageComponent
+  formattedUserNames: string = '';// In SingleMessageComponent
+  tooltipText: string = '';// In SingleMessageComponent
   textareaContent: string = '';
   threadSymbol: '#' | '@' = '#';
   threadTitle: string = '';
@@ -77,7 +77,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   editingMessageId: string | null = null; // In SingleMessageComponent
   editedText: string = ''; // In SingleMessageComponent
   messagesReady = false;
-  showAllReactions: { [messageId: string]: boolean } = {};
+  showAllReactions: { [messageId: string]: boolean } = {}; // In SingleMessageComponent
 
   private shouldScrollAfterUpdate: boolean = true;
   private threadShouldScrollAfterUpdate: boolean = false;
@@ -145,7 +145,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     const container = this.scrollContainer.nativeElement;
   }
 
-  handleEditClick(msg: Message, index: number): void {
+  handleEditClick(msg: Message, index: number): void { // In SingleMessageComponent
     this.startEditing(msg);
     this.editMenuOpenIndex = null;
   }
@@ -231,7 +231,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   private async ensureThreadId(msg: Message): Promise<void> {
     if (!msg.threadId) {
       msg.threadId = msg.id;
-      await this.saveMessage(msg);
+      await this.messageDataService.updateMessage(msg);
     }
     this.threadId = msg.threadId;
   }
@@ -274,9 +274,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }, 0);
   }
 
-  async saveMessage(msg: Message) {
-    await this.messageDataService.updateMessage(msg);
-  }
+  // async saveMessage(msg: Message) {
+  //   await this.messageDataService.updateMessage(msg);
+  // }
 
   openThreadOldVersion(msg: Message) { // LÖSCHEN
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
@@ -311,24 +311,24 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.emojiMenuOpen[index] = !this.emojiMenuOpen[index];
   }
 
-  onEmojiToggle(i: number): void { // Bleibt
-    this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
-  }
+  // onEmojiToggle(i: number): void { // Bleibt
+  //   this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
+  // }
 
   closeEmojiRow(event: MouseEvent): void { // In SingleMessageComponent
     this.emojiMenuOpen = this.emojiMenuOpen.map(() => false);
   }
 
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:touchstart', ['$event'])
+  // @HostListener('document:click', ['$event'])
+  // @HostListener('document:touchstart', ['$event'])
 
-  onDocumentClick(event: MouseEvent | TouchEvent): void {
-    this.openEmojiIndex = null;
-  }
+  // onDocumentClick(event: MouseEvent | TouchEvent): void { // Bleibt
+  //   this.openEmojiIndex = null;
+  // }
 
-  onMessageTouch(i: number): void { // Bleibt
-    this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
-  }
+  // onMessageTouch(i: number): void { // Bleibt
+  //   this.openEmojiIndex = this.openEmojiIndex === i ? null : i;
+  // }
 
   async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
     this.messageEventService.disableAutoScroll();
@@ -347,7 +347,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       }
     }
 
-    await this.saveMessage(updatedMsg);
+    await this.messageDataService.updateMessage(msg);
     if (reactionIndex !== undefined) {
       const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
 
@@ -406,7 +406,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
 
 
-  onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) {
+  onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) { // In SingleMessageComponent
     const wrapper = event.currentTarget as HTMLElement;
     setTimeout(() => {
       const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
@@ -417,19 +417,19 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }, 60);
   }
 
-  getVisibleReactions(message: Message): Reaction[] {
+  getVisibleReactions(message: Message): Reaction[] { // In SingleMessageComponent
     return getVisibleReactions(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
-  getHiddenReactionCount(message: Message): number {
+  getHiddenReactionCount(message: Message): number { // In SingleMessageComponent
     return getHiddenReactionCount(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
-  shouldShowCollapseButton(message: Message): boolean {
+  shouldShowCollapseButton(message: Message): boolean { // In SingleMessageComponent
     return shouldShowCollapseButton(message, this.showAllReactions, this.viewMode, this.isThread);
   }
 
-  toggleShowAll(messageId: string): void {
+  toggleShowAll(messageId: string): void { // In SingleMessageComponent
     this.showAllReactions[messageId] = !this.showAllReactions[messageId];
   }
 
@@ -483,7 +483,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   getUserNames = (userIds: string[]) => getUserNames(this.users, userIds, this.currentUser);
   getUserById = (userId: string) => getUserById(this.users, userId);// In SingleMessageComponent
   formatUserNames = (userIds: string[]) => formatUserNames(this.users, userIds, this.currentUser);
-  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name);
+  getEmojiByName = (name: string) => getEmojiByName(this.emojis, name); // In SingleMessageComponent
   getEmojiByUnicode = (unicode: string) => getEmojiByUnicode(this.emojis, unicode);
   addEmojiToTextarea = (unicodeEmoji: string) => {
     this.textareaContent = addEmojiToTextarea(this.textareaContent, unicodeEmoji);
@@ -494,5 +494,5 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   }
   isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id); // In SingleMessageComponent
   trackByMessageId = trackByMessageId;
-  setTooltipHoveredState = setTooltipHoveredState;
+  setTooltipHoveredState = setTooltipHoveredState; // In SingleMessageComponent
 }
