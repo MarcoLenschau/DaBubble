@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { getAuth } from '@angular/fire/auth';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -11,6 +10,8 @@ export class MessageAudioService {
   record = false;
   chunks: any = [];
   audioInSeconds = {};
+  elapsedSeconds = 0;
+  timer: any;
 
   /**
    * Converts a Blob object to a Base64-encoded string.
@@ -53,6 +54,7 @@ export class MessageAudioService {
     this.recorder.ondataavailable = (e: any) => this.chunks.push(e.data);
     this.recorder.start();
     this.record = true;
+    this.startTimer();
   }
 
   /**
@@ -64,6 +66,7 @@ export class MessageAudioService {
    */
   async recordStop(recorder: any, stream: any): Promise<Blob> {
     recorder.stop();
+    this.stopTimer();
     await new Promise(r => recorder.onstop = r);
     stream.getTracks().forEach((t: any) => t.stop());
     this.record = false;
@@ -71,28 +74,34 @@ export class MessageAudioService {
   }
 
   /**
-   * Generates a structured audio message object to be sent or stored.
+   * Starts a timer that increments `elapsedSeconds` every second.
+   *
+   * @return {void} This function does not return a value.
+   */
+  startTimer() {
+    this.timer = setInterval(() => {
+      this.elapsedSeconds++;
+    }, 1000);
+  }
+
+  /**
+   * Stops the running timer by clearing the interval.
+   *
+   * @return {void} This function does not return a value.
+   */
+  stopTimer() {
+    clearInterval(this.timer);
+  }
+
+  /**
+   * Creates a clean audio message object for direct messages.
    *
    * @param {string} base64 - The Base64-encoded audio string.
-   * @param {string} [receiverId=""] - The ID of the message receiver.
-   * @return {Object} An object containing the audio message data including timestamp, sender, and receiver information.
+   * @param {string} [id=""] - The receiver ID.
+   * @param {User} user - The user object containing sender information.
+   * @return {Object} An object representing a direct audio message including metadata like timestamp and user ID.
    */
-
-  // Original-Code:
-
-  // getCleanAudioMessage(base64: string, receiverId = ""): {} {
-  //   const auth = getAuth();
-  //   return {
-  //     audio: base64,
-  //     timestamp: Date.now(),
-  //     userId: auth.currentUser?.displayName?.toLowerCase(),
-  //     name: auth.currentUser?.displayName,
-  //     receiverId: receiverId
-  //   };
-  // }
-
   getCleanDirectAudioMessage(base64: string, id = "", user: User): {} {
-    const auth = getAuth();
     return {
       audio: base64,
       timestamp: Date.now(),
@@ -101,16 +110,21 @@ export class MessageAudioService {
       userId: user.id,
       receiverId: id,
       isDirectMessage: true,
-      // id
-      // threadId,
       channelId: '',
       reactions: {},
       replies: 0,
     };
   }
 
+  /**
+   * Creates a clean audio message object for channel messages.
+   *
+   * @param {string} base64 - The Base64-encoded audio string.
+   * @param {string} [id=""] - The channel ID.
+   * @param {User} user - The user object containing sender information.
+   * @return {Object} An object representing a channel audio message including metadata like timestamp and channel ID.
+   */
   getCleanChannelAudioMessage(base64: string, id = "", user: User): {} {
-    const auth = getAuth();
     return {
       audio: base64,
       timestamp: Date.now(),
@@ -119,11 +133,23 @@ export class MessageAudioService {
       userId: user.id,
       receiverId: '',
       isDirectMessage: false,
-      // id
-      // threadId,
       channelId: id,
       reactions: {},
       replies: 0,
     };
+  }
+
+  /**
+   * Converts a number of seconds into a formatted time string (e.g., "1:09").
+   *
+   * @param {number} seconds - The number of seconds to format.
+   * @return {string} A string representing the formatted time in minutes and seconds.
+   */
+  formatTime(seconds: number): string {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const totalSeconds = Math.round(seconds);
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
   }
 }

@@ -5,13 +5,14 @@
   </button>
   <div class="time-container">
     <div class="time-info">
-      <span>{{ formatTime(currentTime) }}</span>
+      <span>{{ audioService.formatTime(currentTime) }}</span>
       <span>/</span>
-      <span>{{ formatTime(duration) }}</span>
+      <span>{{ audioService.formatTime(duration) }}</span>
     </div>
     <div class="progress-bar" (click)="seek($event)">
       <div class="progress" [style.width.%]="getProgress()"></div>
     </div>
   </div>
-  <audio #audioRef [src]="audio" (timeupdate)="onTimeUpdate()" (ended)="onEnded()"></audio>
+  <audio #audioRef [src]="audio" (loadedmetadata)="loadDuraction();" 
+  (timeupdate)="onTimeUpdate()" (ended)="onEnded()"></audio>
 </div>

@@ -312,10 +312,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
-
-
   async sendAudioMessage(): Promise<void> {
     let blob = await this.messageAudio.recordStop(this.messageAudio.recorder, this.messageAudio.stream);
     const url = URL.createObjectURL(blob);

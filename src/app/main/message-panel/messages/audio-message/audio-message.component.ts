@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import { MessageAudioService } from '../../../../core/services/message-audio.service';
 
 @Component({
   selector: 'app-audio-message',
@@ -13,7 +14,7 @@ export class AudioMessageComponent {
   isPlaying = false;
   currentTime = 0;
   duration = 0;
-
+  public audioService = inject(MessageAudioService);
 
   togglePlay() {
     const audio = this.audioElement.nativeElement;
@@ -32,29 +33,22 @@ export class AudioMessageComponent {
     this.isPlaying = false;
   }
 
-  formatTime(seconds: number): string {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const totalSeconds = Math.round(seconds);
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
-  }
-
   getProgress(): number {
     if (!this.duration) return 0;
     return (this.currentTime / this.duration) * 100;
   }
 
   seek(event: MouseEvent) {
-  const bar = (event.target as HTMLElement).closest('.progress-bar');
-  if (!bar) return;
+    const bar = (event.target as HTMLElement).closest('.progress-bar');
+    if (!bar) return;
+    const rect = bar.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const audio = this.audioElement.nativeElement;
+    audio.currentTime = percentage * this.duration;
+  }
 
-  const rect = bar.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const percentage = clickX / rect.width;
-
-  const audio = this.audioElement.nativeElement;
-  audio.currentTime = percentage * this.duration;
-}
-
+  loadDuraction() {
+    this.duration = this.audioElement.nativeElement.duration;
+  }
 }
