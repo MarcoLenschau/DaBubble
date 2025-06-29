@@ -347,7 +347,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
       }
     }
 
-    await this.messageDataService.updateMessage(msg);
+    await this.messageDataService.updateMessage(updatedMsg);
     if (reactionIndex !== undefined) {
       const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
 

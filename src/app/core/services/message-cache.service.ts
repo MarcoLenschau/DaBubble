@@ -172,6 +172,10 @@ export class MessageCacheService {
     return onSnapshot(q, snap => this.handleDocChangesThread(snap, cacheKey));
   }
 
+  //   handleDocChanges(snapshot, cacheKey, this.messageCache, this.activeListeners, this.currentContextKey, (msgs) => this.messageSubject.next(msgs));
+  // handleDocChangesThread(snapshot, cacheKey, this.messageCache, (msgs) => this.threadMessageSubject.next(msgs));
+
+
   private handleDocChanges(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
     if (!this.activeListeners.has(cacheKey)) {
       return;

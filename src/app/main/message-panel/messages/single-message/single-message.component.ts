@@ -3,14 +3,11 @@ import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
-import { UserDataService } from '../../../../core/services/user-data.service';
-import { FirebaseService } from '../../../../core/services/firebase.service';
 import { MessageDataService } from '../../../../core/services/message-data.service';
 import { MessageEventService } from '../../../../core/services/message-event.service';
 
 import { DialogUserDetailsComponent } from '../../../../dialogs/dialog-user-details/dialog-user-details.component';
 import { AudioMessageComponent } from '../audio-message/audio-message.component';
-
 
 import { Message } from '../../../../core/models/message.model';
 import { User } from '../../../../core/models/user.model';
@@ -43,86 +40,78 @@ export class SingleMessageComponent {
   @Input() viewMode: ViewMode = ViewMode.Desktop;
   @Input() openEmojiIndex!: number | null;
 
-
-
   @Output() messageEdited = new EventEmitter<{ index: number; newText: string; isThread: boolean }>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() emojiUsageChanged = new EventEmitter<{ usage: { [emojiName: string]: number }; recent: string[]; }>();
-  // @Output() emojiToggle = new EventEmitter<number>();
 
   localEmojiStats: { [emojiName: string]: number } = {};
   localRecentEmojis: string[] = [];
   emojiMenuOpen = false;
-  // hoveredIndex: number | null = null;
   hovered = false;
   editingMessageId: string | null = null;
   editedText: string = '';
-  editMenuOpenIndex: number | null = null; // In SingleMessageComponent
+  editMenuOpenIndex: number | null = null;
   showAllReactions: { [messageId: string]: boolean } = {};
   tooltipHoveredIndex: number | null = null;
-  formattedUserNames: string = '';// In SingleMessageComponent
+  formattedUserNames: string = '';
   tooltipText: string = '';
 
   private emojiTouched = false;
 
   constructor(
-    private userDataService: UserDataService,
-    private firebaseService: FirebaseService,
     private messageDataService: MessageDataService,
     private messageEventService: MessageEventService,
-    private dialog: MatDialog, // In SingleMessageComponent
+    private dialog: MatDialog,
   ) { }
 
-  // get emojiMenuOpen(): boolean {
-  //   return this.i === this.openEmojiIndex;
-  // }
-
-
-
-
-
-  // setHoverState(index: number | null) { // In SingleMessageComponent
-  //   this.hoveredIndex = index;
-  //   if (index === null) {
-  //     this.emojiMenuOpen = false;
-  //   }
-  // }
-
+  /**
+   * Sets hovered state to true.
+   * This triggers background highlight on the message and makes the emoji row visible.
+   */
   onMouseEnter(): void {
     this.hovered = true;
   }
 
+  /**
+   * Sets hovered state to false and closes the emoji menu if open.
+   * This removes the background highlight and hides the emoji row.
+   */
   onMouseLeave(): void {
     this.hovered = false;
     this.closeEmojiMenu();
   }
 
+  /**
+   * Toggles hovered state on touch start.
+   * This toggles background highlight and emoji row visibility,
+   * adapting for touch devices without mouse events.
+   */
+  onTouchStart(): void {
+    this.hovered = !this.hovered;
+  }
+
+  /**
+   * Closes the emoji menu by setting emojiMenuOpen to false.
+   */
   closeEmojiMenu(): void {
     this.emojiMenuOpen = false;
   }
 
-  onTouchStart(): void {
-    this.hovered = !this.hovered;
-    // !this.hovered ? this.closeEmojiMenu() : null;
-  }
-
-  // onTouchStart(event: TouchEvent): void {
-  //   event.stopPropagation();
-  //   this.touchOnMessage.emit();
-  // }
-
-  toggleEmojiMenu(): void { // In SingleMessageComponent
+  /**
+ * Toggles the emoji menu open/close state.
+ */
+  toggleEmojiMenu(): void {
     this.emojiMenuOpen = !this.emojiMenuOpen;
   }
 
-  // toggleEmojiMenu(): void {
-  //   this.emojiToggle.emit(this.i);
-  // }
-
-  // closeEmojiRow(event: MouseEvent): void { // In SingleMessageComponent
-  //   this.emojiMenuOpen = false;
-  // }
-
+  /**
+   * Handles touch event on an emoji. Prevents default behavior, sets emojiTouched flag,
+   * processes emoji click logic, and triggers emoji row mouse leave handling.
+   * 
+   * @param emojiName - Name of the emoji clicked.
+   * @param msg - The message object.
+   * @param event - The touch event triggering this handler.
+   */
   handleEmojiTouch(emojiName: string, msg: Message, event: TouchEvent): void {
     event.preventDefault();
     this.emojiTouched = true;
@@ -130,18 +119,45 @@ export class SingleMessageComponent {
     this.onEmojiRowMouseLeave();
   }
 
+  /**
+   * Handles a click on an emoji.
+   * Prevents duplicate handling when touched.
+   * Updates message reactions and disables auto-scroll.
+   * Updates tooltip if reaction index is given.
+   *
+   * @param emojiName Name of the emoji clicked
+   * @param msg The message being reacted to
+   * @param reactionIndex Optional index of the reaction for tooltip update
+   */
   async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
     if (this.emojiTouched) {
       this.emojiTouched = false;
       return;
     }
+
     this.messageEventService.disableAutoScroll();
+    const updatedMsg = this.processEmojiReaction(emojiName, msg);
+    await this.messageDataService.updateMessage(updatedMsg);
+
+    if (reactionIndex !== undefined) {
+      this.updateReactionTooltip(updatedMsg, emojiName, reactionIndex);
+    }
+  }
+
+  /**
+   * Processes the emoji reaction logic.
+   * Updates local emoji stats and recent emojis, which determine the order of emojis shown for the logged-in user.
+   * 
+   * @param emojiName Name of the emoji reacted with
+   * @param msg The original message
+   * @returns The updated message object including new reactions
+   */
+  private processEmojiReaction(emojiName: string, msg: Message): Message {
     const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
     const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
     const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
 
     if (!wasAlreadyReacted && isReactedNow) {
-
       this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
       if (this.localRecentEmojis[0] !== emojiName) {
         this.localRecentEmojis = [
@@ -150,22 +166,41 @@ export class SingleMessageComponent {
         ];
       }
     }
-    await this.messageDataService.updateMessage(msg);
-    if (reactionIndex !== undefined) {
-      const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
+    return updatedMsg;
+  }
 
-      if (reaction) {
-        this.setTooltipHoveredState(reactionIndex, reaction.userIds, this);
-      } else {
-        this.setTooltipHoveredState(null, null, this);
-      }
+  /**
+   * Updates the reaction tooltip based on the updated message.
+   *
+   * @param updatedMsg The message after emoji reaction update
+   * @param emojiName The emoji name to update tooltip for
+   * @param reactionIndex Index of the reaction to show tooltip on
+   */
+  private updateReactionTooltip(updatedMsg: Message, emojiName: string, reactionIndex: number): void {
+    const reaction = updatedMsg.reactions.find(r => r.emojiName === emojiName);
+
+    if (reaction) {
+      this.setTooltipHoveredState(reactionIndex, reaction.userIds, this);
+    } else {
+      this.setTooltipHoveredState(null, null, this);
     }
   }
 
+  /**
+   * Checks if the user has already reacted with the given emoji on the message.
+   *
+   * @param msg The message to check
+   * @param emojiName The emoji name to check for reaction
+   * @param userId The user ID to check reaction from
+   * @returns True if user reacted with emoji, otherwise false
+   */
   userHasReactedToEmoji(msg: Message, emojiName: string, userId: string): boolean {
     return msg.reactions.some((r) => r.emojiName === emojiName && r.userIds.includes(userId));
   }
 
+  /**
+   * Emits emoji usage changes if any local updates exist and closes the emoji menu.
+   */
   async onEmojiRowMouseLeave(): Promise<void> {
     const hasEmojiUpdates =
       Object.keys(this.localEmojiStats).length > 0 ||
@@ -181,11 +216,10 @@ export class SingleMessageComponent {
     this.emojiMenuOpen = false;
   }
 
-
-
-
-
-  openUserDialog(userId?: string): void { // In SingleMessageComponent
+  /**
+   * Opens a dialog to show user details by user ID.
+   */
+  openUserDialog(userId?: string): void {
     if (!userId) return;
     const user = this.getUserById(userId);
     if (user) {
@@ -193,39 +227,49 @@ export class SingleMessageComponent {
     }
   }
 
-
-
-
-
-
-  handleEditClick(msg: Message, index: number): void { // In SingleMessageComponent
+  /**
+   * Starts editing the given message and closes the edit menu.
+   */
+  handleEditClick(msg: Message, index: number): void {
     this.startEditing(msg);
     this.editMenuOpenIndex = null;
   }
 
-  toggleEditMenu(index: number): void { // In SingleMessageComponent
+  /**
+   * Toggles the visibility of the edit menu for a message.
+   */
+  toggleEditMenu(index: number): void {
     this.editMenuOpenIndex = this.editMenuOpenIndex === index ? null : index;
   }
 
-  startEditing(msg: Message): void { // In SingleMessageComponent
+  /**
+   * Starts editing by setting the editing message ID and initializing edited text.
+   */
+  startEditing(msg: Message): void {
     this.editingMessageId = msg.id;
     this.editedText = msg.text;
   }
 
-  cancelEditing(): void { // In SingleMessageComponent
+  /**
+   * Cancels the current editing operation.
+   */
+  cancelEditing(): void {
     this.editingMessageId = null;
     this.editedText = '';
   }
 
-  saveEditedMessage(msg: Message, index: number): void { // In SingleMessageComponent
+  /**
+   * Saves the edited message if the text was changed and not empty.
+   * Emits an event to update the message and disables auto-scroll.
+   * Logs an error if update fails.
+   */
+  saveEditedMessage(msg: Message, index: number): void {
     const trimmed = this.editedText.trim();
     if (!trimmed || trimmed === msg.text) {
       this.cancelEditing();
       return;
     }
-
     const updatedMessage = { ...msg, text: trimmed };
-    // this.messages[index] = { ...this.messages[index], text: trimmed };
     this.messageEdited.emit({ index, newText: trimmed, isThread: this.isThread });
     this.cancelEditing();
     this.messageEventService.disableAutoScroll();
@@ -234,27 +278,45 @@ export class SingleMessageComponent {
     });
   }
 
+  /**
+   * Emits an event to open a thread starting from the given message.
+   */
   openThread(msg: Message) {
     this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
   }
 
+  /**
+   * Returns the visible reactions for a message.
+   */
   getVisibleReactions(message: Message): Reaction[] {
     return getVisibleReactions(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
+  /**
+   * Returns the count of hidden reactions for a message.
+   */
   getHiddenReactionCount(message: Message): number {
     return getHiddenReactionCount(message, !!this.showAllReactions[message.id], this.viewMode, this.isThread);
   }
 
+  /**
+   * Determines if the collapse button should be shown for a message's reactions.
+   */
   shouldShowCollapseButton(message: Message): boolean {
     return shouldShowCollapseButton(message, this.showAllReactions, this.viewMode, this.isThread);
   }
 
-  toggleShowAll(messageId: string): void { // In SingleMessageComponent
+  /**
+   * Toggles whether all reactions for a message are shown or collapsed.
+   */
+  toggleShowAll(messageId: string): void {
     this.showAllReactions[messageId] = !this.showAllReactions[messageId];
   }
 
-  onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) { // In SingleMessageComponent
+  /**
+   * Adjusts tooltip overflow on mouse enter for emoji wrappers.
+   */
+  onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) {
     const wrapper = event.currentTarget as HTMLElement;
     setTimeout(() => {
       const tooltip = wrapper.querySelector('.bottom-emoji-tooltip');
