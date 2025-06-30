@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -15,31 +15,46 @@ import { firstValueFrom, filter } from 'rxjs';
 })
 export class DialogUserEditComponent {
   @Input() user: any = {};
+  private dialogRef = inject(MatDialogRef<DialogUserEditComponent>);
+  private userDataService = inject(UserDataService);
 
-  constructor(private dialogRef: MatDialogRef<DialogUserEditComponent>, private firebase: FirebaseService, private userDataService: UserDataService) {
-    console.log('DialogUserEditComponent initialized with user:', this.user);
-  }
-
-  dialogClose() {
+  /**
+   * Closes the currently open dialog.
+   *
+   * @return {void}
+   */
+  dialogClose(): void {
     this.dialogRef.close();
   }
 
-  async userSave() {
+  /**
+   * Initiates the user name saving process.
+   * Trims the input and only proceeds if the result is non-empty.
+   *
+   * @return {Promise<void>}
+   */
+  async userSave(): Promise<void> {
     const trimmedName = this.user.displayName?.trim();
     if (!trimmedName) return;
+    this.saveChanges(trimmedName).catch(() => {});
+  }
 
-    try {
-      const currentUser = await firstValueFrom(
-        this.userDataService.currentUser$.pipe(
-          filter(user => !!user && user.id !== 'default')
-        )
-      );
-      if (trimmedName !== currentUser.displayName) {
-        await this.userDataService.updateUserName(currentUser.id, trimmedName);
-      }
-      this.dialogClose();
-    } catch (err) {
-      console.error('Error saving new username:', err);
+  /**
+   * Compares the new trimmed name with the current user's name and updates it if different.
+   * Closes the dialog afterward.
+   *
+   * @param {string} trimmedName - The cleaned and trimmed display name input.
+   * @return {Promise<void>}
+   */  
+  async saveChanges(trimmedName: string): Promise<void> {
+    const currentUser = await firstValueFrom(
+      this.userDataService.currentUser$.pipe(
+        filter(user => !!user && user.id !== 'default')
+      )
+    );
+    if (trimmedName !== currentUser.displayName) {
+      await this.userDataService.updateUserName(currentUser.id, trimmedName);
     }
+    this.dialogClose();
   }
 }

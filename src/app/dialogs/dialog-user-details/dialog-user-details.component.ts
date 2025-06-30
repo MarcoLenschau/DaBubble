@@ -19,22 +19,44 @@ export class DialogUserDetailsComponent {
   @Input() directMessage = false;
   sendMailStatus = false;
   
-  closeProfilView() {
+  /**
+   * Closes the profile view dialog.
+   *
+   * @return {void}
+   */
+  closeProfilView(): void {
     this.dialogRef.close();
   }
 
-  openEditDialog() {
+  /**
+   * Opens the user edit dialog, sets the user data in the component instance,
+   * and closes the current profile view.
+   *
+   * @return {void}
+   */
+  openEditDialog(): void {
     const dialogRef = this.dialog.open(DialogUserEditComponent);
     dialogRef.componentInstance.user = this.user;
     this.closeProfilView();
   }
 
-  openEmailDialog() {
+  /**
+   * Opens the email edit dialog and closes the current profile view.
+   *
+   * @return {void}
+   */ 
+  openEmailDialog(): void {
     const dialogRef = this.dialog.open(DialogEmailEditComponent);
     this.closeProfilView();
   }
 
-  sendMail() {
+  /**
+   * Sends an email verification if not already in the sending state.
+   * Prevents multiple sends by disabling the status for 10 seconds.
+   *
+   * @return {void}
+   */
+  sendMail(): void {
     if (!this.sendMailStatus) {
       this.sendMailStatus = !this.sendMailStatus;
       this.sendEmailVerfication();
@@ -43,11 +65,13 @@ export class DialogUserDetailsComponent {
       }, 10000);
     }
   }
-
-  sendEmailVerfication()  {
-    this.auth.sendEmailVerification()
-    .catch((error) =>  {
-      console.error(error);
-    });
+  
+  /**
+   * Triggers the email verification process through the authentication service.
+   *
+   * @return {void}
+   */  
+  sendEmailVerfication(): void {
+    this.auth.sendEmailVerification();
   }
 }
