@@ -1,5 +1,6 @@
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
+import jsdoc from "eslint-plugin-jsdoc";
 
 export default defineConfig([
   {
@@ -19,6 +20,18 @@ export default defineConfig([
       "semi": ["error", "always"],
       "no-console": ["error"],
       "prefer-const": ["warn"],
+      "jsdoc/require-jsdoc": ["warn", 
+        { "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ArrowFunctionExpression": true,
+            "FunctionExpression": true
+          }
+        }
+      ],
     },
+    plugins: {
+      jsdoc: jsdoc
+    }
   },
 ]);

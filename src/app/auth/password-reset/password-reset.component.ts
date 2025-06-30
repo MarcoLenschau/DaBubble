@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { AuthService } from '../../core/services/auth.service';
@@ -16,10 +16,16 @@ export class PasswordResetComponent {
   email = "";
   emailSend = false;
   emailMessage = "";
-
-  constructor(private auth: AuthService) {}
+  private auth = inject(AuthService);
   
-  async resetPassword() {
+  /**
+   * Sends a password reset email to the provided email address.
+   * On success, a confirmation message is shown.
+   * On failure, the error message is shown.
+   *
+   * @return {Promise<void>} A promise that resolves when the process completes.
+   */
+  async resetPassword(): Promise<void> {
     await this.auth.resetPassword(this.email)
       .then(() =>{
         this.emailMessageShow("Die E-Mail wurde gesendet prüffen sie auch ihren Spam Ordner.");
@@ -29,7 +35,13 @@ export class PasswordResetComponent {
       });
   }
 
-  emailMessageShow(value: string) {
+  /**
+   * Displays a message to the user for 10 seconds, usually after sending the reset email.
+   *
+   * @param {string} value - The message to be shown to the user.
+   * @return {void}
+   */
+  emailMessageShow(value: string): void {
     this.emailSend = true;
     setTimeout(() => {
       this.emailSend = false;
@@ -37,11 +49,24 @@ export class PasswordResetComponent {
     this.emailMessage = value;
   }
 
-  setValue(eventValue: string){
+  /**
+   * Sets the internal email value from input.
+   *
+   * @param {string} eventValue - The value entered by the user.
+   * @return {void}
+   */
+  setValue(eventValue: string): void {
     this.email = eventValue;
   }
-  
-  validate(event: any) {
+
+  /**
+   * Validates the email format.
+   * If invalid, triggers a visual validation error.
+   *
+   * @param {any} event - The current value to validate (usually the email string).
+   * @return {void}
+   */
+  validate(event: any): void {
     validateEmail(event) ? validateError(this.emailRef, "remove") : validateError(this.emailRef);
   }
 }

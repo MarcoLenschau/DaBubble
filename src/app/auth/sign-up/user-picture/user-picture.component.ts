@@ -19,23 +19,38 @@ export class UserPictureComponent {
   private firebase = inject(FirebaseService);
   private router = inject(RouterService);
 
-
-  async registerUser() {
+  /**
+   * Registers the user by updating their profile with the selected picture.
+   * Searches the user by email, then updates their information in Firebase.
+   * On success, navigates to the main page. Logs an error on failure.
+   *
+   * @return {Promise<void>} A promise that resolves when the user registration process is complete.
+   */
+  async registerUser(): Promise<void> {
     this.user.photoURL = "./assets/img/profilepic/" + this.currentProfilePicutre;
     const user = await this.firebase.searchUsersByEmail(this.user.email);
     this.firebase.updateUser(user[0].id, this.user)
     .then(() => {
       this.router.switchRoute("");
-    }).catch((err) => {
-      console.log(err)
-    }); 
+    });
   }
 
-  selectPicture(picture: any) {
+  /**
+   * Sets the selected profile picture for the user.
+   *
+   * @param {any} picture - The selected profile picture filename or object.
+   * @return {void} This function does not return a value.
+   */
+  selectPicture(picture: any): void  {
     this.currentProfilePicutre = picture;
   }
 
-  sendData() {
+  /**
+   * Emits a signal indicating that the data is not ready (false).
+   *
+   * @return {void} This function does not return a value.
+   */
+  sendData(): void {
     this.dataReady.emit(false);
   }
 }

@@ -16,6 +16,10 @@ export class SignUpComponent {
   dataReady = false;
   user: any = {};
 
+  /**
+   * Constructor for initializing the component.
+   * Clears local storage and logs out the current user if one is logged in.
+   */
   constructor() {
     deleteLocalStorage();
     if (this.authService.user) {
@@ -23,11 +27,23 @@ export class SignUpComponent {
     }
   }
 
-  loadData(data: boolean) {
+  /**
+   * Sets the internal state flag indicating whether the data is ready.
+   *
+   * @param {boolean} data - Indicates if the data is ready.
+   * @return {void} This function does not return a value.
+   */  
+  loadData(data: boolean): void {
     this.dataReady = data;
   }
 
-  loadUserData(user: any) {
+  /**
+   * Loads the user data into the component.
+   *
+   * @param {any} user - The user object to load.
+   * @return {void} This function does not return a value.
+   */
+  loadUserData(user: any): void {
     this.user = user;
   }
 }
