@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DevspaceComponent } from './devspace/devspace.component';
 import { CommonModule } from '@angular/common';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { Message } from '../core/models/message.model';
 import { MessageWindowComponent } from './message-window/message-window.component';
 import { ThreadWindowComponent } from './thread-window/thread-window.component';
@@ -16,14 +16,7 @@ import { areUsersEqual } from '../core/utils/messages.utils';
 
 @Component({
   selector: 'app-main',
-  imports: [
-    DevspaceComponent,
-    MessageWindowComponent,
-    ThreadWindowComponent,
-    CommonModule,
-    MessageWindowComponent,
-    ThreadWindowComponent,
-  ],
+  imports: [ DevspaceComponent, MessageWindowComponent, ThreadWindowComponent, CommonModule, MessageWindowComponent, ThreadWindowComponent ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
@@ -69,34 +62,31 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {
     const mobileQuery = `(max-width: ${this.mobileMaxWidth}px)`;
     const tabletQuery = `(min-width: ${this.mobileMaxWidth + 1}px) and (max-width: ${this.tabletMaxWidth}px)`;
-
-
     this.breakpointObserver
       .observe([mobileQuery, tabletQuery])
       .subscribe(result => {
-        if (result.breakpoints[mobileQuery]) {
-          this.viewMode = ViewMode.Mobile;
-          this.showMessage = false;
-          if (this.showThread) {
-            this.showDevSpace = false;
-          } else {
-            this.showDevSpace = true;
-          }
-          // this.showThread = false;
-        } else if (result.breakpoints[tabletQuery]) {
-          this.viewMode = ViewMode.Tablet;
-          this.showMessage = true;
-          if (this.showThread) {
-            this.showDevSpace = false;
-          } else {
-            this.showDevSpace = true;
-          }
-        } else {
-          this.viewMode = ViewMode.Desktop;
-          this.showMessage = true;
-          this.showDevSpace = true;
-        }
+        result.breakpoints[mobileQuery] ? this.showMobileView() :
+        result.breakpoints[tabletQuery] ? this.showTabletView() :
+        this.showDesktopView();
       });
+  }
+
+  showDesktopView(): void {
+    this.viewMode = ViewMode.Desktop;
+    this.showMessage = true;
+    this.showDevSpace = true;
+  }
+
+  showTabletView(): void {
+    this.viewMode = ViewMode.Tablet;
+    this.showMessage = true;
+    this.showThread ? this.showDevSpace = false : this.showDevSpace = true;
+  }
+
+  showMobileView(): void {
+    this.viewMode = ViewMode.Mobile;
+    this.showMessage = false;
+    this.showThread ? this.showDevSpace = false : this.showDevSpace = true;
   }
 
   onThreadStart(event: { starterMessage: Message; userId: string }) {
@@ -167,12 +157,13 @@ export class MainComponent implements OnInit {
       this.messageContext?.receiverId === context.receiverId;
 
     if (!same) {
-      console.log("MainComponent: messageContext wurde wirklich geändert:", context);
       this.messageContext = context;
       this.messageEventService.notifyScrollIntent('message', true);
-    } else {
-      console.log("MainComponent: Kein Update notwendig (messageContext gleich)");
     }
+    this.checkIfViewModeMobile();
+  }
+
+  checkIfViewModeMobile(): void {
     if (this.viewMode === 'mobile') {
       this.showMessage = true;
       this.showDevSpace = false;
