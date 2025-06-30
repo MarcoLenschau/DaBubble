@@ -126,19 +126,46 @@ export class FirebaseService {
   //   await setDoc(messageRef, this.messageAudio.getCleanAudioMessage(base64, receiverId));
   // }
 
-  async addDirectAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
+  // async addDirectAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
+  //   const messageCollection = this.getDocRef('messages');
+  //   const messageRef = doc(messageCollection);
+  //   const audioBlob = data.get('audio');
+  //   const base64: any = await this.messageAudio.blobToBase64(audioBlob);
+  //   await setDoc(messageRef, this.messageAudio.getCleanDirectAudioMessage(base64, receiverId, user));
+  // }
+
+  // async addChannelAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
+  //   const messageCollection = this.getDocRef('messages');
+  //   const messageRef = doc(messageCollection);
+  //   const audioBlob = data.get('audio');
+  //   const base64: any = await this.messageAudio.blobToBase64(audioBlob);
+  //   await setDoc(messageRef, this.messageAudio.getCleanChannelAudioMessage(base64, receiverId, user));
+  // }
+
+  async addAudioMessage(
+    data: any,
+    user: User,
+    opts: {
+      channelId?: string;
+      threadId?: string;
+      receiverId?: string;
+      isDirect: boolean;
+    }
+  ): Promise<void> {
     const messageCollection = this.getDocRef('messages');
     const messageRef = doc(messageCollection);
     const audioBlob = data.get('audio');
     const base64: any = await this.messageAudio.blobToBase64(audioBlob);
-    await setDoc(messageRef, this.messageAudio.getCleanDirectAudioMessage(base64, receiverId, user));
+    const cleanMessage = this.messageAudio.getCleanAudioMessage(base64, {
+      id: messageRef.id,
+      user,
+      channelId: opts.channelId ?? '',
+      threadId: opts.threadId ?? '',
+      receiverId: opts.receiverId ?? '',
+      isDirect: opts.isDirect,
+    });
+
+    await setDoc(messageRef, cleanMessage);
   }
 
-  async addChannelAudioMessage(data: any, receiverId: string, user: User): Promise<void> {
-    const messageCollection = this.getDocRef('messages');
-    const messageRef = doc(messageCollection);
-    const audioBlob = data.get('audio');
-    const base64: any = await this.messageAudio.blobToBase64(audioBlob);
-    await setDoc(messageRef, this.messageAudio.getCleanChannelAudioMessage(base64, receiverId, user));
-  }
 }

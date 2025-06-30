@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
+import { Message } from '../models/message.model';
 
 @Injectable({
   providedIn: 'root'
@@ -101,20 +102,20 @@ export class MessageAudioService {
    * @param {User} user - The user object containing sender information.
    * @return {Object} An object representing a direct audio message including metadata like timestamp and user ID.
    */
-  getCleanDirectAudioMessage(base64: string, id = "", user: User): {} {
-    return {
-      audio: base64,
-      timestamp: Date.now(),
-      name: user.displayName,
-      text: '',
-      userId: user.id,
-      receiverId: id,
-      isDirectMessage: true,
-      channelId: '',
-      reactions: {},
-      replies: 0,
-    };
-  }
+  // getCleanDirectAudioMessage(base64: string, id = "", user: User): {} {
+  //   return {
+  //     audio: base64,
+  //     timestamp: Date.now(),
+  //     name: user.displayName,
+  //     text: '',
+  //     userId: user.id,
+  //     receiverId: id,
+  //     isDirectMessage: true,
+  //     channelId: '',
+  //     reactions: {},
+  //     replies: 0,
+  //   };
+  // }
 
   /**
    * Creates a clean audio message object for channel messages.
@@ -124,17 +125,41 @@ export class MessageAudioService {
    * @param {User} user - The user object containing sender information.
    * @return {Object} An object representing a channel audio message including metadata like timestamp and channel ID.
    */
-  getCleanChannelAudioMessage(base64: string, id = "", user: User): {} {
+  // getCleanChannelAudioMessage(base64: string, id = "", user: User): {} {
+  //   return {
+  //     audio: base64,
+  //     timestamp: Date.now(),
+  //     name: user.displayName,
+  //     text: '',
+  //     userId: user.id,
+  //     receiverId: '',
+  //     isDirectMessage: false,
+  //     channelId: id,
+  //     reactions: {},
+  //     replies: 0,
+  //   };
+  // }
+
+  getCleanAudioMessage(base64: string, opts: {
+    id: string;
+    user: User;
+    channelId?: string;
+    threadId?: string;
+    receiverId?: string;
+    isDirect: boolean;
+  }): Message {
     return {
+      id: opts.id,
       audio: base64,
       timestamp: Date.now(),
-      name: user.displayName,
+      name: opts.user.displayName,
       text: '',
-      userId: user.id,
-      receiverId: '',
-      isDirectMessage: false,
-      channelId: id,
-      reactions: {},
+      userId: opts.user.id,
+      receiverId: opts.receiverId,
+      isDirectMessage: opts.isDirect,
+      channelId: opts.channelId,
+      threadId: opts.threadId,
+      reactions: [],
       replies: 0,
     };
   }

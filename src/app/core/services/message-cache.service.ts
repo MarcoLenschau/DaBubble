@@ -90,21 +90,53 @@ export class MessageCacheService {
 
   async loadMessagesForThread(threadId: string): Promise<void> {
     const cacheKey = `thread:${threadId}`;
-
+    console.log('[Thread] START loading for:', cacheKey);
     const cached = this.messageCache.get(cacheKey) ?? [];
     this.threadMessageSubject.next([...cached]);
 
-    this.removeLiveListener(cacheKey);
-    this.registerLiveListener(cacheKey, () =>
-      this.createThreadListener(threadId, cacheKey)
-    );
+    // this.removeLiveListener(cacheKey);
+    // this.registerLiveListener(cacheKey, () =>
+    //   this.createThreadListener(threadId, cacheKey)
+    // );
+
+    // console.log('[Thread] Removing existing listener for', cacheKey);
+    // this.removeLiveListener(cacheKey);
+
+    // console.log('[Thread] Registering new listener for', cacheKey);
+    // this.registerLiveListener(cacheKey, () =>
+    //   this.createThreadListener(threadId, cacheKey)
+    // );
+
+    // this.registerLiveListener(cacheKey, () => {
+    //   console.log('[Thread] Removing existing listener for:', cacheKey);
+    //   this.removeLiveListener(cacheKey);
+
+    //   console.log('[Thread] Registering new listener for:', cacheKey);
+    //   return this.createThreadListener(threadId, cacheKey);
+    // });
+
+    if (this.activeListeners.has(cacheKey)) {
+      console.log('[Thread] Removing existing listener for:', cacheKey);
+      this.removeLiveListener(cacheKey);
+    }
+
+    console.log('[Thread] Registering new listener for:', cacheKey);
+    this.registerLiveListener(cacheKey, () => {
+      console.log('[createThreadListener] Creating listener for', cacheKey);
+      return this.createThreadListener(threadId, cacheKey);
+    });
 
     if (!this.messageCache.has(cacheKey)) {
+      console.log('[Thread] No cached messages found, filtering...');
       const allMessages = this.messageCache.get('all') ?? [];
       const filtered = allMessages.filter(msg => msg.threadId === threadId);
       this.messageCache.set(cacheKey, filtered);
       this.threadMessageSubject.next([...filtered]);
+      console.log('[Thread] Filtered and cached messages for:', cacheKey);
+    } else {
+      console.log('[Thread] Messages already cached for:', cacheKey);
     }
+    console.log('[Thread] END loading for:', cacheKey);
   }
 
   public registerLiveListener(cacheKey: string, createUnsub: () => (() => void | Promise<void>)): void {
@@ -121,6 +153,7 @@ export class MessageCacheService {
   }
 
   public removeLiveListener(cacheKey: string): void {
+    console.log('[removeLiveListener] for', cacheKey);
     const unsub = this.activeListeners.get(cacheKey);
 
     if (!unsub) {
@@ -167,6 +200,7 @@ export class MessageCacheService {
   }
 
   private createThreadListener(threadId: string, cacheKey: string): Unsubscribe {
+    console.log('[createThreadListener] Creating listener for', cacheKey);
     const col = collection(this.firestore, 'messages');
     const q = query(col, where('threadId', '==', threadId), orderBy('timestamp', 'asc'));
     return onSnapshot(q, snap => this.handleDocChangesThread(snap, cacheKey));
@@ -253,6 +287,7 @@ export class MessageCacheService {
   }
 
   private handleDocChangesThread(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
+    console.log('[handleDocChangesThread] Snapshot received for:', cacheKey);
     let global = this.messageCache.get('all') ?? [];
     let globalChanged = false;
 
@@ -260,6 +295,7 @@ export class MessageCacheService {
     let threadChanged = false;
 
     snapshot.docChanges().forEach(change => {
+      console.log(`[Thread:${cacheKey}]`, change.type, change.doc.id);
       const msg = mapDocToMessage(change.doc as any);
       const idxGlobal = global.findIndex(m => m.id === msg.id);
 

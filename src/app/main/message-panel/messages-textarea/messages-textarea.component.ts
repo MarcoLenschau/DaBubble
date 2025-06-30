@@ -21,6 +21,7 @@ import { MessageAudioService } from '../../../core/services/message-audio.servic
   imports: [CommonModule, FormsModule],
   templateUrl: './messages-textarea.component.html',
   styleUrl: './messages-textarea.component.scss',
+  providers: [MessageAudioService]
 })
 export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() textInput: string = '';
@@ -212,10 +213,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   async sendMessage(): Promise<void> {
     const text = this.textInput.trim();
     if (!text || !this.currentUser) return;
-    this.messageEventService.notifyScrollIntent(this.mode, true);
-    if (this.mode == 'thread') {
-      this.messageEventService.notifyScrollIntent('message', false);
-    }
+    this.handleScrollIntent();
     const message = this.createMessage(text);
     try {
       await this.messageDataService.addMessage(message);
@@ -224,6 +222,13 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Fehler beim Senden der Nachricht:', error);
       this.resetInputField();
+    }
+  }
+
+  private handleScrollIntent(): void {
+    this.messageEventService.notifyScrollIntent(this.mode, true);
+    if (this.mode === 'thread') {
+      this.messageEventService.notifyScrollIntent('message', false);
     }
   }
 
@@ -262,7 +267,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       isDirectMessage: isDirect,
       threadId,
       channelId,
-      reactions: this.reaction || {},
+      reactions: this.reaction || [],
       replies: 0,
     });
   }
@@ -300,16 +305,30 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   // }
 
 
+  // async saveAudioMessage(blob: any): Promise<void> {
+  //   const audioData = new FormData();
+  //   audioData.append('audio', blob, 'message.webm');
+  //   if (this.messageContext) {
+  //     if (this.messageContext.receiverId) {
+  //       this.firebase.addDirectAudioMessage(audioData, this.messageContext.receiverId, this.currentUser);
+  //     } else if (this.messageContext.id) {
+  //       this.firebase.addChannelAudioMessage(audioData, this.messageContext.id, this.currentUser);
+  //     }
+  //   }
+  // }
+
   async saveAudioMessage(blob: any): Promise<void> {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
-    if (this.messageContext) {
-      if (this.messageContext.receiverId) {
-        this.firebase.addDirectAudioMessage(audioData, this.messageContext.receiverId, this.currentUser);
-      } else if (this.messageContext.id) {
-        this.firebase.addChannelAudioMessage(audioData, this.messageContext.id, this.currentUser);
-      }
-    }
+    const isDirect = this.messageContext?.type === 'direct';
+    const receiverId = isDirect ? this.messageContext!.receiverId : '';
+
+    await this.firebase.addAudioMessage(audioData, this.currentUser, {
+      channelId: this.findChannelId(),
+      threadId: this.findThreadId(),
+      receiverId: receiverId,
+      isDirect: isDirect,
+    });
   }
 
   async sendAudioMessage(): Promise<void> {
@@ -320,6 +339,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       this.messageAudio.audioInSeconds = Math.round(audio.duration);
     };
     this.messageAudio.createAudioMessage(blob);
+    this.handleScrollIntent();
     this.saveAudioMessage(blob);
   }
 }
