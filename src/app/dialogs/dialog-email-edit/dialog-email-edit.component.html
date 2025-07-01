@@ -1,4 +1,5 @@
-<div class="main-container">
+<div class="dialog-email-edit">
+    <h3>Ändere deine Email Adresse</h3>
     <div class="content">
         <app-input #email (valueChange)="validate($event); setValue($event, 'email');" 
         [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'" [height]="48"></app-input>

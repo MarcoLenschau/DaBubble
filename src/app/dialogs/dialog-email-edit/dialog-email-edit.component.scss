@@ -1,0 +1,16 @@
+@import "../../shared/styles/mix-in.scss";
+
+.dialog-email-edit {
+    @include dFlex($jc: none, $f: column);
+    padding: 18px 8px;
+}
+
+.content {
+    @include dFlex($jc: none, $ai: none, $f: column, $g: 12px);
+    margin: 9px;
+}   
+
+.send-button {
+    @include dFlex($jc: flex-end, $ai: none);
+    margin-top: 12px;
+}
