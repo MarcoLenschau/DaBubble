@@ -2,22 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
-import {
-  getDocs,
-  collection,
-  Firestore,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  QuerySnapshot,
-  DocumentData,
-  Unsubscribe,
-  CollectionReference
-} from '@angular/fire/firestore';
-import {
-  filterMessagesByContext, generateCacheKey, directQueryConditions, handleDocChanges, handleDocChangesThread
-} from '../utils/message-cache.utils';
+import { getDocs, collection, Firestore, query, where, orderBy, onSnapshot, QuerySnapshot, DocumentData, Unsubscribe, CollectionReference } from '@angular/fire/firestore';
+import { handleDocChanges, handleDocChangesThread } from '../utils/message-cache.utils';
+import { filterMessagesByContext, generateCacheKey, directQueryConditions } from '../utils/message-context.utils';
 
 @Injectable({
   providedIn: 'root'
