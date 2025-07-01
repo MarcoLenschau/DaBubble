@@ -12,11 +12,11 @@ import {
   onSnapshot,
   QuerySnapshot,
   DocumentData,
-  Unsubscribe
+  Unsubscribe,
+  CollectionReference
 } from '@angular/fire/firestore';
-import { detectRelevantChanges, } from '../utils/messages.utils';
 import {
-  filterMessagesByContext, messageBelongsToContext, mapDocToMessage, generateCacheKey, directQueryConditions, messageBelongsToThread,
+  filterMessagesByContext, generateCacheKey, directQueryConditions, handleDocChanges, handleDocChangesThread
 } from '../utils/message-cache.utils';
 
 @Injectable({
@@ -33,22 +33,47 @@ export class MessageCacheService {
 
   constructor(private firestore: Firestore) { }
 
+  /**
+   * Observable stream of all messages.
+   * 
+   * @returns Observable<Message[]> Emits all messages as an observable stream.
+   */
   get messages$(): Observable<Message[]> {
     return this.messageSubject.asObservable();
   }
 
+  /**
+   * Observable stream of messages in the current thread.
+   * 
+   * @returns Observable<Message[]> Emits messages of the currently active thread.
+   */
   get threadMessages$(): Observable<Message[]> {
     return this.threadMessageSubject.asObservable();
   }
 
+  /**
+   * Returns the current message context or null if none is set.
+   * 
+   * @returns MessageContext | null The current context or null if not set.
+   */
   public getCurrentContext(): MessageContext | null {
     return this.currentContextObj;
   }
 
+  /**
+   * Returns the current cache key for the message context or null if none is set.
+   * 
+   * @returns string | null The current cache key or null if not set.
+   */
   public getCurrentContextKey(): string | null {
     return this.currentContextKey;
   }
 
+  /**
+   * Initializes the message cache by loading all messages from Firestore, ordered by timestamp ascending.
+   * 
+   * @returns A promise that resolves when the cache has been initialized.
+   */
   async initInitialMessageCache(): Promise<void> {
     const q = query(
       collection(this.firestore, 'messages'),
@@ -64,86 +89,124 @@ export class MessageCacheService {
     this.messageCache.set('all', allMessages);
   }
 
+  /**
+   * Loads messages for the given context and user.
+   * Updates the current context, cache, and ensures a listener is active for the context.
+   * 
+   * @param context The message context (channel or direct)
+   * @param currentUserId The current user's ID
+   * @param reason Optional reason for loading (for debugging)
+   * @returns Promise resolved when loading is complete
+   */
   async loadMessagesForContext(context: MessageContext, currentUserId: string, reason: string = 'unknown'): Promise<void> {
     const cacheKey = generateCacheKey(context, currentUserId);
+    this.updateCurrentContext(cacheKey, context);
+    this.updateCacheAndSubject(cacheKey, context, currentUserId);
+    this.ensureListener(context, currentUserId, cacheKey);
+  }
 
+  /**
+   * Updates the current message context and removes previous listener if necessary.
+   * 
+   * @param cacheKey Cache key for the current context
+   * @param context The current message context
+   */
+  private updateCurrentContext(cacheKey: string, context: MessageContext): void {
     if (this.currentContextKey && this.currentContextKey !== cacheKey) {
       this.removeLiveListener(this.currentContextKey);
     }
-
     this.currentContextKey = cacheKey;
     this.currentContextObj = context;
+  }
 
+  /**
+   * Filters cached messages based on the context and user,
+   * updates the cache, and emits messages to subscribers.
+   * 
+   * @param cacheKey Cache key for the context
+   * @param context The message context
+   * @param currentUserId The current user's ID
+   */
+  private updateCacheAndSubject(cacheKey: string, context: MessageContext, currentUserId: string): void {
     const allMessages = this.messageCache.get('all') ?? [];
-
     const filtered = filterMessagesByContext(allMessages, context, currentUserId);
     this.messageCache.set(cacheKey, filtered);
     this.messageSubject.next([...filtered]);
+  }
 
+  /**
+   * Ensures a live listener is registered for the current context.
+   * 
+   * @param context The message context
+   * @param currentUserId The current user's ID
+   * @param cacheKey Cache key for the context
+   */
+  private ensureListener(context: MessageContext, currentUserId: string, cacheKey: string): void {
     if (!this.activeListeners.has(cacheKey)) {
       this.registerLiveListener(cacheKey, () =>
-        this.createContextListener(context, currentUserId, cacheKey)
-      );
+        this.createContextListener(context, currentUserId, cacheKey));
     }
   }
 
-
+  /**
+   * Loads messages for a given thread, emits cached messages immediately,
+   * manages live listeners, and loads messages from cache if necessary.
+   *
+   * @param threadId The ID of the thread to load messages for
+   * @returns Promise that resolves when the loading and caching process completes
+   */
   async loadMessagesForThread(threadId: string): Promise<void> {
     const cacheKey = `thread:${threadId}`;
-    console.log('[Thread] START loading for:', cacheKey);
-    const cached = this.messageCache.get(cacheKey) ?? [];
-    this.threadMessageSubject.next([...cached]);
-
-    // this.removeLiveListener(cacheKey);
-    // this.registerLiveListener(cacheKey, () =>
-    //   this.createThreadListener(threadId, cacheKey)
-    // );
-
-    // console.log('[Thread] Removing existing listener for', cacheKey);
-    // this.removeLiveListener(cacheKey);
-
-    // console.log('[Thread] Registering new listener for', cacheKey);
-    // this.registerLiveListener(cacheKey, () =>
-    //   this.createThreadListener(threadId, cacheKey)
-    // );
-
-    // this.registerLiveListener(cacheKey, () => {
-    //   console.log('[Thread] Removing existing listener for:', cacheKey);
-    //   this.removeLiveListener(cacheKey);
-
-    //   console.log('[Thread] Registering new listener for:', cacheKey);
-    //   return this.createThreadListener(threadId, cacheKey);
-    // });
+    this.emitCachedThreadMessages(cacheKey);
 
     if (this.activeListeners.has(cacheKey)) {
-      console.log('[Thread] Removing existing listener for:', cacheKey);
       this.removeLiveListener(cacheKey);
     }
 
-    console.log('[Thread] Registering new listener for:', cacheKey);
-    this.registerLiveListener(cacheKey, () => {
-      console.log('[createThreadListener] Creating listener for', cacheKey);
-      return this.createThreadListener(threadId, cacheKey);
-    });
+    this.registerLiveListener(cacheKey, () => this.createThreadListener(threadId, cacheKey));
 
+    await this.loadAndCacheThreadMessagesIfNeeded(threadId, cacheKey);
+  }
+
+  /**
+   * Emits cached thread messages to subscribers based on the provided cache key.
+   *
+   * @param cacheKey The cache key representing the thread messages
+   */
+  private emitCachedThreadMessages(cacheKey: string): void {
+    const cached = this.messageCache.get(cacheKey) ?? [];
+    this.threadMessageSubject.next([...cached]);
+  }
+
+
+  /**
+   * Loads messages for a thread from the 'all' cache if they are not already cached,
+   * caches the filtered messages, and emits them to subscribers.
+   *
+   * @param threadId The ID of the thread whose messages should be loaded
+   * @param cacheKey The cache key associated with the thread
+   * @returns Promise that resolves when loading and caching is complete
+   */
+  private async loadAndCacheThreadMessagesIfNeeded(threadId: string, cacheKey: string): Promise<void> {
     if (!this.messageCache.has(cacheKey)) {
-      console.log('[Thread] No cached messages found, filtering...');
       const allMessages = this.messageCache.get('all') ?? [];
       const filtered = allMessages.filter(msg => msg.threadId === threadId);
       this.messageCache.set(cacheKey, filtered);
       this.threadMessageSubject.next([...filtered]);
-      console.log('[Thread] Filtered and cached messages for:', cacheKey);
-    } else {
-      console.log('[Thread] Messages already cached for:', cacheKey);
     }
-    console.log('[Thread] END loading for:', cacheKey);
   }
 
+  /**
+   * Registers a live listener for the given cache key if it does not already exist.
+   * The listener is created by invoking the provided factory function.
+   *
+   * @param cacheKey The cache key for which the live listener should be registered
+   * @param createUnsub A factory function that returns an unsubscribe function or Promise thereof
+   */
   public registerLiveListener(cacheKey: string, createUnsub: () => (() => void | Promise<void>)): void {
     if (this.activeListeners.has(cacheKey)) {
       return;
     }
-
     try {
       const unsub = createUnsub();
       this.activeListeners.set(cacheKey, unsub);
@@ -152,20 +215,32 @@ export class MessageCacheService {
     }
   }
 
+  /**
+   * Removes the live listener associated with the given cache key.
+   * If no listener exists for the key, the method returns immediately.
+   *
+   * @param cacheKey The cache key identifying the listener to remove
+   */
   public removeLiveListener(cacheKey: string): void {
-    console.log('[removeLiveListener] for', cacheKey);
     const unsub = this.activeListeners.get(cacheKey);
+    if (!unsub) return;
 
-    if (!unsub) {
-      return;
-    }
+    this.callUnsubAndCleanup(unsub, cacheKey);
+  }
 
+  /**
+   * Calls the unsubscribe function and cleans up the activeListeners map.
+   * Handles both synchronous and asynchronous unsubscribe functions,
+   * logging errors if they occur during the process.
+   *
+   * @param unsub The unsubscribe function to call
+   * @param cacheKey The cache key associated with the listener to clean up
+   */
+  private callUnsubAndCleanup(unsub: () => any, cacheKey: string): void {
     try {
       const result = unsub();
       Promise.resolve(result)
-        .then(() => {
-          this.activeListeners.delete(cacheKey);
-        })
+        .then(() => this.activeListeners.delete(cacheKey))
         .catch((err) => {
           console.error('[CacheService] Fehler beim Entfernen des LiveListeners für key=', cacheKey, err);
         });
@@ -174,220 +249,141 @@ export class MessageCacheService {
     }
   }
 
-
-  private createContextListener(
-    context: MessageContext,
-    currentUserId: string,
-    cacheKey: string
-  ): Unsubscribe {
+  /**
+   * Creates a Firestore listener for messages in a given context.
+   * Supports 'channel' and 'direct' message contexts.
+   *
+   * @param context The message context (channel or direct)
+   * @param currentUserId The ID of the current user
+   * @param cacheKey The cache key associated with this context
+   * @returns An unsubscribe function to stop listening
+   */
+  private createContextListener(context: MessageContext, currentUserId: string, cacheKey: string): Unsubscribe {
     const col = collection(this.firestore, 'messages');
-
-    if (context.type === 'channel') {
-      const q = query(col, where('channelId', '==', context.id), orderBy('timestamp', 'asc'));
-      return onSnapshot(q, snap => this.handleDocChanges(snap, cacheKey));
+    const handle = (snap: QuerySnapshot<DocumentData>) => {
+      handleDocChanges(snap, cacheKey, this.messageCache, this.activeListeners, this.currentContextKey, (msgs: Message[]) => this.messageSubject.next(msgs));
+    };
+    if (context.type === 'channel' && context.id) {
+      return this.createChannelListener(col, context.id, handle);
     }
-
     if (context.type === 'direct' && context.receiverId) {
-      const q1 = query(col, ...directQueryConditions(currentUserId, context.receiverId));
-      const q2 = query(col, ...directQueryConditions(context.receiverId, currentUserId));
-
-      const unsub1 = onSnapshot(q1, snap => this.handleDocChanges(snap, cacheKey));
-      const unsub2 = onSnapshot(q2, snap => this.handleDocChanges(snap, cacheKey));
-      return () => { unsub1(); unsub2(); };
+      return this.createDirectListeners(col, currentUserId, context.receiverId, handle);
     }
-
     return () => { };
   }
 
-  private createThreadListener(threadId: string, cacheKey: string): Unsubscribe {
-    console.log('[createThreadListener] Creating listener for', cacheKey);
-    const col = collection(this.firestore, 'messages');
-    const q = query(col, where('threadId', '==', threadId), orderBy('timestamp', 'asc'));
-    return onSnapshot(q, snap => this.handleDocChangesThread(snap, cacheKey));
+  /**
+   * Creates a Firestore listener for a specific channel.
+   *
+   * @param col The Firestore collection reference
+   * @param channelId The ID of the channel to listen to
+   * @param handle The snapshot handler callback
+   * @returns An unsubscribe function to stop listening
+   */
+  private createChannelListener(col: CollectionReference<DocumentData>, channelId: string, handle: (snap: QuerySnapshot<DocumentData>) => void): Unsubscribe {
+    const q = query(col, where('channelId', '==', channelId), orderBy('timestamp', 'asc'));
+    return onSnapshot(q, handle);
   }
 
-  //   handleDocChanges(snapshot, cacheKey, this.messageCache, this.activeListeners, this.currentContextKey, (msgs) => this.messageSubject.next(msgs));
-  // handleDocChangesThread(snapshot, cacheKey, this.messageCache, (msgs) => this.threadMessageSubject.next(msgs));
+  /**
+   * Creates Firestore listeners for direct message queries between two users.
+   *
+   * @param col The Firestore collection reference
+   * @param userA ID of the first user
+   * @param userB ID of the second user
+   * @param handle The snapshot handler callback
+   * @returns A combined unsubscribe function to stop both listeners
+   */
+  private createDirectListeners(col: CollectionReference<DocumentData>, userA: string, userB: string, handle: (snap: QuerySnapshot<DocumentData>) => void): Unsubscribe {
+    const q1 = query(col, ...directQueryConditions(userA, userB));
+    const q2 = query(col, ...directQueryConditions(userB, userA));
+    const unsub1 = onSnapshot(q1, handle);
+    const unsub2 = onSnapshot(q2, handle);
+    return () => { unsub1(); unsub2(); };
+  }
 
+  /**
+   * Creates a Firestore listener for messages in a specific thread.
+   *
+   * @param threadId The ID of the thread to listen to
+   * @param cacheKey The cache key associated with this thread
+   * @returns An unsubscribe function to stop listening
+   */
+  private createThreadListener(threadId: string, cacheKey: string): Unsubscribe {
+    const col = collection(this.firestore, 'messages');
+    const q = query(col, where('threadId', '==', threadId), orderBy('timestamp', 'asc'));
+    return onSnapshot(q, snap => handleDocChangesThread(snap,
+      cacheKey,
+      this.messageCache,
+      (msgs: Message[]) => this.threadMessageSubject.next(msgs)));
+  }
 
-  private handleDocChanges(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
-    if (!this.activeListeners.has(cacheKey)) {
+  /**
+   * Updates the user name in the message cache and reloads affected messages.
+   * 
+   * @param userId The ID of the user whose name is updated
+   * @param newName The new name to assign to the user
+   */
+  updateUserNameInCache(userId: string, newName: string): void {
+    const allMessages = this.messageCache.get('all') || [];
+    let updated = this.updateNamesInMessages(allMessages, userId, newName);
+    if (!updated) {
       return;
     }
 
-    let global = this.messageCache.get('all') ?? [];
-    let globalChanged = false;
-
-    const currentContextMessages = this.messageCache.get(cacheKey) ?? [];
-    let contextChanged = false;
-
-    snapshot.docChanges().forEach(change => {
-      const msg = mapDocToMessage(change.doc as any);
-
-      const idxGlobal = global.findIndex(m => m.id === msg.id);
-      if (change.type === 'added') {
-        if (idxGlobal === -1) {
-          global.push(msg);
-          global.sort((a, b) => a.timestamp - b.timestamp);
-          globalChanged = true;
-        }
-      } else if (change.type === 'modified' && idxGlobal !== -1) {
-        if (detectRelevantChanges(global[idxGlobal], msg)) {
-          global[idxGlobal] = msg;
-          globalChanged = true;
-        }
-      } else if (change.type === 'removed' && idxGlobal !== -1) {
-        global.splice(idxGlobal, 1);
-        globalChanged = true;
-      }
-
-      const belongs = messageBelongsToContext(msg, cacheKey);
-      const idxCtx = currentContextMessages.findIndex(m => m.id === msg.id);
-      if (change.type === 'added') {
-        if (belongs && idxCtx === -1) {
-          currentContextMessages.push(msg);
-          currentContextMessages.sort((a, b) => a.timestamp - b.timestamp);
-          contextChanged = true;
-        }
-      } else if (change.type === 'modified') {
-        if (idxCtx !== -1) {
-          if (detectRelevantChanges(currentContextMessages[idxCtx], msg)) {
-            if (belongs) {
-              currentContextMessages[idxCtx] = msg;
-            } else {
-              currentContextMessages.splice(idxCtx, 1);
-            }
-            contextChanged = true;
-          }
-        } else {
-          if (belongs) {
-            currentContextMessages.push(msg);
-            currentContextMessages.sort((a, b) => a.timestamp - b.timestamp);
-            contextChanged = true;
-          }
-        }
-      } else if (change.type === 'removed') {
-        if (idxCtx !== -1) {
-          currentContextMessages.splice(idxCtx, 1);
-          contextChanged = true;
-        }
-      }
-    });
-
-    if (globalChanged) {
-      this.messageCache.set('all', global);
-    }
-    if (contextChanged) {
-      this.messageCache.set(cacheKey, currentContextMessages);
-
-      if (cacheKey === this.currentContextKey) {
-        this.messageSubject.next([...currentContextMessages]);
-      }
-    }
+    this.messageCache.set('all', allMessages);
+    this.reloadContextMessagesIfNeeded(userId);
+    this.updateThreadMessages(userId, newName);
   }
 
-  private handleDocChangesThread(snapshot: QuerySnapshot<DocumentData>, cacheKey: string): void {
-    console.log('[handleDocChangesThread] Snapshot received for:', cacheKey);
-    let global = this.messageCache.get('all') ?? [];
-    let globalChanged = false;
-
-    const threadMessages = this.messageCache.get(cacheKey) ?? [];
-    let threadChanged = false;
-
-    snapshot.docChanges().forEach(change => {
-      console.log(`[Thread:${cacheKey}]`, change.type, change.doc.id);
-      const msg = mapDocToMessage(change.doc as any);
-      const idxGlobal = global.findIndex(m => m.id === msg.id);
-
-      if (change.type === 'added' && idxGlobal === -1) {
-        global.push(msg);
-        global.sort((a, b) => a.timestamp - b.timestamp);
-        globalChanged = true;
-      } else if (change.type === 'modified' && idxGlobal !== -1) {
-        if (detectRelevantChanges(global[idxGlobal], msg)) {
-          global[idxGlobal] = msg;
-          globalChanged = true;
-        }
-      } else if (change.type === 'removed' && idxGlobal !== -1) {
-        global.splice(idxGlobal, 1);
-        globalChanged = true;
-      }
-
-      const belongs = messageBelongsToThread(msg, cacheKey);
-      const idxThread = threadMessages.findIndex(m => m.id === msg.id);
-
-      if (change.type === 'added' && belongs && idxThread === -1) {
-        threadMessages.push(msg);
-        threadMessages.sort((a, b) => a.timestamp - b.timestamp);
-        threadChanged = true;
-      } else if (change.type === 'modified') {
-        if (idxThread !== -1) {
-          if (detectRelevantChanges(threadMessages[idxThread], msg)) {
-            if (belongs) {
-              threadMessages[idxThread] = msg;
-            } else {
-              threadMessages.splice(idxThread, 1);
-            }
-            threadChanged = true;
-          }
-        } else if (belongs) {
-          threadMessages.push(msg);
-          threadMessages.sort((a, b) => a.timestamp - b.timestamp);
-          threadChanged = true;
-        }
-      } else if (change.type === 'removed' && idxThread !== -1) {
-        threadMessages.splice(idxThread, 1);
-        threadChanged = true;
-      }
-    });
-
-    if (globalChanged) {
-      this.messageCache.set('all', global);
-    }
-
-    if (threadChanged) {
-      this.messageCache.set(cacheKey, threadMessages);
-      this.threadMessageSubject.next([...threadMessages]);
-    }
-  }
-
-  updateUserNameInCache(userId: string, newName: string): void {
-    const allMessages = this.messageCache.get('all') || [];
+  /**
+   * Updates the name of the user in the given message array.
+   * 
+   * @param messages Array of messages to update
+   * @param userId The user ID to match for updating names
+   * @param newName The new name to assign
+   * @returns True if any message was updated, false otherwise
+   */
+  private updateNamesInMessages(messages: Message[], userId: string, newName: string): boolean {
     let updated = false;
-
-    allMessages.forEach(msg => {
+    messages.forEach(msg => {
       if (msg.userId === userId && msg.name !== newName) {
         msg.name = newName;
         updated = true;
       }
     });
-    if (!updated) {
-      return;
-    }
-    this.messageCache.set('all', allMessages);
+    return updated;
+  }
 
-    this.messageCache.set('all', allMessages);
-
+  /**
+   * Reloads the messages for the current context if it exists.
+   * 
+   * @param userId The user ID to use when reloading messages
+   */
+  private reloadContextMessagesIfNeeded(userId: string): void {
     const ctx = this.currentContextObj;
     if (ctx && this.currentContextKey) {
-
       this.loadMessagesForContext(ctx, userId, 'from updateUserNameInCache');
     }
+  }
 
+  /**
+   * Updates thread messages if the user name has changed.
+   * 
+   * @param userId The user ID whose name was changed
+   * @param newName The new name to assign
+   */
+  private updateThreadMessages(userId: string, newName: string): void {
     const currentThreadMessages = this.threadMessageSubject.getValue();
-    let threadChanged = false;
-    currentThreadMessages.forEach(msg => {
-      if (msg.userId === userId && msg.name !== newName) {
-        msg.name = newName;
-        threadChanged = true;
-      }
-    });
-
+    let threadChanged = this.updateNamesInMessages(currentThreadMessages, userId, newName);
     if (threadChanged) {
       this.threadMessageSubject.next([...currentThreadMessages]);
     }
   }
 
+  /**
+   * Clears the current message context and emits an empty message list.
+   */
   clearCurrentContext(): void {
     this.currentContextKey = null;
     this.currentContextObj = null;
