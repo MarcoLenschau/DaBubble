@@ -145,28 +145,38 @@ export class SingleMessageComponent {
   }
 
   /**
-   * Processes the emoji reaction logic.
-   * Updates local emoji stats and recent emojis, which determine the order of emojis shown for the logged-in user.
+   * Processes a user’s emoji reaction on a message.
+   * Adds the emoji to the message and updates local stats if it’s a new reaction by the user.
    * 
-   * @param emojiName Name of the emoji reacted with
-   * @param msg The original message
-   * @returns The updated message object including new reactions
+   * @param emojiName - The emoji name reacted with.
+   * @param msg - The message to react to.
+   * @returns The updated message including the new emoji reaction.
    */
   private processEmojiReaction(emojiName: string, msg: Message): Message {
-    const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, this.currentUser.id);
-    const updatedMsg = addEmojiToMessage(emojiName, msg, this.currentUser.id);
-    const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, this.currentUser.id);
+    const userId = this.currentUser.id;
+    const wasAlreadyReacted = this.userHasReactedToEmoji(msg, emojiName, userId);
+    const updatedMsg = addEmojiToMessage(emojiName, msg, userId);
+    const isReactedNow = this.userHasReactedToEmoji(updatedMsg, emojiName, userId);
 
     if (!wasAlreadyReacted && isReactedNow) {
-      this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
-      if (this.localRecentEmojis[0] !== emojiName) {
-        this.localRecentEmojis = [
-          emojiName,
-          ...this.localRecentEmojis.filter((e) => e !== emojiName)
-        ];
-      }
+      this.updateLocalEmojiStats(emojiName);
     }
     return updatedMsg;
+  }
+
+  /**
+   * Updates local emoji statistics and the order of recent emojis.
+   * 
+   * @param emojiName - The name of the emoji that was added.
+   */
+  private updateLocalEmojiStats(emojiName: string): void {
+    this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
+    if (this.localRecentEmojis[0] !== emojiName) {
+      this.localRecentEmojis = [
+        emojiName,
+        ...this.localRecentEmojis.filter((e) => e !== emojiName)
+      ];
+    }
   }
 
   /**
