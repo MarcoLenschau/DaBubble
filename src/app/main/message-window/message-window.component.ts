@@ -28,14 +28,26 @@ export class MessageWindowComponent {
   }>();
   @Output() showThreadClosing = new EventEmitter<boolean>();
 
+  /**
+   * Emits an event to indicate that the thread window should be closed.
+   */
   onInnerClose() {
     this.showThreadClosing.emit(false);
   }
 
+  /**
+   * Emits an event to open a thread with the given message and user ID.
+   * @param message The starter message for the thread.
+   * @param userId The ID of the user opening the thread.
+   */
   threadOpen(message: Message, userId: string) {
     this.threadStart.emit({ starterMessage: message, userId });
   }
 
+  /**
+   * Emits an event when a message context is selected from the panel.
+   * @param context The selected message context.
+   */
   onContextSelectedFromPanel(context: MessageContext): void {
     this.contextSelected.emit(context);
   }

@@ -57,6 +57,9 @@ export class DevspaceComponent {
     });
   }
 
+  /**
+   * Angular lifecycle hook that subscribes to the current user observable.
+   */
   async ngOnInit(): Promise<void> {
     this.currentUserSubscription = this.userDataService.currentUser$
       .pipe(filter(user => !!user && user.id !== 'default'))
@@ -64,19 +67,32 @@ export class DevspaceComponent {
         this.currentUser = user;
       });
   }
+
+  /**
+   * Angular lifecycle hook that unsubscribes from the current user observable.
+   */
   ngOnDestroy() {
     this.currentUserSubscription?.unsubscribe();
   }
 
+  /**
+   * Toggles the visibility of the channels section.
+   */
   toggleChannels() {
     this.isChannelOpen = !this.isChannelOpen;
   }
 
+  /**
+   * Toggles the visibility of the messages section.
+   */
   toggleMessage() {
     this.isMessageOpen = !this.isMessageOpen;
   }
 
-
+  /**
+   * Returns the appropriate arrow icon path for the channels section based on its state.
+   * @returns The path to the arrow icon image.
+   */
   getChannelArrowIcon() {
     if (this.isChannelOpen) {
       return this.isChannelHovered
@@ -89,7 +105,10 @@ export class DevspaceComponent {
     }
   }
 
-
+  /**
+   * Returns the appropriate arrow icon path for the messages section based on its state.
+   * @returns The path to the arrow icon image.
+   */
   getMessageArrowIcon() {
     if (this.isMessageOpen) {
       return this.isMessageHovered
@@ -102,6 +121,10 @@ export class DevspaceComponent {
     }
   }
 
+  /**
+   * Sets the active user and emits the corresponding events and context.
+   * @param user The user to set as active.
+   */
   setActiveUser(user: any) {
     if (!user || !user.email) return;
     // this.userSelected.emit(user);
@@ -114,6 +137,10 @@ export class DevspaceComponent {
     this.closeThread();
   }
 
+  /**
+   * Sets the active channel and emits the corresponding events and context.
+   * @param channel The channel to set as active.
+   */
   selectChannel(channel: any) {
     this.activeChannel = channel;
     this.activeUser = null;
@@ -122,11 +149,16 @@ export class DevspaceComponent {
     this.closeThread();
   }
 
+  /**
+   * Emits an event to close the thread window.
+   */
   closeThread() {
     this.closeThreadWindow.emit();
   }
 
-
+  /**
+   * Toggles the visibility of the workspace section.
+   */
   toggleWorkspace() {
     this.isWorkspaceOpen = !this.isWorkspaceOpen;
   }

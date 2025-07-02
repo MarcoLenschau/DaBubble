@@ -18,10 +18,18 @@ export class ThreadWindowComponent {
   @Output() showThreadClosing = new EventEmitter<boolean>();
   @Output() starterMessageChange = new EventEmitter<Message>();
 
+  /**
+   * Emits an event to close the thread window.
+   */
   onInnerClose() {
     this.showThreadClosing.emit(false);
   }
 
+  /**
+   * Handles the event when the starter message is changed from the message panel.
+   * Updates the local starter message and emits the change.
+   * @param updatedMessage The updated starter message.
+   */
   onStarterMessageChangeFromPanel(updatedMessage: Message) {
     this.starterMessage = { ...updatedMessage };
     this.starterMessageChange.emit(this.starterMessage);

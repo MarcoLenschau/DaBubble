@@ -58,7 +58,10 @@ export class MainComponent implements OnInit {
     return this.showThread;
   }
 
-
+  /**
+   * Angular lifecycle hook that is called after data-bound properties are initialized.
+   * Sets up responsive view mode handling based on screen size.
+   */
   ngOnInit(): void {
     const mobileQuery = `(max-width: ${this.mobileMaxWidth}px)`;
     const tabletQuery = `(min-width: ${this.mobileMaxWidth + 1}px) and (max-width: ${this.tabletMaxWidth}px)`;
@@ -71,24 +74,37 @@ export class MainComponent implements OnInit {
       });
   }
 
+  /**
+   * Switches the view to desktop mode.
+   */
   showDesktopView(): void {
     this.viewMode = ViewMode.Desktop;
     this.showMessage = true;
     this.showDevSpace = true;
   }
 
+  /**
+   * Switches the view to tablet mode.
+   */
   showTabletView(): void {
     this.viewMode = ViewMode.Tablet;
     this.showMessage = true;
     this.showThread ? this.showDevSpace = false : this.showDevSpace = true;
   }
 
+  /**
+   * Switches the view to mobile mode.
+   */
   showMobileView(): void {
     this.viewMode = ViewMode.Mobile;
     this.showMessage = false;
     this.showThread ? this.showDevSpace = false : this.showDevSpace = true;
   }
 
+  /**
+   * Handles the event when a thread is started.
+   * @param event Contains the starter message and user ID.
+   */
   onThreadStart(event: { starterMessage: Message; userId: string }) {
     this.starterMessage = { ...event.starterMessage };
     this.userId = event.userId;
@@ -99,6 +115,9 @@ export class MainComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles the event when a thread is closed.
+   */
   onThreadClose() {
     this.showThread = false;
     if (this.viewMode === 'mobile') {
@@ -106,11 +125,17 @@ export class MainComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the starter message when it changes from the thread.
+   * @param updatedMessage The updated starter message.
+   */
   onStarterMessageChangedFromThread(updatedMessage: Message) {
     this.starterMessage = { ...updatedMessage };
   }
 
-
+  /**
+   * Opens the DevSpace window in mobile view.
+   */
   openDevSpace(): void {
     if (this.viewMode === 'mobile') {
       this.showDevSpace = true;
@@ -119,6 +144,9 @@ export class MainComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the DevSpace window in mobile view.
+   */
   closeDevSpace(): void {
     if (this.viewMode === 'mobile') {
       this.showDevSpace = false;
@@ -127,6 +155,10 @@ export class MainComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles the event when a channel is selected.
+   * @param channel The selected channel.
+   */
   onChannelSelected(channel: Channel) {
     this.channels.forEach((channelFromBackend: any) => {
       if (channelFromBackend.id === channel.id) {
@@ -136,6 +168,10 @@ export class MainComponent implements OnInit {
     });
   }
 
+  /**
+   * Handles the event when a user is selected.
+   * @param user The selected user.
+   */
   onUserSelected(user: any) {
     if (this.activeUser?.id === user?.id) {
       return;
@@ -150,6 +186,10 @@ export class MainComponent implements OnInit {
     this.activeChannel = null;
   }
 
+  /**
+   * Handles the event when a message context is selected.
+   * @param context The selected message context.
+   */
   onContextSelected(context: MessageContext): void {
     const same =
       this.messageContext?.type === context.type &&
@@ -163,6 +203,9 @@ export class MainComponent implements OnInit {
     this.checkIfViewModeMobile();
   }
 
+  /**
+   * Checks if the current view mode is mobile and updates the window visibility accordingly.
+   */
   checkIfViewModeMobile(): void {
     if (this.viewMode === 'mobile') {
       this.showMessage = true;
