@@ -52,12 +52,16 @@
     margin-left: 16px;
   }
 
-  img {
-    width: 40px;
-    height: 40px;
+  .mic-img {
     cursor: pointer;
     filter: brightness(0) saturate(100%) invert(25%) sepia(95%) saturate(3350%)
       hue-rotate(218deg) brightness(100%) contrast(101%);
+  }
+
+  .trash-img {
+    cursor: pointer;
+    height: 28px !important;
+    width: 28px !important;
   }
 }
 .emoji-picker {

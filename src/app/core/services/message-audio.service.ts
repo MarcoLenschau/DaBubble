@@ -66,12 +66,24 @@ export class MessageAudioService {
    * @return {Promise<Blob>} A promise that resolves with the recorded audio as a Blob.
    */
   async recordStop(recorder: any, stream: any): Promise<Blob> {
+    this.endRecord(recorder, stream);
+    return new Blob(this.chunks, { type: 'audio/webm' });
+  }
+
+  /**
+   * Ends the audio recording session by stopping the recorder and associated media stream.
+   *
+   * @param recorder - The audio recorder instance to be stopped.
+   * @param stream - The media stream associated with the recording, whose tracks will be stopped.
+   * @returns A promise that resolves when the recorder has fully stopped and the stream tracks are stopped.
+   */
+  async endRecord(recorder: any, stream: any): Promise<void> {
+    this.elapsedSeconds = 0;
     recorder.stop();
     this.stopTimer();
     await new Promise(r => recorder.onstop = r);
     stream.getTracks().forEach((t: any) => t.stop());
     this.record = false;
-    return new Blob(this.chunks, { type: 'audio/webm' });
   }
 
   /**

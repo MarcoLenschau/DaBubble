@@ -103,9 +103,11 @@
   <!-- Senden -->
   <div class="textarea-send-button" (click)="sendMessage()">
     <span *ngIf="messageAudio.record">{{ messageAudio.formatTime(messageAudio.elapsedSeconds) }}</span>
+    <img *ngIf="messageAudio.record" (click)="messageAudio.endRecord(messageAudio.recorder, messageAudio.stream)" 
+    class="audio-message trash-img" src="assets/img/audio-message/trash.png"/>    
     <img *ngIf="textInput.length === 0" 
     (click)="messageAudio.record ? sendAudioMessage() : messageAudio.startRecord()" 
-    class="audio-message" src="assets/img/microphone.png"/>
+    class="audio-message mic-img" src="assets/img/audio-message/microphone.png"/>
     <img *ngIf="!messageAudio.record && textInput.length > 0" src="assets/img/message-icons/Send icon.svg"/>
   </div>
 </div>
