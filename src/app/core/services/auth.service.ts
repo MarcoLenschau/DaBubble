@@ -26,7 +26,17 @@ export class AuthService {
 
   private authReadySubject = new BehaviorSubject<boolean>(false);
   authReady$ = this.authReadySubject.asObservable();
-
+  
+  /**
+   * Initializes the AuthService by setting up the users observable,
+   * subscribing to user data updates, checking if the user's email is verified,
+   * and restoring the authentication state from storage or previous session.
+   *
+   * - Retrieves a reference to the 'users' collection from Firebase.
+   * - Subscribes to changes in the users collection and updates the local users property.
+   * - Checks if the currently authenticated user's email is verified.
+   * - Restores the authentication state to maintain user session persistence.
+   */
   constructor() {
     this.users$ = this.firebase.getColRef('users');
     this.users$.subscribe((users: any) => {
@@ -36,6 +46,9 @@ export class AuthService {
     this.restoreAuthState();
   }
 
+  /**
+   * Checks if the current user's email is verified and updates the state.
+   */
   checkIfEmailVerified(): void {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
@@ -45,6 +58,10 @@ export class AuthService {
     });
   }
 
+  /**
+   * Restores the authentication state and updates the user subject accordingly.
+   * @private
+   */
   private async restoreAuthState(): Promise<void> {
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -65,10 +82,18 @@ export class AuthService {
     });
   }
 
+  /**
+   * Restores authentication state for provider-based logins.
+   * @param user The authenticated user object.
+   */
   async restoreProviderAuth(user: any): Promise<void> {
     await this.userDataService.initCurrentUser();
   }
 
+  /**
+   * Restores authentication state for email-based logins.
+   * @param user The authenticated user object.
+   */
   async restoreEmailAuth(user: any): Promise<void> {
     if (user.email) {
       let userData = await this.firebase.searchUsersByEmail(user.email);
@@ -76,6 +101,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Logs in a user with email and password.
+   * @param email The user's email address.
+   * @param password The user's password.
+   * @returns The user credential or null if login fails.
+   */
   async login(email: string, password: string): Promise<UserCredential | null> {
     try {
       const result = await signInWithEmailAndPassword(this.auth, email, password);
@@ -87,6 +118,9 @@ export class AuthService {
     }
   }
 
+  /**
+   * Logs out the current user and updates their state.
+   */
   logout(): void {
     this.users.forEach(async (user) => {
       if (user.email === this.user.email) {
@@ -103,18 +137,32 @@ export class AuthService {
     });
   }
 
+  /**
+   * Logs in a user using Google authentication.
+   * @returns The authenticated user or null if login fails.
+   */
   async loginWithGoogle(): Promise<User | null> {
     const userCreated = false;
     const provider = new GoogleAuthProvider();
     return this.loginWithProvider(provider, userCreated);
   }
 
+  /**
+   * Logs in a user using GitHub authentication.
+   * @returns The authenticated user or null if login fails.
+   */
   async loginWithGitHub(): Promise<User | null> {
     const userCreated = false;
     const provider = new GithubAuthProvider();
     return this.loginWithProvider(provider, userCreated);
   }
 
+  /**
+   * Logs in a user using the specified provider.
+   * @param provider The authentication provider.
+   * @param userCreated Indicates if the user was just created.
+   * @returns The authenticated user or null if login fails.
+   */
   async loginWithProvider(provider: any, userCreated: boolean): Promise<User | null> {
     return signInWithPopup(this.auth, provider)
       .then(async (result) => {
@@ -128,6 +176,10 @@ export class AuthService {
       });
   }
 
+  /**
+   * Saves the current user to the service and local storage.
+   * @param user The user object to save.
+   */
   async saveCurrentUser(user: any): Promise<void> {
     this.user = user;
     this.userSubject.next(this.user);
@@ -135,6 +187,11 @@ export class AuthService {
     await this.userDataService.initCurrentUser();
   }
 
+  /**
+   * Sends a password reset email to the specified address.
+   * @param email The user's email address.
+   * @returns A promise that resolves when the email is sent.
+   */
   async resetPassword(email: string): Promise<any> {
     return sendPasswordResetEmail(this.auth, email)
       .then(() => {
@@ -146,6 +203,11 @@ export class AuthService {
       });
   }
 
+  /**
+   * Checks if a user exists in the users list and updates their state.
+   * @param result The authentication result object.
+   * @param userCreated Indicates if the user was just created.
+   */
   isUserExists(result: any, userCreated: boolean): void {
     this.users.forEach((user) => {
       if (user.email === result.user.email) {
@@ -159,11 +221,23 @@ export class AuthService {
     }
   }
 
+  /**
+   * Registers a new user with email and password.
+   * @param email The user's email address.
+   * @param password The user's password.
+   * @returns The created user or null if registration fails.
+   */
   async register(email: string, password: string): Promise<User | null> {
     return this.createUserWithEmail(email, password)
       .catch(() => null);
   }
 
+  /**
+   * Creates a new user with email and password.
+   * @param email The user's email address.
+   * @param password The user's password.
+   * @returns The created user.
+   */
   async createUserWithEmail(email: string, password: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
     let user: any = { ...result.user };
@@ -174,6 +248,11 @@ export class AuthService {
     return result.user;
   }
 
+  /**
+   * Checks if the user exists in Firestore after registration.
+   * @param result The authentication result object.
+   * @returns A promise that resolves if the user is found.
+   */
   async checkAllUser(result: any): Promise<any> {
     const allUsers = await firstValueFrom(this.firebase.getColRef('users'));
     const firestoreUser = allUsers.find(
@@ -184,12 +263,21 @@ export class AuthService {
     }
   }
 
+  /**
+   * Updates the email address of the specified user.
+   * @param email The new email address.
+   * @param user The user object.
+   */
   editEmail(email: string, user: any): void {
     updateEmail(user, email).then(() => {
       console.log("Email ist geupdatet")
     });
   }
 
+  /**
+   * Sends an email verification to the current user.
+   * @returns A promise that resolves when the email is sent.
+   */
   sendEmailVerification() {
     return sendEmailVerification(this.user);
   };

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Channel } from '../models/channel.model';
 import { Observable, map } from 'rxjs';
@@ -8,11 +8,9 @@ import { doc, updateDoc, deleteDoc, addDoc, collection, setDoc } from '@angular/
   providedIn: 'root'
 })
 export class ChannelDataService {
-
   private readonly collectionPath = 'channels';
-
-  constructor(private firebaseService: FirebaseService) { }
-
+  private firebaseService = inject(FirebaseService);
+  
   /**
    * Fetches all channels from Firestore and maps them to Channel instances.
    *
@@ -21,17 +19,12 @@ export class ChannelDataService {
   getChannels(): Observable<Channel[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
       map((docs) =>
-        docs.map(
-          (docData: any) =>
+        docs.map( (docData: any) =>
             new Channel({
-              id: docData.id,
-              name: docData.name,
+              id: docData.id, name: docData.name,
               description: docData.description,
-              members: docData.members ?? [],
-              messages: docData.messages ?? [],
-              createdBy: docData.createdBy,
-              createdById: docData.createdById,
-              createdAt: docData.createdAt,
+              members: docData.members ?? [], messages: docData.messages ?? [],
+              createdBy: docData.createdBy, createdById: docData.createdById, createdAt: docData.createdAt,
             })
         )
       )

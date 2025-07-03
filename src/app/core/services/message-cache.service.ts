@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Message } from '../models/message.model';
 import { MessageContext } from '../interfaces/message-context.interface';
@@ -17,9 +17,8 @@ export class MessageCacheService {
   private activeListeners = new Map<string, Unsubscribe>();
   private currentContextKey: string | null = null;
   public currentContextObj: MessageContext | null = null;
-
-  constructor(private firestore: Firestore) { }
-
+  private firestore = inject(Firestore);
+  
   /**
    * Observable stream of all messages.
    * 

@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { Firestore, QuerySnapshot, DocumentData } from '@angular/fire/firestore';
 import { User } from '../models/user.model';
@@ -15,8 +15,14 @@ export class UserDataService {
   private readonly collectionPath = 'users';
   private currentUserSubject = new BehaviorSubject<User>(this.createGuestUser());
   public currentUser$ = this.currentUserSubject.asObservable();
+  private firestore = inject(Firestore);
+  private injector = inject(Injector);
 
-  constructor(private firestore: Firestore, private injector: Injector) {
+  /**
+   * Initializes a new instance of the service and sets up the user subscription.
+   * Calls the `initUserSubscription` method to start listening for user data changes.
+   */
+  constructor() {
     this.initUserSubscription();
   }
 
@@ -190,16 +196,11 @@ export class UserDataService {
   getUsers(): Observable<User[]> {
     return this.firebaseService.getColRef(this.collectionPath).pipe(
       map((firestoreDocs) =>
-        firestoreDocs.map(
-          (docData) =>
+        firestoreDocs.map( (docData) =>
             new User({
-              id: docData['id'],
-              displayName: docData['displayName'],
-              email: docData['email'],
-              photoURL: docData['photoURL'] ?? './assets/img/profilepic/frederik.png',
-              state: docData['state'] ?? false,
-              recentEmojis: docData['recentEmojis'] ?? [],
-              emojiUsage: docData['emojiUsage'] ?? {},
+              id: docData['id'], displayName: docData['displayName'], email: docData['email'],
+              photoURL: docData['photoURL'] ?? './assets/img/profilepic/frederik.png', state: docData['state'] ?? false,
+              recentEmojis: docData['recentEmojis'] ?? [], emojiUsage: docData['emojiUsage'] ?? {},
             })
         )
       )

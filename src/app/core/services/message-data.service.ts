@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
 import { MessageCacheService } from './message-cache.service';
 import { Message } from '../models/message.model';
@@ -20,12 +20,10 @@ import {
 
 export class MessageDataService {
   private readonly collectionPath = 'messages';
-
-  constructor(
-    private firebaseService: FirebaseService,
-    private firestore: Firestore, private messageCacheService: MessageCacheService
-  ) { }
-
+  private firebaseService = inject(FirebaseService);
+  private messageCacheService = inject(MessageCacheService);
+  private firestore = inject(Firestore);
+  
   /**
      * Adds a new message to Firestore and assigns it a generated ID.
      *
@@ -126,12 +124,9 @@ export class MessageDataService {
   private getCleanJson(message: Message): any {
     return {
       audio: message.audio ?? '',
-      id: message.id,
-      name: message.name,
-      text: message.text,
-      timestamp: message.timestamp,
-      userId: message.userId,
-      channelId: message.channelId ?? '',
+      id: message.id, name: message.name,
+      text: message.text, timestamp: message.timestamp,
+      userId: message.userId, channelId: message.channelId ?? '',
       receiverId: message.receiverId ?? null,
       isDirectMessage: message.isDirectMessage ?? false,
       threadId: message.threadId,

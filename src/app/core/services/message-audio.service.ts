@@ -91,7 +91,7 @@ export class MessageAudioService {
    *
    * @return {void} This function does not return a value.
    */
-  startTimer() {
+  startTimer(): void {
     this.timer = setInterval(() => {
       this.elapsedSeconds++;
     }, 1000);
@@ -102,68 +102,26 @@ export class MessageAudioService {
    *
    * @return {void} This function does not return a value.
    */
-  stopTimer() {
+  stopTimer(): void {
     clearInterval(this.timer);
   }
 
   /**
-   * Creates a clean audio message object for direct messages.
+   * Creates a new audio message object with the provided base64 audio data and message options.
    *
-   * @param {string} base64 - The Base64-encoded audio string.
-   * @param {string} [id=""] - The receiver ID.
-   * @param {User} user - The user object containing sender information.
-   * @return {Object} An object representing a direct audio message including metadata like timestamp and user ID.
+   * @param base64 - The base64-encoded audio string representing the audio message content.
+   * @param opts - An object containing message metadata:
+   *   @param opts.id - The unique identifier for the message.
+   *   @param opts.user - The user sending the message.
+   *   @param opts.channelId - (Optional) The ID of the channel where the message is sent.
+   *   @param opts.threadId - (Optional) The ID of the thread where the message is sent.
+   *   @param opts.receiverId - (Optional) The ID of the receiver (for direct messages).
+   *   @param opts.isDirect - Indicates if the message is a direct message.
+   * @returns A `Message` object representing the audio message, ready to be sent or stored.
    */
-  // getCleanDirectAudioMessage(base64: string, id = "", user: User): {} {
-  //   return {
-  //     audio: base64,
-  //     timestamp: Date.now(),
-  //     name: user.displayName,
-  //     text: '',
-  //     userId: user.id,
-  //     receiverId: id,
-  //     isDirectMessage: true,
-  //     channelId: '',
-  //     reactions: {},
-  //     replies: 0,
-  //   };
-  // }
-
-  /**
-   * Creates a clean audio message object for channel messages.
-   *
-   * @param {string} base64 - The Base64-encoded audio string.
-   * @param {string} [id=""] - The channel ID.
-   * @param {User} user - The user object containing sender information.
-   * @return {Object} An object representing a channel audio message including metadata like timestamp and channel ID.
-   */
-  // getCleanChannelAudioMessage(base64: string, id = "", user: User): {} {
-  //   return {
-  //     audio: base64,
-  //     timestamp: Date.now(),
-  //     name: user.displayName,
-  //     text: '',
-  //     userId: user.id,
-  //     receiverId: '',
-  //     isDirectMessage: false,
-  //     channelId: id,
-  //     reactions: {},
-  //     replies: 0,
-  //   };
-  // }
-
-  getCleanAudioMessage(base64: string, opts: {
-    id: string;
-    user: User;
-    channelId?: string;
-    threadId?: string;
-    receiverId?: string;
-    isDirect: boolean;
-  }): Message {
+  getCleanAudioMessage(base64: string, opts: { id: string; user: User; channelId?: string; threadId?: string; receiverId?: string; isDirect: boolean; }): Message {
     return {
-      id: opts.id,
-      audio: base64,
-      timestamp: Date.now(),
+      id: opts.id, audio: base64, timestamp: Date.now(),
       name: opts.user.displayName,
       text: '',
       userId: opts.user.id,

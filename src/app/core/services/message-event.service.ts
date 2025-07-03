@@ -5,12 +5,9 @@ import { Subject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MessageEventService {
-
-  constructor() { }
-
   private messageWindowScrollSubject = new Subject<boolean>();
   private threadWindowScrollSubject = new Subject<boolean>();
-
+  
   /**
      * Notifies listeners about the scroll intent for either the message or thread window.
      *
