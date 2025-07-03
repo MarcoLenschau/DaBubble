@@ -15,6 +15,14 @@ export class AppComponent implements OnInit {
 
   constructor(private messageCacheService: MessageCacheService) { }
 
+  /**
+   * Lifecycle hook that runs once after component initialization.
+   * 
+   * This method initializes the global message cache on application startup.
+   * It preloads all messages to improve performance and responsiveness.
+   * 
+   * If the initialization fails, the error is logged to the console.
+   */
   async ngOnInit() {
     try {
       await this.messageCacheService.initInitialMessageCache();

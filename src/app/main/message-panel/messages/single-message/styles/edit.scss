@@ -1,0 +1,93 @@
+.edit-menu {
+  position: absolute;
+  top: 62px;
+  left: 0px;
+  background-color: white;
+  color: #141d2f;
+  padding: 12px 24px;
+  border-radius: 11px 25px 25px 25px;
+  font-size: 20px;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  cursor: pointer;
+  
+   
+  &::before {
+    display: none;
+  }
+  
+  &:hover {
+    background-color: #f4f4f4;
+  }
+}
+
+.edit-container {
+  padding-top: 8px;
+}
+  
+.edit-box {
+  background-color: white;
+  border: 1px solid #d1d1e0;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+  
+.edit-textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #141d2f;
+  font-family: inherit;
+}
+  
+.edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+}
+  
+.emoji-icon {
+  font-size: 20px;
+  margin-right: auto;
+  cursor: pointer;
+}
+  
+.cancel-btn {
+  padding: 8px 16px;
+  border: 1px solid #4d5eff;
+  background-color: transparent;
+  color: #4d5eff;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+  
+.cancel-btn:hover {
+  background-color: #eef0ff;
+}
+  
+.save-btn {
+  padding: 8px 16px;
+  background-color: #4d5eff;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+  
+.save-btn:hover {
+  background-color: #3d4be0;
+}
+  

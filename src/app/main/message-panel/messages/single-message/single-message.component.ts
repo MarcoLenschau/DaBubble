@@ -24,7 +24,7 @@ import { addEmojiToMessage, getVisibleReactions, getHiddenReactionCount, shouldS
   standalone: true,
   imports: [CommonModule, FormsModule, NgClass, AudioMessageComponent],
   templateUrl: './single-message.component.html',
-  styleUrl: './single-message.component.scss'
+  styleUrls: ['./single-message.component.scss']
 })
 export class SingleMessageComponent {
 

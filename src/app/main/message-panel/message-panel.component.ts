@@ -36,9 +36,6 @@ export class MessagePanelComponent {
   @Output() closeThreadPanelWindow = new EventEmitter<void>();
   @Output() starterMessageChange = new EventEmitter<Message>();
 
-
-  // @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
-
   textInput = '';
 
   get isThread(): boolean {
@@ -49,23 +46,35 @@ export class MessagePanelComponent {
     return this.mode === 'message';
   }
 
+  /**
+   * Emits the threadStart event when a message should start a thread.
+   * @param message - The message to start the thread from.
+   * @param userId - ID of the current user.
+   */
   onStartThread(message: Message, userId: string) {
     this.threadStart.emit({ starterMessage: message, userId });
   }
 
+  /**
+   * Updates the starter message and emits the change.
+   * @param updatedMessage - The new message object.
+   */
   onStarterMessageChange(updatedMessage: Message) {
     this.starterMessage = { ...updatedMessage };
     this.starterMessageChange?.emit(this.starterMessage);
   }
 
+  /**
+   * Emits the event to close the thread panel.
+   */
   onCloseClick() {
     this.closeThreadPanelWindow.emit();
   }
 
-  // onMessageSent() {
-  //   this.messagesComponent.reloadMessages();
-  // }
-
+  /**
+   * Emits the selected context from the header component.
+   * @param context - The selected message context.
+   */
   onContextSelectedFromHeader(context: MessageContext): void {
     this.contextSelected.emit(context);
   }

@@ -1,0 +1,151 @@
+* {
+  margin: 0;
+}
+  
+.message-img {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 50%;
+  background-color: $purple-2;
+}
+  
+.message-body {
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 8px, $f: column);
+  min-width: 0;
+  flex: 1;
+  
+  .message-body-header {
+    @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+  
+    h4 {
+      @include text-style(18px, 700, $black);
+      flex-shrink: 1;
+      min-width: 0;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2; 
+      line-clamp: 2;           
+      overflow: hidden;
+      word-break: break-word;           
+      overflow-wrap: break-word;        
+      text-overflow: ellipsis;          
+      max-width: 100%;
+      line-height: 1.2;
+  
+      &:hover {
+        cursor: pointer;
+        color: $purple-1;
+      }
+    }
+  
+    p {
+      @include text-style(14px, 400, $text-gray);
+      width: 64px;
+      cursor: default;
+    }
+  }
+  
+  .own-message-body-header {
+    @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row-reverse);
+  }
+}
+  
+  .own-message-body {
+    @include dFlex($jc: flex-start, $ai: flex-end, $g: 8px, $f: column);
+  }
+  
+.message-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 12px 40px 16px;
+}
+  
+.hover-message-wrapper {
+  background-color: $grey;
+  @include transition();
+  
+  &.not-own-message {
+    .thread-message-text {
+      background-color: $white;
+      @include transition();
+    }
+  }
+}
+  
+.hover-thread-message {
+  width: 100%;
+}
+  
+.hover-own-message {
+  width: 100%;
+}
+  
+.thread-message {
+  width: 100%;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row);
+}
+  
+.own-message {
+  width: 100%;
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 20px, $f: row-reverse);
+}
+  
+.replies-info-container {
+  @include dFlex($jc: flex-start, $ai: center, $g: 20px, $f: row);
+}
+  
+.show-replies-button {
+  @include text-style(18px, 400, $purple-3);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  
+  &::after {
+    content: attr(data-text);      
+    font-weight: 700;              
+    visibility: hidden;            
+    height: 0;                     
+    overflow: hidden;
+    display: block;                
+  }
+    
+  &:hover {
+    font-weight: 700;
+  }
+}
+  
+.last-answer-time {
+  @include text-style(14px, 400, $text-gray);
+}
+  
+.thread-message-text {
+  border-radius: 0 20px 20px 20px;
+  background-color: $grey;
+  padding: 15px;
+  max-width: 100%;
+  width: fit-content;
+  @include text-style(18px, 400, $black);
+  cursor: default;
+  line-height: 1.2;
+  max-height: 500px;
+  overflow-y: auto;
+  word-break: break-word;     
+  overflow-wrap: break-word; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+      
+  &.own-message-text {
+    border-radius: 20px 0 20px 20px;
+    background-color: $purple-2;
+    @include text-style(18px, 400, $white);
+  }
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

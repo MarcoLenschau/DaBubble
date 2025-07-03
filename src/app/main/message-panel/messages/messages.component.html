@@ -74,7 +74,7 @@
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
     <!-- In SingleMessageComponent auslagern: Start -->
-    <div class="message-wrapper" [ngClass]="{
+    <!-- <div class="message-wrapper" [ngClass]="{
             'hover-thread-message not-own-message': !isOwnMessage(msg),
             'hover-own-message': isOwnMessage(msg),
             'hover-message-wrapper': hoveredIndex === i
@@ -94,7 +94,6 @@
             <p>{{ isThread ? formatRelativeTimeSimple(msg.timestamp) : formatTime(msg.timestamp) }}</p>
           </div>
 
-          <!-- Nachricht oder Bearbeitungsfeld -->
           <p class="thread-message-text" *ngIf="!msg.audio && editingMessageId !== msg.id"
             [ngClass]="{ 'own-message-text': isOwnMessage(msg) }">
             {{ msg.text }}
@@ -116,7 +115,6 @@
           </div>
 
 
-          <!-- Antworten-Anzeige -->
           <ng-container *ngIf="isMessage && msg.replies > 0">
             <div class="replies-info-container">
               <button class="show-replies-button"
@@ -131,7 +129,6 @@
           </ng-container>
         </div>
 
-        <!-- Emoji-Zeile -->
         <div class="emoji-row" [ngClass]="{
               'emoji-row-left-aligned': isOwnMessage(msg),
               'emoji-row-right-aligned': !isOwnMessage(msg),
@@ -140,7 +137,6 @@
               'emoji-row-closed': !emojiMenuOpen[i]
             }" (click)="$event.stopPropagation()" (mouseleave)="onEmojiRowMouseLeave(i)">
 
-          <!-- Bitte nicht löschen! -->
           <ng-container *ngIf="isThread && emojiMenuOpen[i]">
             <span *ngFor="let emoji of sortedEmojis" class="emoji-icon top-emojis"
               (click)="handleEmojiClick(emoji.name, msg)" title="{{ emoji.name }}">
@@ -162,13 +158,11 @@
             </ng-container>
           </ng-container>
 
-          <!-- Reaktion hinzufügen -->
           <div class="toggle-icon" (click)="toggleEmojiMenu(i); $event.stopPropagation()">
             <img src="assets/img/message-icons/add-reaction.svg" class="default" />
             <img src="assets/img/message-icons/add-reaction-hover.svg" class="hover" />
           </div>
 
-          <!-- Thread öffnen -->
           <ng-container *ngIf="isMessage">
             <div class="toggle-icon" (click)="openThreadOldVersion(msg)">
               <img src="assets/img/message-icons/answer.svg" class="default" />
@@ -176,7 +170,6 @@
             </div>
           </ng-container>
 
-          <!-- Drei Punkte Menü für eigene Nachricht -->
           <ng-container *ngIf="!msg.audio && isOwnMessage(msg)">
             <div class="toggle-icon-wrapper">
               <div class="toggle-icon" (click)="toggleEditMenu(i)">
@@ -194,7 +187,6 @@
 
       </div>
 
-      <!-- Reaktionen -->
       <div class="reactions" *ngIf="msg.reactions?.length" [ngClass]="{
                'thread-reactions': isThread,
                'message-reactions': isMessage,
@@ -232,7 +224,7 @@
         </div>
       </div>
 
-    </div>
+    </div> -->
     <!-- In SingleMessageComponent auslagern: ENDE -->
     <app-single-message [currentUser]="currentUser" [msg]="msg" [i]="i" [users]="users" [isThread]="isThread"
       [messages]="messages" [isMessage]="isMessage" (messageEdited)="onMessageEdited($event)"
