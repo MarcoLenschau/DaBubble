@@ -136,6 +136,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   });
   // }
 
+  /**
+   * Lifecycle hook that is called after data-bound properties are initialized.
+   * Initializes the current user, emoji data, subscriptions, and loads user data.
+   */
   async ngOnInit(): Promise<void> {
     await this.initCurrentUserAndEmojiData();
     this.subscribeToMessages();
@@ -143,6 +147,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.loadAllUsers();
   }
 
+  /**
+   * Loads the current user once (skipping the 'default' placeholder),
+   * and initializes emoji usage and sorting data.
+   */
   private async initCurrentUserAndEmojiData(): Promise<void> {
     const firstUser = await firstValueFrom(
       this.userDataService.currentUser$.pipe(
@@ -154,28 +162,36 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.initializeLocalEmojiData();
   }
 
+  /**
+   * Subscribes to currentUser$ stream to detect and apply user changes
+   * after the initial load. Uses shallow comparison to prevent unnecessary updates.
+   */
   private subscribeToCurrentUserChanges(): void {
     this.currentUserSubscription = this.userDataService.currentUser$
-      .pipe(
-        skip(1),
-        distinctUntilChanged((a, b) => areUsersEqual(a, b))
-      )
-      .subscribe(user => {
-        this.currentUser = user;
-      });
+      .pipe(skip(1), distinctUntilChanged((a, b) => areUsersEqual(a, b)))
+      .subscribe(user => this.currentUser = user);
   }
 
+  /**
+   * Loads the list of all users from the backend (e.g., Firebase).
+   * The result is assigned to the `users` array.
+   */
   private async loadAllUsers(): Promise<void> {
-    firstValueFrom(this.userDataService.getUsers()).then(users => {
-      this.users = users;
-    });
+    firstValueFrom(this.userDataService.getUsers()).then(users => this.users = users);
   }
 
+  /**
+   * Initializes the local emoji state based on the current user's data.
+   * Fills localRecentEmojis and localEmojiStats from the current user object.
+   */
   private initializeLocalEmojiData(): void {
     this.localRecentEmojis = [...(this.currentUser.recentEmojis ?? [])];
     this.localEmojiStats = { ...this.currentUser.emojiUsage ?? {} };
   }
 
+  /**
+   * Called when the scroll container is scrolled.
+   */
   onScroll(): void {
     const container = this.scrollContainer.nativeElement;
   }
@@ -185,6 +201,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   this.editMenuOpenIndex = null;
   // }
 
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * Cleans up all active subscriptions to avoid memory leaks.
+   */
   ngOnDestroy() {
     this.messagesSubscription?.unsubscribe();
     this.threadMessagesSubscription?.unsubscribe();
@@ -201,6 +221,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   }
   // }
 
+  /**
+   * Lifecycle hook that is called when any data-bound input properties change.
+   * Reacts to changes in the message context and starter message to reload messages or update reply targets.
+   * 
+   * @param changes - Object containing the changed input properties.
+   */
   ngOnChanges(changes: SimpleChanges): void {
     const currentJson = JSON.stringify(this.messageContext ?? {});
     if (
@@ -216,6 +242,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Subscribes to the message stream for the current message context.
+   * Unsubscribes from previous subscriptions and handles new incoming messages.
+   */
   private subscribeToMessages(): void {
     if (!this.messageContext || !this.currentUser?.id) return;
     this.messagesSubscription?.unsubscribe();
@@ -230,6 +260,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Processes the loaded messages. If the data is valid, it updates the message list;
+   * otherwise it logs a warning and resets the message state.
+   * 
+   * @param loadedMessages - The incoming message data to validate and apply.
+   */
   private handleLoadedMessages(loadedMessages: unknown): void {
     if (!Array.isArray(loadedMessages)) {
       console.warn('[MessagesComponent] WARNING: loadedMessages ist kein Array:', loadedMessages);
@@ -269,6 +305,10 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   });
   // }
 
+  /**
+   * Finalizes the message update process by setting scroll position
+   * and marking the messages as ready for display.
+   */
   private finalizeMessageHandling(): void {
     setTimeout(() => {
       if (this.shouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
@@ -278,6 +318,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }, 0);
   }
 
+  /**
+   * Sets the given message as the reply target, ensures threadId,
+   * unsubscribes previous thread subscription and starts a new one.
+   * 
+   * @param msg - The message that will become the root of the thread.
+   */
   async setReplyToMessage(msg: Message) {
     this.replyToMessage = msg;
     this.messagesReady = false;
@@ -288,6 +334,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.subscribeToThreadMessages(msg);
   }
 
+
+  /**
+   * Ensures that the given message has a valid threadId and sets it if missing.
+   * 
+   * @param msg - The message to verify or assign a threadId to.
+   */
   private async ensureThreadId(msg: Message): Promise<void> {
     if (!msg.threadId) {
       msg.threadId = msg.id;
@@ -296,6 +348,12 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.threadId = msg.threadId;
   }
 
+  /**
+   * Subscribes to messages in the thread and handles message updates,
+   * reply counts and auto-scrolling.
+   * 
+   * @param msg - The root message of the thread.
+   */
   private subscribeToThreadMessages(msg: Message): void {
     let isFirst = true;
     this.threadMessagesSubscription = this.messageDataService.getMessagesForThread(this.threadId).subscribe(loadedMessages => {
@@ -311,6 +369,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Updates the local starterMessage if name or channelId have changed.
+   * 
+   * @param msg - The message to match against loaded messages.
+   */
   private updateStarterMessageFromLoaded(msg: Message): void {
     const updatedRoot = this.filteredMessages.find(m => m.id === msg.id);
     if (!updatedRoot) return;
@@ -325,6 +388,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Schedules auto-scrolling and marks the thread messages as ready to display.
+   */
   private scheduleAutoScrollAndMarkReady(): void {
     setTimeout(() => {
       if (this.threadShouldScrollAfterUpdate && this.scrollContainer?.nativeElement) {
@@ -342,6 +408,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   this.threadStart.emit({ starterMessage: msg, userId: this.currentUser.id });
   // }
 
+  /**
+   * Emits the threadStart event to open a thread with the given message and user.
+   * 
+   * @param event - Contains the starter message and userId to open the thread.
+   */
   openThread(event: { starterMessage: Message; userId: string }) { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
     this.threadStart.emit(event);
   }
@@ -354,6 +425,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   }
   // }
 
+  /**
+   * Emits an event to close the thread view and unsubscribes from thread messages.
+   */
   closeThread() {
     this.showThreadChange.emit(false);
     this.threadMessagesSubscription?.unsubscribe();
@@ -464,6 +538,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   this.updateSortedEmojis();
   // }
 
+  /**
+   * Updates the local emoji usage and recent emoji list, then persists the changes to the user data.
+   * 
+   * @param event - Contains updated emoji usage stats and recent emojis list.
+   */
   onEmojiUsageChanged(event: { usage: any; recent: string[] }) { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
     this.localEmojiStats = event.usage;
     this.localRecentEmojis = event.recent;
@@ -472,6 +551,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     this.persistUpdatedUser(updatedUser);
   }
 
+  /**
+   * Creates a new User object with updated emoji usage and recent emojis.
+   */
   private buildUpdatedUser(): User {
     return {
       ...this.currentUser,
@@ -480,6 +562,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Saves the updated user object locally and in Firebase, then updates the emoji sorting.
+   * 
+   * @param updatedUser - The user object with updated emoji data.
+   */
   private persistUpdatedUser(updatedUser: User): void {
     this.userDataService.setCurrentUser(updatedUser);
     this.firebaseService.updateUser(this.currentUser.id, {
@@ -550,6 +637,13 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   //   });
   // }
 
+  /**
+   * Updates the text of a message at the given index, depending on whether it's a thread or not.
+   * 
+   * @param index - Index of the message to update.
+   * @param newText - New message content.
+   * @param isThread - Whether the message is part of a thread.
+   */
   onMessageEdited({ index, newText, isThread }: { index: number; newText: string; isThread: boolean }): void { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
     if (isThread) {
       this.filteredMessages[index].text = newText;

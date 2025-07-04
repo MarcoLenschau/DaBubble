@@ -2,6 +2,7 @@
   position: absolute;
   top: -20px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
+  // flex-wrap: wrap;
   padding: 3px 15px 3px 20px;
   border: 1px solid $light-purple;
   background-color: $white;
@@ -20,6 +21,7 @@
     width: 70%;
     flex-wrap: wrap;
     max-height: 150px;
+    // justify-content: flex-start;
   }
   
   &.emoji-row-left-aligned {
@@ -38,7 +40,8 @@
 }
   
 .emoji-icon {
-  display: inline-flex;
+  // display: inline-flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   width: 40px;
@@ -52,6 +55,7 @@
       "Noto Color Emoji", sans-serif;
   user-select: none;
   @include transition();
+  // flex-shrink: 0;
 }
   
 .top-emojis.emoji-icon:hover {
