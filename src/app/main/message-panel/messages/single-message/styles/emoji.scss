@@ -1,8 +1,13 @@
 .emoji-row {
+
+  display: grid;
+  gap: 5px;
+  width: auto;
+
+  // @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
+
   position: absolute;
   top: -20px;
-  @include dFlex($jc: flex-start, $ai: flex-start, $g: 5px, $f: row);
-  // flex-wrap: wrap;
   padding: 3px 15px 3px 20px;
   border: 1px solid $light-purple;
   background-color: $white;
@@ -14,14 +19,17 @@
   @include transition();
   
   &.emoji-row-closed {
-    width: fit-content;
+    // width: fit-content; // mit @include dFlex
+    grid-auto-flow: column;
+    grid-auto-columns: 40px;
   }
   
   &.emoji-row-open {
+    grid-template-columns: repeat(auto-fill, 40px);
+    justify-content: start;
     width: 70%;
-    flex-wrap: wrap;
+    // flex-wrap: wrap; // mit @include dFlex
     max-height: 150px;
-    // justify-content: flex-start;
   }
   
   &.emoji-row-left-aligned {
@@ -71,6 +79,13 @@
 .toggle-icon {
   @include hover-image-swap(40px, 40px);
 }
+
+// .emoji-filler {
+//   flex: 1 1 auto;
+//   max-width: 0; 
+//   height: 0; 
+// }
+
   
 .thread-reactions {
   max-width: 315px;

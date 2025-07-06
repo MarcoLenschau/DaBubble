@@ -2,43 +2,22 @@
 
   <!-- Eingabefeld + Placeholder -->
   <div class="textarea-wrapper">
-    <div
-      class="textarea"
-      contenteditable="true"
-      #editableDiv
-      (input)="onInput($event)"
-    ></div>
+    <div class="textarea" contenteditable="true" #editableDiv (input)="onInput($event)"></div>
 
- <div class="textarea-placeholder" *ngIf="!textInput">
-    {{ placeholder }}
+    <div class="textarea-placeholder" *ngIf="!textInput">
+      {{ placeholder }}
+    </div>
   </div>
-</div>
 
   <!-- Mention-Dropdown bei @ -->
-  <div
-    class="search-results"
-    *ngIf="filteredMentionUsers.length"
-    [style.top.px]="mentionBoxPosition.top"
-    [style.left.px]="mentionBoxPosition.left"
-  >
+  <div class="search-results" *ngIf="filteredMentionUsers.length" [style.top.px]="mentionBoxPosition.top"
+    [style.left.px]="mentionBoxPosition.left">
     <ul>
-      <li
-        class="profile-user"
-        *ngFor="let user of filteredMentionUsers"
-        (click)="selectMentionUser(user)"
-      >
+      <li class="profile-user" *ngFor="let user of filteredMentionUsers" (click)="selectMentionUser(user)">
         <div class="profile-icon">
-          <img
-            class="profile-pic"
-            [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
-            alt="{{ user.displayName }}"
-          />
-          <img
-            *ngIf="user.state"
-            class="profile-online"
-            src="assets/img/profilepic/online-user.png"
-            alt="online"
-          />
+          <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+            alt="{{ user.displayName }}" />
+          <img *ngIf="user.state" class="profile-online" src="assets/img/profilepic/online-user.png" alt="online" />
         </div>
         <div class="mention-user-name">{{ user.displayName }}</div>
       </li>
@@ -48,23 +27,11 @@
   <!-- Benutzer-Dropdown durch Icon -->
   <div class="search-results" *ngIf="showUserDropdown" style="top: 100%; left: 16px;">
     <ul>
-      <li
-        class="profile-user"
-        *ngFor="let user of allUsers"
-        (click)="selectUserFromSmiley(user)"
-      >
+      <li class="profile-user" *ngFor="let user of allUsers" (click)="selectUserFromSmiley(user)">
         <div class="profile-icon">
-          <img
-            class="profile-pic"
-            [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
-            alt="{{ user.displayName }}"
-          />
-          <img
-            *ngIf="user.state"
-            class="profile-online"
-            src="assets/img/profilepic/online-user.png"
-            alt="online"
-          />
+          <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
+            alt="{{ user.displayName }}" />
+          <img *ngIf="user.state" class="profile-online" src="assets/img/profilepic/online-user.png" alt="online" />
         </div>
         <div class="mention-user-name">{{ user.displayName }}</div>
       </li>
@@ -73,29 +40,14 @@
 
   <!-- Linke Icons im Eingabefeld -->
   <div class="textarea-left-icons">
-    <img
-      src="assets/img/message-icons/smiley2.svg"
-      (click)="toggleMainEmojiMenu($event)"
-    />
-    <img
-      src="assets/img/message-icons/smiley.svg"
-      (click)="toggleUserDropdown($event)"
-    />
+    <img src="assets/img/message-icons/smiley2.svg" (click)="toggleMainEmojiMenu($event)" />
+    <img src="assets/img/message-icons/smiley.svg" (click)="toggleUserDropdown($event)" />
   </div>
 
   <!-- Emoji Picker -->
-  <div
-    #emojiPicker
-    class="emoji-picker"
-    *ngIf="mainEmojiMenuOpen"
-    (click)="$event.stopPropagation()"
-  >
-    <span
-      *ngFor="let emoji of sortedEmojis.slice(0,20)"
-      class="emoji-icon"
-      (click)="addEmojiToMainMessage(emoji.unicode)"
-      title="{{ emoji.name }}"
-    >
+  <div #emojiPicker class="emoji-picker" *ngIf="mainEmojiMenuOpen" (click)="$event.stopPropagation()">
+    <span *ngFor="let emoji of sortedEmojis" class="emoji-icon" (click)="addEmojiToMainMessage(emoji.unicode)"
+      title="{{ emoji.name }}">
       {{ emoji.unicode }}
     </span>
   </div>
@@ -103,11 +55,10 @@
   <!-- Senden -->
   <div class="textarea-send-button" (click)="sendMessage()">
     <span *ngIf="messageAudio.record">{{ messageAudio.formatTime(messageAudio.elapsedSeconds) }}</span>
-    <img *ngIf="messageAudio.record" (click)="messageAudio.endRecord(messageAudio.recorder, messageAudio.stream)" 
-    class="audio-message trash-img" src="assets/img/audio-message/trash.png"/>    
-    <img *ngIf="textInput.length === 0" 
-    (click)="messageAudio.record ? sendAudioMessage() : messageAudio.startRecord()" 
-    class="audio-message mic-img" src="assets/img/audio-message/microphone.png"/>
-    <img *ngIf="!messageAudio.record && textInput.length > 0" src="assets/img/message-icons/Send icon.svg"/>
+    <img *ngIf="messageAudio.record" (click)="messageAudio.endRecord(messageAudio.recorder, messageAudio.stream)"
+      class="audio-message trash-img" src="assets/img/audio-message/trash.png" />
+    <img *ngIf="textInput.length === 0" (click)="messageAudio.record ? sendAudioMessage() : messageAudio.startRecord()"
+      class="audio-message mic-img" src="assets/img/audio-message/microphone.png" />
+    <img *ngIf="!messageAudio.record && textInput.length > 0" src="assets/img/message-icons/Send icon.svg" />
   </div>
 </div>

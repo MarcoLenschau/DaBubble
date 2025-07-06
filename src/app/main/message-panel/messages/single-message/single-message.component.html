@@ -1,14 +1,14 @@
-<!-- <div class="message-wrapper" [ngClass]="{
-    'hover-thread-message not-own-message': !isOwnMessage(msg),
-    'hover-own-message': isOwnMessage(msg),
-    'hover-message-wrapper': hovered
-  }" (mouseenter)="onMouseEnter()" (touchstart)="onTouchStart()" (click)="closeEmojiMenu()"> -->
 <div class="message-wrapper" [ngClass]="{
     'hover-thread-message not-own-message': !isOwnMessage(msg),
     'hover-own-message': isOwnMessage(msg),
     'hover-message-wrapper': hovered
+  }" (mouseenter)="onMouseEnter()" (touchstart)="onTouchStart()" (click)="closeEmojiMenu()">
+  <!-- <div class="message-wrapper" [ngClass]="{
+    'hover-thread-message not-own-message': !isOwnMessage(msg),
+    'hover-own-message': isOwnMessage(msg),
+    'hover-message-wrapper': hovered
   }" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" (touchstart)="onTouchStart()"
-  (click)="closeEmojiMenu()">
+  (click)="closeEmojiMenu()"> -->
 
   <div class="message-flex-box" [ngClass]="{
   'thread-message': !isOwnMessage(msg),
@@ -60,21 +60,21 @@
 
     </div>
     <!-- Emoji-Zeile -->
-    <!-- <div class="emoji-row" [ngClass]="{
-          'emoji-row-left-aligned': isOwnMessage(msg),
-          'emoji-row-right-aligned': !isOwnMessage(msg),
-          'make-visible': hovered,
-          'emoji-row-open scrollable': emojiMenuOpen,
-          'emoji-row-closed': !emojiMenuOpen
-        }" (click)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()"> -->
     <div class="emoji-row" [ngClass]="{
           'emoji-row-left-aligned': isOwnMessage(msg),
           'emoji-row-right-aligned': !isOwnMessage(msg),
           'make-visible': hovered,
           'emoji-row-open scrollable': emojiMenuOpen,
           'emoji-row-closed': !emojiMenuOpen
+        }" (click)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()">
+      <!-- <div class="emoji-row" [ngClass]="{
+          'emoji-row-left-aligned': isOwnMessage(msg),
+          'emoji-row-right-aligned': !isOwnMessage(msg),
+          'make-visible': hovered,
+          'emoji-row-open scrollable': emojiMenuOpen,
+          'emoji-row-closed': !emojiMenuOpen
         }" (click)="$event.stopPropagation()" (touchstart)="$event.stopPropagation()"
-      (mouseleave)="onEmojiRowMouseLeave()">
+      (mouseleave)="onEmojiRowMouseLeave()"> -->
 
       <!-- Bitte nicht löschen! -->
 
@@ -132,6 +132,7 @@
           </div>
         </div>
       </ng-container>
+      <!-- <div class="emoji-filler"></div> -->
     </div>
 
 
