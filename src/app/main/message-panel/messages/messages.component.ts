@@ -26,7 +26,7 @@ import {
 } from '../../../core/utils/messages.utils';
 import {
   getEmojiByName, getEmojiByUnicode, addEmojiToTextarea, addEmojiToMessage, getSortedEmojisForUser, applyTooltipOverflowAdjustment,
-  getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton
+  getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton, mergeEmojiUsageMaps
 } from '../../../core/utils/emojis.utils';
 import { scrollToBottom } from '../../../core/utils/scroll.utils';
 import { SingleMessageComponent } from "./single-message/single-message.component";
@@ -51,6 +51,11 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Output() showThreadChange = new EventEmitter<boolean>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() starterMessageChange = new EventEmitter<Message>();
+  @Output() sortedEmojisChange = new EventEmitter<Emoji[]>();
+  @Output() emojiStatsChanged = new EventEmitter<{
+    usage: { [emojiName: string]: number };
+    recent: string[];
+  }>();
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
@@ -544,7 +549,8 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
    * @param event - Contains updated emoji usage stats and recent emojis list.
    */
   onEmojiUsageChanged(event: { usage: any; recent: string[] }) { // Bleibt hier!!!!!!!!!!!!!!!!!!!!
-    this.localEmojiStats = event.usage;
+    // this.localEmojiStats = event.usage;
+    this.localEmojiStats = mergeEmojiUsageMaps(this.localEmojiStats, event.usage);
     this.localRecentEmojis = event.recent;
 
     const updatedUser = this.buildUpdatedUser();
@@ -575,7 +581,7 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     });
 
     this.currentUser = updatedUser;
-    this.updateSortedEmojis();
+    this.updateSortedEmojis(updatedUser);
   }
 
   // onMouseEnterEmojiWrapper(event: MouseEvent, reactionIndex: number) { // In SingleMessageComponent
@@ -662,13 +668,16 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   formatUserNames = (userIds: string[]) => formatUserNames(this.users, userIds, this.currentUser);
   // getEmojiByName = (name: string) => getEmojiByName(this.emojis, name); // In SingleMessageComponent
   getEmojiByUnicode = (unicode: string) => getEmojiByUnicode(this.emojis, unicode);
-  addEmojiToTextarea = (unicodeEmoji: string) => {
-    this.textareaContent = addEmojiToTextarea(this.textareaContent, unicodeEmoji);
-    this.updateSortedEmojis();
-  };
-  updateSortedEmojis(): void {
-    this.sortedEmojis = getSortedEmojisForUser(this.currentUser, this.emojis);
+  // addEmojiToTextarea = (unicodeEmoji: string) => {
+  //   this.textareaContent = addEmojiToTextarea(this.textareaContent, unicodeEmoji);
+  //   this.updateSortedEmojis();
+  // };
+
+  private updateSortedEmojis(user: User = this.currentUser): void {
+    this.sortedEmojis = getSortedEmojisForUser(user, this.emojis);
+    this.sortedEmojisChange.emit(this.sortedEmojis);
   }
+
   // isOwnMessage = (msg: Message) => isOwnMessage(msg, this.currentUser.id); // In SingleMessageComponent
   trackByMessageId = trackByMessageId;
   // setTooltipHoveredState = setTooltipHoveredState; // In SingleMessageComponent

@@ -6,11 +6,14 @@
 
     <app-messages [mode]="mode" [starterMessage]="starterMessage" [userId]="userId" [messageContext]="messageContext"
       (threadStart)="onStartThread($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"
-      [activeUser]="activeUser" (starterMessageChange)="onStarterMessageChange($event)"
-      [viewMode]="viewMode"></app-messages>
+      [activeUser]="activeUser" (starterMessageChange)="onStarterMessageChange($event)" [viewMode]="viewMode"
+      (sortedEmojisChange)="onSortedEmojisChange($event)"
+      (emojiStatsChanged)="onEmojiStatsChanged($event)"></app-messages>
     <div class="message-textarea">
       <app-messages-textarea [mode]="mode" [starterMessage]="starterMessage" [textInput]="textInput"
-        placeholder="Nachricht schreiben..." [messageContext]="messageContext"></app-messages-textarea>
+        placeholder="Nachricht schreiben..." [messageContext]="messageContext" [sortedEmojis]="sortedEmojis"
+        (emojiUsageChanged)="onEmojiUsageChanged($event)" [emojiUsage]="emojiUsage"
+        [recentEmojis]="recentEmojis"></app-messages-textarea>
     </div>
   </div>
 </div>

@@ -82,7 +82,6 @@ function removeUserFromReaction(
     userId: string
 ): Reaction[] {
     const updatedUserIds = target.userIds.filter(id => id !== userId);
-
     if (updatedUserIds.length === 0) {
         return reactions.filter(r => r !== target);
     }
@@ -94,9 +93,6 @@ function removeUserFromReaction(
 /**
  * Adds a user to an existing reaction.
  * 
- * @param reactions - The full list of reactions.
- * @param target - The reaction to update.
- * @param userId - The ID of the user to add.
  * @returns Updated reactions list.
  */
 function addUserToReaction(
@@ -139,18 +135,15 @@ export function getSortedEmojisForUser(user: User, emojis: Emoji[]): Emoji[] {
     if (!hasEmojiData(user)) {
         return getDefaultEmojis(emojis);
     }
-
     const recent = getRecentEmojis(user, emojis);
     const frequent = getFrequentEmojisExcludingRecent(user, emojis, recent);
     const remaining = getRemainingEmojis(emojis, recent, frequent);
-
     return [...recent, ...frequent, ...remaining];
 }
 
 /**
  * Checks if the user has any emoji data stored.
  * 
- * @param user - The user to check.
  * @returns True if user has recent or frequent emoji data.
  */
 function hasEmojiData(user: User): boolean {
@@ -163,8 +156,6 @@ function hasEmojiData(user: User): boolean {
 /**
  * Gets frequent emojis excluding recently used ones.
  * 
- * @param user - The user to get data from.
- * @param emojis - Available emojis.
  * @param recent - Emojis recently used by user.
  * @returns Frequently used emojis, excluding recent ones.
  */
@@ -180,7 +171,6 @@ function getFrequentEmojisExcludingRecent(
 /**
  * Filters out emojis that are already in recent or frequent sets.
  * 
- * @param emojis - All available emojis.
  * @param recent - Recently used emojis.
  * @param frequent - Frequently used emojis.
  * @returns Remaining emojis not in recent or frequent sets.
@@ -207,8 +197,6 @@ function getDefaultEmojis(emojis: Emoji[]): Emoji[] {
 /**
  * Returns up to 2 recent emojis used by user.
  * 
- * @param user - The user to get emojis for.
- * @param emojis - All available emojis.
  * @returns List of recent emojis.
  */
 function getRecentEmojis(user: User, emojis: Emoji[]): Emoji[] {
@@ -223,8 +211,6 @@ function getRecentEmojis(user: User, emojis: Emoji[]): Emoji[] {
  * Returns the user's most frequently used emojis (excluding the up to two 
  * most recently used), sorted by usage and matched from the emoji list.
  * 
- * @param user - The user to get data from.
- * @param emojis - All available emojis.
  * @param excludeNames - Names to exclude from result.
  * @returns Sorted list of frequently used emojis.
  */
@@ -306,6 +292,25 @@ function updateEmojiUsageCount(usage: { [key: string]: number }, emojiName: stri
 }
 
 /**
+ * Merges new emoji usage data into existing usage map by incrementing counts.
+ *
+ * @param existing - The user's current emoji usage map.
+ * @param incoming - New usage data to merge in.
+ * @returns A new usage map with updated counts.
+ */
+export function mergeEmojiUsageMaps(
+    existing: { [emojiName: string]: number },
+    incoming: { [emojiName: string]: number }
+): { [emojiName: string]: number } {
+    const merged = { ...existing };
+    for (const [name, count] of Object.entries(incoming)) {
+        merged[name] = (merged[name] ?? 0) + count;
+    }
+    return merged;
+}
+
+
+/**
  * Adjusts the tooltip position if it overflows the container.
  * 
  * @param tooltipEl - The tooltip element.
@@ -349,10 +354,6 @@ export function getVisibleReactions(
 /**
  * Calculates number of hidden reactions due to limit.
  * 
- * @param message - The message with reactions.
- * @param showAll - Whether all are shown.
- * @param viewMode - Current UI mode.
- * @param isThreadView - Whether in thread view.
  * @returns Number of hidden reactions.
  */
 export function getHiddenReactionCount(

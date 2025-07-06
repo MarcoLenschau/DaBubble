@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -57,6 +57,7 @@ export class SingleMessageComponent {
   tooltipText: string = '';
 
   private emojiTouched = false;
+  private emojiClicked = false;
 
   constructor(
     private messageDataService: MessageDataService,
@@ -130,11 +131,11 @@ export class SingleMessageComponent {
    * @param reactionIndex Optional index of the reaction for tooltip update
    */
   async handleEmojiClick(emojiName: string, msg: Message, reactionIndex?: number): Promise<void> {
+    this.emojiClicked = true;
     if (this.emojiTouched) {
       this.emojiTouched = false;
       return;
     }
-
     this.messageEventService.disableAutoScroll();
     const updatedMsg = this.processEmojiReaction(emojiName, msg);
     await this.messageDataService.updateMessage(updatedMsg);
@@ -212,17 +213,17 @@ export class SingleMessageComponent {
    * Emits emoji usage changes if any local updates exist and closes the emoji menu.
    */
   async onEmojiRowMouseLeave(): Promise<void> {
-    const hasEmojiUpdates =
-      Object.keys(this.localEmojiStats).length > 0 ||
-      this.localRecentEmojis.length > 0;
+    // const hasEmojiUpdates =
+    //   Object.keys(this.localEmojiStats).length > 0 ||
+    //   this.localRecentEmojis.length > 0;
 
-    if (hasEmojiUpdates) {
+    if (this.emojiClicked) {
       this.emojiUsageChanged.emit({
         usage: this.localEmojiStats,
         recent: this.localRecentEmojis,
       });
     }
-
+    this.emojiClicked = false;
     this.emojiMenuOpen = false;
   }
 

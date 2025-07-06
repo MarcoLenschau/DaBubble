@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy, inject, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, filter } from 'rxjs';
@@ -11,7 +11,6 @@ import { Channel } from '../../../core/models/channel.model';
 import { User } from '../../../core/models/user.model';
 import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
-import { getSortedEmojisForUser, updateEmojiDataForUser } from '../../../core/utils/emojis.utils';
 import { FirebaseService } from '../../../core/services/firebase.service';
 import { MessageAudioService } from '../../../core/services/message-audio.service';
 
@@ -32,11 +31,22 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Nachricht an...';
   @Input() mode: 'thread' | 'message' = 'message';
   @Input() messageContext?: MessageContext;
+  @Input() sortedEmojis: Emoji[] = [];
+  @Input() emojiUsage: { [emojiName: string]: number } = {};
+  @Input() recentEmojis: string[] = [];
+
+
+  @Output() emojiUsageChanged = new EventEmitter<{
+    usage: { [emojiName: string]: number };
+    recent: string[];
+  }>();
+
   @ViewChild('editableDiv') editableDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('emojiPicker') emojiPicker!: ElementRef<HTMLDivElement>;
   @ViewChild('chatDiv') chatDiv!: ElementRef;
   emojis: Emoji[] = EMOJIS;
-  sortedEmojis: Emoji[] = [];
+  localRecentEmojis: string[] = [];
+  localEmojiStats: { [emojiName: string]: number } = {};
   reaction: Reaction[] = [];
   mainEmojiMenuOpen: boolean = false;
   currentUser!: User;
@@ -74,7 +84,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       .subscribe(user => {
         this.currentUser = user;
       });
-    this.updateSortedEmojis();
   }
 
   ngOnDestroy(): void {
@@ -182,21 +191,22 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   };
 
-  addEmojiToMainMessage(unicodeEmoji: string): void {
+  addEmojiToMainMessage(unicodeEmoji: string, emoji: Emoji): void {
     const editable = this.editableDiv.nativeElement;
     editable.focus();
     document.execCommand('insertText', false, unicodeEmoji);
     this.textInput = editable.innerText;
-    updateEmojiDataForUser({ id: 'current-user' } as any, unicodeEmoji);
-    this.updateSortedEmojis();
-    this.mainEmojiMenuOpen = false;
-  }
 
-  updateSortedEmojis(): void {
-    this.sortedEmojis = getSortedEmojisForUser(
-      { id: 'current-user' } as any,
-      this.emojis
-    );
+    const emojiName = emoji.name;
+    this.localEmojiStats = { ...this.emojiUsage };
+    this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
+    this.localRecentEmojis = [emojiName, ...this.localRecentEmojis.filter(e => e !== emojiName)].slice(0, 2);
+    this.emojiUsageChanged.emit({
+      usage: this.localEmojiStats,
+      recent: this.localRecentEmojis
+    });
+
+    this.mainEmojiMenuOpen = false;
   }
 
   private handleClickOutside = (event: MouseEvent): void => {
