@@ -1,47 +1,78 @@
 @import "../styles/mix-in.scss";
+@import "../styles/color.scss";
 
 div {
-    @include dFlex($jc: none);
-    padding: 0 20px;
-    img {
-        margin-right: -65px;
-        z-index: 1;
-        height: 26px;
-        width: 24px;
-    }
+  @include dFlex($jc: none);
+  padding: 0 20px;
 
-    input {   
-        text-align: center;
-        height: 32px;
-        border-radius: 24px;
-        border: 1.5px rgba(0, 0, 0, 0.3) solid;
-    }
+  img {
+    z-index: 1;
+    height: 26px;
+    width: 24px;
+  }
+
+  input {
+    text-align: left;
+    padding-left: 75px;
+    height: 32px;
+    border-radius: 24px;
+    border: none;
+    background-color: $grey;
+    font-family: 'Nunito';
+  }
+
+  input::placeholder {
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.7;
+  }
+
+  input:focus::placeholder {
+  opacity: 0; 
+  transition: opacity 0.2s ease; 
+}
 }
 
 .none {
-    display: none;
+  display: none;
 }
 
 .distance {
-    padding-left: 18px !important;
+  padding-left: 18px !important;
 }
 
 .input-distance {
-    margin: 0 -34px;
+  margin: 0 -34px;
+}
+
+//Login 
+.input-icon {
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+
+
 }
 
 .flex-row {
-    flex-direction: row-reverse;
+  flex-direction: row-reverse;
 }
 
 .input-prefix-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+
+  >img {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .input-prefix-wrapper input {
-  padding-left: 0;
+  padding-left: 75px;
 }
 
 .input-prefix-wrapper .input-prefix-icon {
@@ -60,5 +91,5 @@ div {
 }
 
 .error {
-    border: red 1px solid !important;
+  border: red 1px solid !important;
 }

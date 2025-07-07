@@ -1,12 +1,12 @@
 @import "../styles/mix-in.scss";
-@import "../styles/mix-in.scss";
+@import "../styles/color.scss";
 @import "../styles/breakpoint.scss";
 
 header {
     @include dFlex($jc: space-between);
     background-color: #ECEEFE;
     // margin: -8px;
-    padding: 12px 24px;
+    padding: 40px;
     >.sign-in-page {
         @include dFlex($jc: none, $g: 12px, $f: column);
     }
@@ -15,9 +15,17 @@ header {
     }
 }
 
+
+.sign-in-page {
+    font-family: 'Nunito';
+    >span {
+        font-size: 18px;
+    }
+}
 a {
+    color: $purple-1;
     &:hover {
-        color: gray;
+        color: $text-gray;
     }
 }
 

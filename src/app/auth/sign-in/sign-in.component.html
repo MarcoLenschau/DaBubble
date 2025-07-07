@@ -1,10 +1,16 @@
 <div class="main-container">
     <div class="main-container">
         <h2 class="color-blue">Anmeldung</h2>
-        <span>Wir empfehlen dir die Email zu nutzen, die du bei der Arbeit verwendest.</span>
-        <app-input (valueChange)="setValue($event, 'email')" [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'" [height]="38"></app-input>
-        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'" [height]="38" ></app-input>
-        <a (click)="router.switchRoute('reset')">Passwort vergessen</a>
+        <span>Wir empfehlen dir, die Email zu nutzen, die du bei der Arbeit verwendest.</span>
+        <app-input (valueChange)="setValue($event, 'email')" [placeholder]="'beispielname@email.com'"
+            [img]="'./assets/img/log in/mail-icon.svg'" [activeImg]="'./assets/img/log in/mail-icon-clicked.svg'"
+            [style.width]="'100%'" [height]="45"></app-input>
+        <app-input (valueChange)="setValue($event, 'password')" [placeholder]="'Password'"
+            [img]="'./assets/img/log in/lock.svg'" [activeImg]="'./assets/img/log in/lock-clicked.svg'"
+            [type]="'password'" [style.width]="'100%'" [height]="45"></app-input>
+        <div class="forgot-password">
+            <a (click)="router.switchRoute('reset')">Passwort vergessen?</a>
+        </div>
         <div class="separating-line-container">
             <div></div>
             <span>ODER</span>
@@ -15,16 +21,17 @@
             <span>Anmelden mit Google</span>
         </div>
         <div class="google-sign-in" (click)="loginWithGithub()">
-            <img src="./assets/img/logos/github.png" class="github-logo" alt="github-logo">
+            <img src="./assets/img/logos/github.svg" class="github-logo" alt="github-logo">
             <span>Anmelden mit Github</span>
         </div>
         <span *ngIf="error" class="error-message">Email oder Password sind falsch !</span>
         <div class="button-container">
             <app-button [text]="'Anmelden'" [color]="'primary'" (clicked)="loginWithEmail();"></app-button>
-            <app-button [text]="'Gäste Login'" [color]="'secondary'" (clicked)="router.switchRoute('/message'); gastLogin();"></app-button>
+            <app-button [text]="'Gäste Login'" [color]="'secondary'"
+                (clicked)="router.switchRoute('/message'); gastLogin();"></app-button>
         </div>
     </div>
     <div id="loader" class="loader">
-      <img src="./assets/img/logos/logo.svg" class="loader-image" alt="logo">
+        <img src="./assets/img/logos/logo.svg" class="loader-image" alt="logo">
     </div>
 </div>

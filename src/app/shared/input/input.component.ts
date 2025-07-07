@@ -15,11 +15,14 @@ export class InputComponent {
   @Input() img: string = '';
   @Input() value: string = '';
   @Input() height: number = 32;
-  @Input() width: number = 250;
+  @Input() width: number = 350;
   @Input() reverse: boolean = false;
   @Input() prefix: string = '';
   @Input() prefixIcon: string = '';
+  @Input() activeImg: string = '';
   @Output() valueChange = new EventEmitter<string>();
+
+  private isActive: boolean = false;
 
   constructor() {}
 
@@ -27,4 +30,16 @@ export class InputComponent {
     const eventTarget = event.target as HTMLInputElement;
     this.valueChange.emit(eventTarget.value);
   }    
+
+  onFocus() {
+  this.isActive = true;
+}
+
+onBlur() {
+  this.isActive = false;
+}
+
+get currentIcon(): string {
+  return this.isActive && this.activeImg ? this.activeImg : (this.img || '');
+}
 }

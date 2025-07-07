@@ -1,52 +1,85 @@
 @import "../../shared/styles/mix-in.scss";
 @import "../../shared/styles/color.scss";
 
-a {
+
+.forgot-password {
+   padding: 12px 0px;
+  a {
+    color: $purple-2;
+    cursor: pointer;
+   
+
     &:hover {
-        color: gray;
+      color: gray;
     }
+  }
 }
 
+
 .main-container {
-    >span {
-        width: 350px;
-    }
+  >span {
+    width: 370px;
+  }
 }
 
 .separating-line-container {
-    @include dFlex($jc: none, $g: 12px);
-    >div {
-        width: 124px;
-        height: 1px;
-        background-color: black;
-    }
+  @include dFlex($jc: none, $g: 12px);
+
+  >div {
+    width: 124px;
+    height: 1px;
+    background-color: $light-purple;
+  }
 }
 
 .google-sign-in {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 24px;
-    width: 315px;
-    height: 40px;
+  background-color: $grey;
+  border-radius: 24px;
+  width: 360px;
+  height: 45px !important; 
+  min-height: 45px;        
+  cursor: pointer;
+  @include dFlex($g: 12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
     cursor: pointer;
-    @include dFlex($g: 12px);
-    >span {
-        color: $blue;
+    border: 1px solid $purple-1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    > span {
+      font-weight: 600; 
     }
-    >img {
-        height: 38px;
-        width: 38px;
-    }
+  }
+  
+
+  >span {
+    color: $purple-1;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Nunito';
+    transform: scale(1.03);
+  }
+
+  >img {
+    height: 32px;
+    width: 32px;
+  }
+
     .github-logo {
-        background-color: rgba(0, 0, 0, 0.1);
-    }
+    background-color: $grey;
+  }
 }
 
 .button-container {
-    @include dFlex($ai: none, $g: 24px);
+  @include dFlex($ai: none, $g: 24px);
+  margin: 18px;
+  gap: 32px;
 }
 
 app-input {
-    padding-left: 38px
+  width: 100%;
 }
 
 .d_none {
@@ -54,32 +87,32 @@ app-input {
 }
 
 .loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: backgroundTransition 2s ease forwards;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: backgroundTransition 2s ease forwards;
+}
 
 .loader::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 1);
-    z-index: -1;
-    animation: backgroundTransition 2s ease forwards;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 1);
+  z-index: -1;
+  animation: backgroundTransition 2s ease forwards;
 }
 
 .loader-image {
-    position: absolute;
-    animation: logoTransition 2s ease forwards;
+  position: absolute;
+  animation: logoTransition 2s ease forwards;
 }
 
 @keyframes logoTransition {
@@ -90,20 +123,21 @@ app-input {
     height: 334px;
     transform: translate(-50%, -50%);
   }
-  
+
   100% {
     top: 12px;
     left: 12px;
     width: 100px;
     height: 122px;
     opacity: 0;
-    }
+  }
 }
 
 @keyframes backgroundTransition {
   0% {
     background-color: #313AE5;
   }
+
   100% {
     background-color: rgba(255, 255, 255, 0);
   }

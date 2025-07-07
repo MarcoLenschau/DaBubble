@@ -2,16 +2,26 @@
 @import "../styles/mix-in.scss";
 
 button {
-    height: 35px;
-    width: 100px;
+    padding: 12px 25px;
     border: 0;
+    font-size: 14px;
     border-radius: 24px;
     font-weight: bold;
     cursor: pointer;
-}  
+    font-family: 'Nunito';
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        cursor: pointer;
+        border: 1px solid $purple-1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+}
 
 .primary {
-    background-color: $blue;
+    background-color: $purple-1;
     color: $white;
 }
 
