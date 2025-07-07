@@ -5,9 +5,9 @@
             <h2 class="color-blue">Konto erstellen</h2>
         </div>
         <span>Mit deinem Namen und deiner E-Mail Adresse hast du dein neues DABubble-Konto.</span>
-        <app-input #name (valueChange)="setValue($event, 'name'); validate($event, 'name');" [placeholder]="'Name und Nachnahme'" [img]="'name.svg'"></app-input>
-        <app-input #email (valueChange)="setValue($event, 'email'); validate($event, 'email');" [placeholder]="'max-mustermann@mustermail.com'" [img]="'email.svg'"></app-input>
-        <app-input #password (valueChange)="setValue($event, 'password'); validate($event, 'password');" [placeholder]="'Password'" [img]="'password.svg'" [type]="'password'"></app-input>
+        <app-input #name (valueChange)="setValue($event, 'name'); validate($event, 'name');" [placeholder]="'Name und Nachnahme'" [img]="'./assets/img/input/name.svg'"></app-input>
+        <app-input #email (valueChange)="setValue($event, 'email'); validate($event, 'email');" [placeholder]="'max-mustermann@mustermail.com'" [img]="'./assets/img/input/email.svg'"></app-input>
+        <app-input #password (valueChange)="setValue($event, 'password'); validate($event, 'password');" [placeholder]="'Password'" [img]="'./assets/img/input/password.svg'" [type]="'password'"></app-input>
         <div class="checkbox-container">
             <div id="checkbox" (click)="acceptPrivacy()" class="checkbox"></div>
             <div>
