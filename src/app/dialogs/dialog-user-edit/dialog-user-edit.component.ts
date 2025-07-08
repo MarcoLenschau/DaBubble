@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, ViewChild } from '@angular/core';
 import { InputComponent } from '../../shared/input/input.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -14,10 +14,11 @@ import { firstValueFrom, filter } from 'rxjs';
   styleUrl: './dialog-user-edit.component.scss'
 })
 export class DialogUserEditComponent {
+  @ViewChild('input') input!: InputComponent;
   @Input() user: any = {};
   private dialogRef = inject(MatDialogRef<DialogUserEditComponent>);
   private userDataService = inject(UserDataService);
-
+  
   /**
    * Closes the currently open dialog.
    *
@@ -26,7 +27,7 @@ export class DialogUserEditComponent {
   dialogClose(): void {
     this.dialogRef.close();
   }
-
+  
   /**
    * Initiates the user name saving process.
    * Trims the input and only proceeds if the result is non-empty.
@@ -34,9 +35,8 @@ export class DialogUserEditComponent {
    * @return {Promise<void>}
    */
   async userSave(): Promise<void> {
-    const trimmedName = this.user.displayName?.trim();
-    if (!trimmedName) return;
-    this.saveChanges(trimmedName).catch(() => {});
+    this.user.displayName = this.input.inputRef.nativeElement.value;
+    this.saveChanges(this.user.displayName).catch(() => {});
   }
 
   /**
