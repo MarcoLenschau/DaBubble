@@ -1,0 +1,42 @@
+name: Deploy to SSH Server
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      
+jobs:
+  build:
+    name: Build Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: ⚙️ Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: 🔨 Build Angular App
+        run: ng build --configuration production --base-href="/"
+
+      - name: Copy files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: marco-lenschau.de
+          username: github
+          key: ${{ secrets.SECRET_KEY }}
+          port: 22
+          source: "./dist/dabubble*"
+          target: "/var/www/html/dabubble/"
