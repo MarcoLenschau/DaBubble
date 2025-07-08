@@ -7,6 +7,10 @@
     }
 }
 
+.register-container {
+    height: 520px;
+}
+
 .checkbox-container {
     @include dFlex($jc: none, $g: 6px);
     >.checkbox {
@@ -28,6 +32,12 @@
     }
 }
 
+.register-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
 .button-container {
     @include dFlex($jc: flex-end, $ai: none);
     width: 100%;
@@ -43,11 +53,12 @@
 }
 
 .back-button-container {
-  @include dFlex($jc: flex-start, $g: 48px);
-  width: 400px;
+  @include dFlex($jc: center, $g: 48px);
+  width: 500px;
   >img {
-    height: 40px;
-    margin-left: 12px;
+    position: absolute;
+    height: 26px;
+    margin-right: 470px;
     cursor: pointer;
     &:hover {
         background-color: rgba(0, 0, 0, 0.08);
