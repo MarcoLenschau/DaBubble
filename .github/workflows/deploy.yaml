@@ -38,5 +38,5 @@ jobs:
           username: github
           key: ${{ secrets.SECRET_KEY }}
           port: 22
-          source: "dist/dabubble/browser/*"
+          source: "./dist/dabubble/browser/*"
           target: "/var/www/html/dabubble/"
