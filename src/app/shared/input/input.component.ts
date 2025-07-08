@@ -24,22 +24,33 @@ export class InputComponent {
 
   private isActive: boolean = false;
 
-  constructor() {}
-
+  /**
+   * Emits the value of the input field when the user types.
+   * @param event The input event from the input field.
+   */
   addData(event: Event) {  
     const eventTarget = event.target as HTMLInputElement;
     this.valueChange.emit(eventTarget.value);
   }    
 
+  /**
+   * Sets the input as active (focused).
+   */
   onFocus() {
-  this.isActive = true;
-}
+    this.isActive = true;
+  }
 
-onBlur() {
-  this.isActive = false;
-}
+  /**
+   * Sets the input as inactive (blurred).
+   */
+  onBlur() {
+    this.isActive = false;
+  }
 
-get currentIcon(): string {
-  return this.isActive && this.activeImg ? this.activeImg : (this.img || '');
-}
+  /**
+   * Returns the current icon to display based on the active state.
+   */
+  get currentIcon(): string {
+    return this.isActive && this.activeImg ? this.activeImg : (this.img || '');
+  }
 }

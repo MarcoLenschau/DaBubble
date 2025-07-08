@@ -5,6 +5,7 @@
             <h2 class="color-blue">Konto erstellen</h2>
         </div>
         <span>Mit deinem Namen und deiner E-Mail Adresse hast du dein neues DABubble-Konto.</span>
+
         <div class="register-input-container">
             <app-input #name (valueChange)="setValue($event, 'name'); validate($event, 'name');"
                 [placeholder]="'Name und Nachname'" [img]="'./assets/img/log in/user-icon.svg'" [style.width]="'100%'" [height]="45"></app-input>
@@ -15,6 +16,7 @@
                 [placeholder]="'Passwort'" [img]="'./assets/img/log in/lock.svg'" [type]="'password'" [style.width]="'100%'"
                 [height]="45"></app-input>
         </div>
+
         <div class="checkbox-container">
             <div id="checkbox" (click)="acceptPrivacy()" class="checkbox"></div>
             <div>
