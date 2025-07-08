@@ -11,7 +11,7 @@
         <span>Vollständiger Name</span>
     </div>
     <!-- <app-input [placeholder]="'Dein Name hier'" [img]="'none'" [value]="user.displayName"></app-input> -->
-    <app-input [placeholder]="'Dein Name hier'" [img]="'none'" [(value)]="user.displayName"></app-input>
+    <input type="text" placeholder="Dein Name hier" class="input-field">
     <div class="action-buttons">
         <app-button [text]="'Abrechen'" [color]="'secondary'" (clicked)="dialogClose();"></app-button>
         <app-button [text]="'Speichern'" [color]="'primary'" (clicked)="userSave();"></app-button>
