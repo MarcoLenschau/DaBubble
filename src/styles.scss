@@ -65,6 +65,23 @@ body {
   scrollbar-color: $purple-3 transparent;
 }
 
+@media (max-width: 500px) {
+  .main-container {
+    >.main-container {
+      width: 350px;
+    }
+
+    .google-sign-in {
+      width: 300px !important;
+    }
+
+    .secondary {
+      padding: 12px !important;
+      width: 110px;
+    }
+  }
+}
+
 // TODO Scrollbars verwenden wenn notwendig oder ausblenden
 
 // ::-webkit-scrollbar {
