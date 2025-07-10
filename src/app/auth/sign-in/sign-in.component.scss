@@ -74,7 +74,7 @@
 
 .button-container {
   @include dFlex($ai: none, $g: 24px);
-  margin: 18px;
+  margin: 18px 0;
   gap: 32px;
 }
 
@@ -145,4 +145,5 @@ app-input {
 
 .error-message {
   color: red;
+  height: 10px;
 }

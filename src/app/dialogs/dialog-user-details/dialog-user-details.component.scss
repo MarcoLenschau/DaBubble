@@ -11,7 +11,7 @@
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
     background-color: $white;
-    height: 495px;
+    height: 550px;
     width: 275px;
     @include dFlex($jc: none, $ai: none,$f: column, $g: 24px);
 }

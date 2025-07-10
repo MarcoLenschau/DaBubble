@@ -109,6 +109,22 @@ export class FirebaseService {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
+  
+  /**
+   * Searches for a user by their document ID in the Firestore 'users' collection.
+   *
+   * @param {string} userId - The ID of the user to search for.
+   * @returns {Promise<any>} A Promise that resolves to the user object.
+   */
+  async searchUsersById(userId: string): Promise<any> {
+    let user: any = {};
+    const usersRef = collection(this.firebase, 'users');
+    const querySnapshot = await getDocs(usersRef);
+    querySnapshot.forEach((doc) => {
+      doc.id === userId ? user = {id: doc.id, ...doc.data()}: null;
+    });
+    return user;
+  }
 
   /**
    * Updates the state of a user in the Firestore database.

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +18,7 @@ import { Reaction } from '../../../../core/interfaces/reaction.interface';
 import { isOwnMessage, getUserById, setTooltipHoveredState, } from '../../../../core/utils/messages.utils';
 import { formatRelativeTimeSimple, formatTime } from '../../../../core/utils/date.utils';
 import { addEmojiToMessage, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton, getEmojiByName, applyTooltipOverflowAdjustment, } from '../../../../core/utils/emojis.utils';
+import { FirebaseService } from '../../../../core/services/firebase.service';
 
 @Component({
   selector: 'app-single-message',
@@ -39,7 +40,7 @@ export class SingleMessageComponent {
   @Input() sortedEmojis: Emoji[] = [];
   @Input() viewMode: ViewMode = ViewMode.Desktop;
   @Input() openEmojiIndex!: number | null;
-
+  @Input() activeUser: User | null = null;
   @Output() messageEdited = new EventEmitter<{ index: number; newText: string; isThread: boolean }>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() emojiUsageChanged = new EventEmitter<{ usage: { [emojiName: string]: number }; recent: string[]; }>();
@@ -58,6 +59,8 @@ export class SingleMessageComponent {
 
   private emojiTouched = false;
   private emojiClicked = false;
+
+  private firebase = inject(FirebaseService);
 
   constructor(
     private messageDataService: MessageDataService,
@@ -230,12 +233,11 @@ export class SingleMessageComponent {
   /**
    * Opens a dialog to show user details by user ID.
    */
-  openUserDialog(userId?: string): void {
-    if (!userId) return;
-    const user = this.getUserById(userId);
-    if (user) {
-      this.dialog.open(DialogUserDetailsComponent, { data: user });
-    }
+  async openUserDialog(userId: any) {
+    this.activeUser = await this.firebase.searchUsersById(userId);
+    const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
+    dialogDetails.componentInstance.directMessage = true;
+    dialogDetails.componentInstance.user = this.activeUser;
   }
 
   /**
