@@ -153,10 +153,7 @@ export function buildNewMessage(
  * @param emitter - The EventEmitter to emit through.
  * @param context - The message context to emit.
  */
-export function emitContextSelected(
-  emitter: EventEmitter<MessageContext>,
-  context: MessageContext
-): void {
+export function emitContextSelected(emitter: EventEmitter<MessageContext>, context: MessageContext): void {
   emitter.emit(context);
 }
 
@@ -185,10 +182,7 @@ export function emitDirectUserContext(
  * @param emitter - The EventEmitter to emit through.
  * @param channelId - The ID of the channel.
  */
-export function emitChannelContext(
-  emitter: EventEmitter<MessageContext>,
-  channelId: string
-): void {
+export function emitChannelContext(emitter: EventEmitter<MessageContext>, channelId: string): void {
   emitContextSelected(emitter, {
     type: 'channel',
     id: channelId,
@@ -203,15 +197,10 @@ export function emitChannelContext(
  * @param msg - The message to derive context from.
  * @param currentUserId - ID of the current user (used for direct messages).
  */
-export function emitMessageContextFromMessage(
-  emitter: EventEmitter<MessageContext>,
-  msg: Message,
-  currentUserId: string
-): void {
+export function emitMessageContextFromMessage(emitter: EventEmitter<MessageContext>, msg: Message, currentUserId: string): void {
   const type = msg.channelId ? 'channel' : 'direct';
   const id = msg.channelId ?? msg.userId;
   const receiverId = msg.channelId ? '' : currentUserId;
-
   emitContextSelected(emitter, { type, id, receiverId });
 }
 
