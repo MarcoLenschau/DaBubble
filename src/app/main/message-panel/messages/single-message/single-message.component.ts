@@ -39,7 +39,7 @@ export class SingleMessageComponent {
   @Input() sortedEmojis: Emoji[] = [];
   @Input() viewMode: ViewMode = ViewMode.Desktop;
   @Input() openEmojiIndex!: number | null;
-
+  @Input() activeUser: User | null = null;
   @Output() messageEdited = new EventEmitter<{ index: number; newText: string; isThread: boolean }>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() emojiUsageChanged = new EventEmitter<{ usage: { [emojiName: string]: number }; recent: string[]; }>();
@@ -230,12 +230,10 @@ export class SingleMessageComponent {
   /**
    * Opens a dialog to show user details by user ID.
    */
-  openUserDialog(userId?: string): void {
-    if (!userId) return;
-    const user = this.getUserById(userId);
-    if (user) {
-      this.dialog.open(DialogUserDetailsComponent, { data: user });
-    }
+  openUserDialog(): void {
+    const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
+    dialogDetails.componentInstance.directMessage = true;
+    dialogDetails.componentInstance.user = this.activeUser;
   }
 
   /**

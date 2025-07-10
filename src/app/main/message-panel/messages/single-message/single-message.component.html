@@ -19,7 +19,7 @@
 
     <div class="message-body" [ngClass]="{ 'own-message-body': isOwnMessage(msg) }">
       <div class="message-body-header" [ngClass]="{ 'own-message-body-header': isOwnMessage(msg) }">
-        <h4 (click)="openUserDialog(msg.userId)">{{ msg.name }}</h4>
+        <h4 (click)="openUserDialog()">{{ msg.name }}</h4>
         <p>{{ isThread ? formatRelativeTimeSimple(msg.timestamp) : formatTime(msg.timestamp) }}</p>
       </div>
 
