@@ -2,11 +2,16 @@
 
   <!-- Eingabefeld + Placeholder -->
   <div class="textarea-wrapper">
-    <div class="textarea" contenteditable="true" #editableDiv (input)="onInput($event)"></div>
+   <div
+  class="textarea"
+  [attr.contenteditable]="messageContext ? 'true' : null"
+  [class.disabled]="!messageContext"
+  #editableDiv
+  (input)="messageContext ? onInput($event) : null"
+  [attr.data-placeholder]="placeholder"
+></div>
 
-    <div class="textarea-placeholder" *ngIf="!textInput">
-      {{ placeholder }}
-    </div>
+
   </div>
 
   <!-- Mention-Dropdown bei @ -->
@@ -53,7 +58,10 @@
   </div>
 
   <!-- Senden -->
-  <div class="textarea-send-button" (click)="sendMessage()">
+  <div
+  class="textarea-send-button"
+  [class.disabled]="!messageContext"
+  (click)="messageContext ? sendMessage() : null">
     <span *ngIf="messageAudio.record">{{ messageAudio.formatTime(messageAudio.elapsedSeconds) }}</span>
     <img *ngIf="messageAudio.record" (click)="messageAudio.endRecord(messageAudio.recorder, messageAudio.stream)"
       class="audio-message trash-img" src="assets/img/audio-message/trash.png" />

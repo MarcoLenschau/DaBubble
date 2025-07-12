@@ -11,7 +11,8 @@
       (emojiStatsChanged)="onEmojiStatsChanged($event)"></app-messages>
     <div class="message-textarea">
       <app-messages-textarea [mode]="mode" [starterMessage]="starterMessage" [textInput]="textInput"
-        placeholder="Nachricht schreiben..." [messageContext]="messageContext" [sortedEmojis]="sortedEmojis"
+        [placeholder]="messageContext?.type === 'direct' && activeUser ? 'Nachricht an ' + activeUser.displayName : 'Nachricht an...'"
+        [messageContext]="messageContext" [sortedEmojis]="sortedEmojis"
         (emojiUsageChanged)="onEmojiUsageChanged($event)" [emojiUsage]="emojiUsage"
         [recentEmojis]="recentEmojis"></app-messages-textarea>
     </div>
