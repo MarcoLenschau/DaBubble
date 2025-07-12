@@ -6,6 +6,7 @@ import { MessageContext } from '../../../core/interfaces/message-context.interfa
 import { User } from '../../../core/models/user.model';
 import { UserDataService } from '../../../core/services/user-data.service';
 import { ChannelDataService } from '../../../core/services/channel-data.service';
+import { ChannelDetailsOverlayComponent } from '../../../overlays/channel-details-overlay/channel-details-overlay.component';
 import { Channel } from '../../../core/models/channel.model';
 import { emitDirectUserContext, emitChannelContext, emitMessageContextFromMessage } from '../../../core/utils/messages.utils';
 import { Subscription, filter } from 'rxjs';
@@ -17,7 +18,7 @@ import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [ NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent ],
+  imports: [ NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent, ChannelDetailsOverlayComponent ],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })

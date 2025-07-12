@@ -106,3 +106,7 @@
 
 <app-add-member-overlay *ngIf="showAddMemberOverlay" [channel]="activeChannel"
   (close)="showAddMemberOverlay = false"></app-add-member-overlay>
+
+<app-channel-details-overlay *ngIf="showChannelOverlay && activeChannel" [channel]="activeChannel"
+  (close)="closeChannelOverlay()">
+</app-channel-details-overlay>
