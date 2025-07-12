@@ -13,9 +13,10 @@
   min-height: 80px;
   width: 100%;
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 0px 0px;
   font-family: "Nunito", sans-serif;
-  font-size: 16px;
+  font-weight: 400;
+  font-size: 18px;
   line-height: 1.5;
   outline: none;
   border: none;
@@ -31,13 +32,13 @@
   &:empty::before {
     content: attr(data-placeholder);
     position: absolute;
-    top: 12px;
-    left: 16px;
-    color: #bbb;
+    color: #686868;;
+    top: 6px;
+    left: 0px;
     opacity: 0.6;
     pointer-events: none;
     font-family: "Nunito", sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.5;
   }
 }
@@ -74,6 +75,8 @@
     }
   }
 }
+
+
 
 .textarea-send-button {
   position: absolute;
