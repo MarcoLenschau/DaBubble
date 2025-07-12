@@ -97,7 +97,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
     if (match) {
       this.mentionQuery = match[1].toLowerCase();
-      // NEU: Wenn leer, alle User anzeigen
       this.filteredMentionUsers = this.mentionQuery.length === 0
         ? this.allUsers
         : this.allUsers.filter((user) =>

@@ -61,8 +61,7 @@
   <div
   class="textarea-send-button"
   [class.disabled]="!messageContext"
-  (click)="messageContext ? sendMessage() : null"
->
+  (click)="messageContext ? sendMessage() : null">
     <span *ngIf="messageAudio.record">{{ messageAudio.formatTime(messageAudio.elapsedSeconds) }}</span>
     <img *ngIf="messageAudio.record" (click)="messageAudio.endRecord(messageAudio.recorder, messageAudio.stream)"
       class="audio-message trash-img" src="assets/img/audio-message/trash.png" />
