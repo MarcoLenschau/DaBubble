@@ -93,7 +93,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
 
   onInput(event: Event): void {
     const text = this.getTextFromEditableDiv();
-    this.textInput = text;
+    this.textInput = text.trim();
     const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
     if (match) {
       this.mentionQuery = match[1].toLowerCase();

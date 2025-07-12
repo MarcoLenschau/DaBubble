@@ -13,14 +13,37 @@
   min-height: 80px;
   width: 100%;
   border-radius: 12px;
-  padding: 10px 45px 40px 45px; // Platz für Icons
+  padding: 12px 16px;
   font-family: "Nunito", sans-serif;
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1.5;
   outline: none;
-  resize: none;
   border: none;
   overflow-y: auto;
+  resize: none;
+
+  display: block;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    color: #bbb;
+    opacity: 0.6;
+    pointer-events: none;
+    font-family: "Nunito", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
 }
+
+
+
 
 .textarea-left-icons {
   position: absolute;

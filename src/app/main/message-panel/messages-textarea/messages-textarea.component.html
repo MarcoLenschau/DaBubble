@@ -2,11 +2,14 @@
 
   <!-- Eingabefeld + Placeholder -->
   <div class="textarea-wrapper">
-    <div class="textarea" contenteditable="true" #editableDiv (input)="onInput($event)"></div>
+    <div
+  class="textarea"
+  contenteditable="true"
+  #editableDiv
+  (input)="onInput($event)"
+  [attr.data-placeholder]="placeholder"
+></div>
 
-    <div class="textarea-placeholder" *ngIf="!textInput">
-      {{ placeholder }}
-    </div>
   </div>
 
   <!-- Mention-Dropdown bei @ -->
