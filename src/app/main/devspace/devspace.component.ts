@@ -22,6 +22,7 @@ export class DevspaceComponent {
   @Output() userSelected = new EventEmitter<User>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
   @Output() closeThreadWindow = new EventEmitter<void>();
+  @Output() addChannelRequest = new EventEmitter<boolean>();
 
   isChannelOpen: boolean = true;
   isMessageOpen: boolean = true;
@@ -162,4 +163,13 @@ export class DevspaceComponent {
   toggleWorkspace() {
     this.isWorkspaceOpen = !this.isWorkspaceOpen;
   }
+
+  /**
+ * Shows the add channel overlay by emitting an event.
+ */
+  showAddChannelOverlay() {
+    this.addChannelRequest.emit(true);
+  }
 }
+
+

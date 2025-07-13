@@ -38,11 +38,8 @@
                     </div>
                 </div>
 
-                <img src="./assets/img/devspace/add.png" alt="add" (click)="showAddChannel = true"
+                <img src="./assets/img/devspace/add.png" alt="add" (click)="showAddChannelOverlay()"
                     style="cursor:pointer;">
-
-                <app-add-channel-overlay *ngIf="showAddChannel" (close)="showAddChannel = false">
-                </app-add-channel-overlay>
             </div>
 
             <div *ngIf="isChannelOpen">
@@ -82,7 +79,7 @@
                 </div>
   
 
-                <div class="devspace-channel-add" (click)="showAddChannel = true" style="cursor:pointer;">
+                <div class="devspace-channel-add" (click)="showAddChannelOverlay()" style="cursor:pointer;">
                     <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'"
                         alt="user">
                     <span>Channel hinzufügen</span>
