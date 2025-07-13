@@ -126,56 +126,79 @@ export class MessagesHeaderComponent {
   }
 
   onSearch(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    const term = inputElement.value.trim();
-    this.textInput = term;
+  const inputElement = event.target as HTMLInputElement;
+  const term = inputElement.value.trim();
+  this.textInput = term;
 
-    this.calculateMentionBoxPosition(inputElement);
+  this.calculateMentionBoxPosition(inputElement);
 
-    clearTimeout(this.searchDebounceTimer);
-    this.searchDebounceTimer = setTimeout(() => {
-      if (!term) {
-        this.clearResults();
-        return;
-      }
+  clearTimeout(this.searchDebounceTimer);
+  this.searchDebounceTimer = setTimeout(() => {
+    if (!term) {
+      this.clearResults();
+      return;
+    }
 
-      if (term.startsWith('@')) {
-        const query = term.slice(1).toLowerCase();
+    // Suche nach @email (z. B. @mark@example.com)
+    if (term.startsWith('@') && this.validateEmail(term.slice(1))) {
+      const emailQuery = term.slice(1).toLowerCase();
+      this.searchResultsEmail = this.allUsers.filter((u) =>
+        u.email &&
+        typeof u.email === 'string' &&
+        u.email.toLowerCase().includes(emailQuery)
+      );
+      this.searchResultsUser = [];
+      this.searchResultsChannels = [];
+      return;
+    }
 
-        if (this.validateEmail(query)) {
-          this.searchResultsEmail = this.allUsers.filter((u) =>
-            u.email?.toLowerCase().includes(query)
-          );
-          this.searchResultsUser = [];
-          this.searchResultsChannels = [];
-        } else {
-          this.searchResultsUser =
-            query.length === 0
-              ? this.allUsers
-              : this.allUsers.filter((user) =>
-                user.displayName.toLowerCase().includes(query)
-              );
-          this.searchResultsEmail = [];
-          this.searchResultsChannels = [];
-        }
-      } else if (term.startsWith('#')) {
-        if (this.allChannels.length === 0) return;
+    // Suche nach @username
+    if (term.startsWith('@')) {
+      const query = term.slice(1).toLowerCase();
+      this.searchResultsUser =
+        query.length === 0
+          ? this.allUsers
+          : this.allUsers.filter((user) =>
+              user.displayName &&
+              typeof user.displayName === 'string' &&
+              user.displayName.toLowerCase().includes(query)
+            );
+      this.searchResultsEmail = [];
+      this.searchResultsChannels = [];
+      return;
+    }
 
-        const query = term.slice(1).toLowerCase();
-        this.searchResultsChannels = this.allChannels.filter((channel) =>
-          channel.name.toLowerCase().includes(query)
-        );
-        this.searchResultsUser = [];
-        this.searchResultsEmail = [];
-      } else if (this.validateEmail(term)) {
-        this.searchResultsEmail = this.allUsers.filter((u) =>
-          u.email?.toLowerCase().includes(term.toLowerCase())
-        );
-        this.searchResultsUser = [];
-        this.searchResultsChannels = [];
-      }
-    }, 100);
-  }
+    // Suche nach #channel
+    if (term.startsWith('#')) {
+      if (this.allChannels.length === 0) return;
+
+      const query = term.slice(1).toLowerCase();
+      this.searchResultsChannels = this.allChannels.filter((channel) =>
+        channel.name &&
+        typeof channel.name === 'string' &&
+        channel.name.toLowerCase().includes(query)
+      );
+      this.searchResultsUser = [];
+      this.searchResultsEmail = [];
+      return;
+    }
+
+    // Suche nach direkter E-Mail (z. B. mark@example.com)
+    if (this.validateEmail(term)) {
+      this.searchResultsEmail = this.allUsers.filter((u) =>
+        u.email &&
+        typeof u.email === 'string' &&
+        u.email.toLowerCase().includes(term.toLowerCase())
+      );
+      this.searchResultsUser = [];
+      this.searchResultsChannels = [];
+      return;
+    }
+
+    this.clearResults();
+  }, 100);
+}
+
 
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
     const rect = inputElement.getBoundingClientRect();
