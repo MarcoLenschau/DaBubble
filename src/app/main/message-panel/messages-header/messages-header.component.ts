@@ -139,65 +139,42 @@ export class MessagesHeaderComponent {
       return;
     }
 
-    // Suche nach @email (z. B. @mark@example.com)
-    if (term.startsWith('@') && this.validateEmail(term.slice(1))) {
-      const emailQuery = term.slice(1).toLowerCase();
-      this.searchResultsEmail = this.allUsers.filter((u) =>
-        u.email &&
-        typeof u.email === 'string' &&
-        u.email.toLowerCase().includes(emailQuery)
+    // Suche nach @username (nur displayName)
+    if (term.startsWith('@')) {
+      const query = term.slice(1).toLowerCase();
+      this.searchResultsUser = this.allUsers.filter((user) =>
+        user.displayName?.toLowerCase().includes(query)
       );
-      this.searchResultsUser = [];
+      this.searchResultsEmail = []; // Keine E-Mail bei @
       this.searchResultsChannels = [];
       return;
     }
 
-    // Suche nach @username
-    if (term.startsWith('@')) {
-      const query = term.slice(1).toLowerCase();
-      this.searchResultsUser =
-        query.length === 0
-          ? this.allUsers
-          : this.allUsers.filter((user) =>
-              user.displayName &&
-              typeof user.displayName === 'string' &&
-              user.displayName.toLowerCase().includes(query)
-            );
-      this.searchResultsEmail = [];
+    // Suche nach direkter E-Mail (z. B. mark@example.com)
+    if (term.includes('@')) {
+      this.searchResultsUser = this.allUsers.filter((user) =>
+        user.email?.toLowerCase().includes(term.toLowerCase())
+      );
+      this.searchResultsEmail = []; // nicht separat anzeigen
       this.searchResultsChannels = [];
       return;
     }
 
     // Suche nach #channel
     if (term.startsWith('#')) {
-      if (this.allChannels.length === 0) return;
-
       const query = term.slice(1).toLowerCase();
       this.searchResultsChannels = this.allChannels.filter((channel) =>
-        channel.name &&
-        typeof channel.name === 'string' &&
-        channel.name.toLowerCase().includes(query)
+        channel.name?.toLowerCase().includes(query)
       );
       this.searchResultsUser = [];
       this.searchResultsEmail = [];
       return;
     }
 
-    // Suche nach direkter E-Mail (z. B. mark@example.com)
-    if (this.validateEmail(term)) {
-      this.searchResultsEmail = this.allUsers.filter((u) =>
-        u.email &&
-        typeof u.email === 'string' &&
-        u.email.toLowerCase().includes(term.toLowerCase())
-      );
-      this.searchResultsUser = [];
-      this.searchResultsChannels = [];
-      return;
-    }
-
     this.clearResults();
   }, 100);
 }
+
 
 
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
@@ -212,6 +189,21 @@ export class MessagesHeaderComponent {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email.toLowerCase());
   }
+
+  selectUserByEmail(user: User) {
+  this.textInput += `@${user.displayName} `;
+
+  this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
+
+  emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
+
+  setTimeout(() => {
+    this.textInput = '';
+    this.clearResults();
+    this.closeThread();
+  }, 1);
+}
+
 
   selectUser(user: User) {
     const match = this.textInput.match(/@[\wäöüßÄÖÜ\-]+$/);

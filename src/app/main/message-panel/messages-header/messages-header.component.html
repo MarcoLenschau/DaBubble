@@ -72,20 +72,23 @@
   [style.left.px]="mentionBoxPosition.left">
   <ul>
     <!-- Treffer: Email -->
-    <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
-      <strong>{{ user.email }}</strong>
-    </li>
+ <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
+  <strong>{{ user.displayName }} ({{ user.email }})</strong>
+</li>
+
+
 
     <!-- Treffer: @User mit Bild & Online-Status -->
-    <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
-      <div class="profile-icon">
-        <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'"
-          alt="{{ user.displayName }}" />
-        <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online" />
+ <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
+  <div class="profile-icon">
+    <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'" />
+    <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" />
+  </div>
+  <div class="mention-user-name">{{ user.displayName }}</div>
+</li>
 
-      </div>
-      <div class="mention-user-name">{{ user.displayName }}</div>
-    </li>
+
+
 
     <!-- Treffer: #Channel -->
     <li *ngFor="let channel of searchResultsChannels" (click)="selectChannel(channel)">
