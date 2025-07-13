@@ -13,10 +13,11 @@ import { ViewMode } from '../core/enums/view-mode.enum';
 import { User } from '../core/models/user.model';
 import { Channel } from '../core/models/channel.model';
 import { areUsersEqual } from '../core/utils/messages.utils';
+import { AddChannelOverlayComponent } from '../overlays/add-channel-overlay/add-channel-overlay.component';
 
 @Component({
   selector: 'app-main',
-  imports: [ DevspaceComponent, MessageWindowComponent, ThreadWindowComponent, CommonModule, MessageWindowComponent, ThreadWindowComponent ],
+  imports: [ DevspaceComponent, MessageWindowComponent, ThreadWindowComponent, CommonModule, MessageWindowComponent, ThreadWindowComponent, AddChannelOverlayComponent ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
@@ -32,6 +33,7 @@ export class MainComponent implements OnInit {
   channels$: Observable<any>;
   channels = [];
   messageContext?: MessageContext;
+  showAddChannelOverlay = false;
   mobileMaxWidth = 896;
   tabletMaxWidth = 1440;
 
@@ -213,4 +215,8 @@ export class MainComponent implements OnInit {
       this.showThread = false;
     }
   }
+
+  onAddChannelRequest(show: boolean) {
+  this.showAddChannelOverlay = show;
+}
 }

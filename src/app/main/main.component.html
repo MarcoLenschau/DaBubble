@@ -4,15 +4,16 @@
 </div>
 <div class="main-component">
 
+  <app-add-channel-overlay *ngIf="showAddChannelOverlay" (close)="showAddChannelOverlay = false">
+  </app-add-channel-overlay>
 
-
-  <app-devspace (channelSelected)="onChannelSelected($event)" (userSelected)="onUserSelected($event)"
+  <app-devspace (addChannelRequest)="onAddChannelRequest($event)" (channelSelected)="onChannelSelected($event)" (userSelected)="onUserSelected($event)"
     (contextSelected)="onContextSelected($event)" (closeThreadWindow)="onThreadClose()"
     [ngClass]="{ visible: showDevSpaceWindow, hidden: !showDevSpaceWindow }"></app-devspace>
 
   <div class="spacer" *ngIf="showDevSpaceWindow && showMessageWindow"></div>
 
-  <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel" [activeUser]="activeUser"
+  <app-message-window  (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel" [activeUser]="activeUser"
     (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
     (contextSelected)="onContextSelected($event)" [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }"
     [viewMode]="viewMode"></app-message-window>

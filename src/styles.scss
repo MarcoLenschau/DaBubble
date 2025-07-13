@@ -82,34 +82,29 @@ body {
   }
 }
 
-// TODO Scrollbars verwenden wenn notwendig oder ausblenden
 
-// ::-webkit-scrollbar {
-//   width: 6px;
-// }
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;               
+  height: 8px;              
+}
 
-// ::-webkit-scrollbar-track {
-//   background: transparent;
-// }
+::-webkit-scrollbar-track {
+  background: #f1f1f1;      
+  border-radius: 10px;      
+}
 
-// ::-webkit-scrollbar-thumb {
-//   background-color: $purple-1;
-//   border-radius: 6px;
-//   border: 2px solid transparent;
-//   background-clip: padding-box;
-// }
+::-webkit-scrollbar-thumb {
+  background: $purple-2;    
+  border-radius: 10px;      
+  transition: background 0.3s ease;
+}
 
-// ::-webkit-scrollbar-thumb:hover {
-//   background: $purple-2;
-// }
+::-webkit-scrollbar-thumb:hover {
+  background: darken($purple-2, 10%);  
+}
 
-// ::-webkit-scrollbar-button {
-//   display: none;
-//   height: 0;
-//   width: 0;
-// }
-
-// ::-webkit-scrollbar-button:vertical:start:increment,
-// ::-webkit-scrollbar-button:vertical:end:decrement {
-//   display: none;
-// }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $purple-2 #f1f1f1;
+}
