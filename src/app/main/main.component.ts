@@ -37,6 +37,13 @@ export class MainComponent implements OnInit {
   mobileMaxWidth = 896;
   tabletMaxWidth = 1440;
 
+  /**
+   * Creates an instance of the class and initializes the required services.
+   * 
+   * @param {FirebaseService} firebase - The Firebase service used to fetch channel data.
+   * @param {BreakpointObserver} breakpointObserver - The BreakpointObserver service used to track view mode changes.
+   * @param {MessageEventService} messageEventService - The service used to manage message events.
+   */
   constructor(private firebase: FirebaseService, private breakpointObserver: BreakpointObserver, private messageEventService: MessageEventService) {
     this.channels$ = this.firebase.getColRef("channels");
     this.channels$.subscribe((channels) => {
@@ -44,18 +51,33 @@ export class MainComponent implements OnInit {
     });
   }
 
+  /**
+   * Determines if the Developer Space window should be shown based on the current view mode and state.
+   * 
+   * @returns {boolean} - `true` if the Developer Space window should be shown, otherwise `false`.
+   */
   get showDevSpaceWindow(): boolean {
     return this.viewMode === ViewMode.Desktop
       || (this.viewMode === ViewMode.Tablet && !this.showThread)
       || (this.viewMode === ViewMode.Mobile && this.showDevSpace);
   }
 
+  /**
+   * Determines if the Message window should be shown based on the current view mode and state.
+   * 
+   * @returns {boolean} - `true` if the Message window should be shown, otherwise `false`.
+   */
   get showMessageWindow(): boolean {
     return this.viewMode === ViewMode.Desktop
       || this.viewMode === ViewMode.Tablet
       || (this.viewMode === ViewMode.Mobile && this.showMessage);
   }
 
+  /**
+   * Determines if the Thread window should be shown.
+   * 
+   * @returns {boolean} - `true` if the Thread window should be shown, otherwise `false`.
+   */
   get showThreadWindow(): boolean {
     return this.showThread;
   }
@@ -215,7 +237,12 @@ export class MainComponent implements OnInit {
       this.showThread = false;
     }
   }
-
+  
+  /**
+   * Handles the visibility of the "Add Channel" overlay.
+   * 
+   * @param {boolean} show - Determines whether the "Add Channel" overlay should be shown (`true`) or hidden (`false`).
+   */
   onAddChannelRequest(show: boolean) {
   this.showAddChannelOverlay = show;
 }
