@@ -12,12 +12,7 @@ import { Emoji } from '../../core/interfaces/emojis.interface';
 
 @Component({
   selector: 'app-message-panel',
-  imports: [
-    MessagesHeaderComponent,
-    MessagesComponent,
-    MessagesTextareaComponent,
-    NgClass,
-  ],
+  imports: [ MessagesHeaderComponent, MessagesComponent, MessagesTextareaComponent, NgClass ],
   templateUrl: './message-panel.component.html',
   styleUrl: './message-panel.component.scss',
 })
@@ -46,16 +41,25 @@ export class MessagePanelComponent {
 
   @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
 
-
   textInput = '';
   sortedEmojis: Emoji[] = [];
   emojiUsage: { [emojiName: string]: number } = {};
   recentEmojis: string[] = [];
 
+  /**
+   * Determines if the current mode is set to "thread".
+   * 
+   * @returns {boolean} - `true` if the current mode is "thread", otherwise `false`.
+   */
   get isThread(): boolean {
     return this.mode === 'thread';
   }
 
+  /**
+   * Determines if the current mode is set to "message".
+   * 
+   * @returns {boolean} - `true` if the current mode is "message", otherwise `false`.
+   */
   get isMessage(): boolean {
     return this.mode === 'message';
   }

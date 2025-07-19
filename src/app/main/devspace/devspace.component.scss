@@ -91,7 +91,7 @@ nav {
   justify-content: space-between;
   flex-direction: column;
   max-height: 520px;
-   margin-left: -25px;
+  margin-left: -25px;
 }
 
 .message-title-arrow {
@@ -194,9 +194,11 @@ nav {
 
 .scrollbar {
   overflow-y: scroll;
-  height: 445px;
+  height: 385px;
   width: 315px;
   position: relative;
+  top: 64px;
+  left: 10px;
 }
 
 .scrollbar-channel {

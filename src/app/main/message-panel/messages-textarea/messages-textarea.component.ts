@@ -64,10 +64,20 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   public messageAudio = inject(MessageAudioService);
   private currentUserSubscription?: Subscription;
 
+  /**
+   * Determines if the current mode is set to "thread".
+   * 
+   * @returns {boolean} - `true` if the current mode is "thread", otherwise `false`.
+   */
   get isThread(): boolean {
     return this.mode === 'thread';
   }
 
+  /**
+   * Determines if the current mode is set to "message".
+   * 
+   * @returns {boolean} - `true` if the current mode is "message", otherwise `false`.
+   */
   get isMessage(): boolean {
     return this.mode === 'message';
   }
@@ -78,12 +88,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       this.allUsers = users;
     });
     this.currentUserSubscription = this.userDataService.currentUser$
-      .pipe(
-        filter(user => !!user && user.id !== 'default')
-      )
-      .subscribe(user => {
-        this.currentUser = user;
-      });
+      .pipe(filter(user => !!user && user.id !== 'default'))
+      .subscribe(user => { this.currentUser = user; });
   }
 
   ngOnDestroy(): void {
@@ -97,11 +103,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     const match = text.match(/@([\wäöüßÄÖÜ\-]*)$/);
     if (match) {
       this.mentionQuery = match[1].toLowerCase();
-      this.filteredMentionUsers = this.mentionQuery.length === 0
-        ? this.allUsers
-        : this.allUsers.filter((user) =>
-          user.displayName.toLowerCase().includes(this.mentionQuery)
-        );
+      this.filteredMentionUsers = this.mentionQuery.length === 0 ? this.allUsers
+        : this.allUsers.filter((user) => user.displayName.toLowerCase().includes(this.mentionQuery));
       this.showMentionDropdown = this.filteredMentionUsers.length > 0;
       this.setMentionBoxPosition();
     } else {
@@ -139,11 +142,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.textInput = newText;
     this.showMentionDropdown = false;
     this.filteredMentionUsers = [];
-    this.messageContext = {
-      type: 'direct',
-      id: this.currentUser.id,
-      receiverId: user.id
-    };
+    this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id };
   }
 
   toggleUserDropdown(event: MouseEvent): void {
@@ -167,11 +166,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     sel?.addRange(range);
     this.textInput = editable.innerText;
     this.showUserDropdown = false;
-    this.messageContext = {
-      type: 'direct',
-      id: this.currentUser.id,
-      receiverId: user.id,
-    };
+    this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id,};
   }
 
   placeCursorAtEnd(el: HTMLElement) {
@@ -195,16 +190,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     editable.focus();
     document.execCommand('insertText', false, unicodeEmoji);
     this.textInput = editable.innerText;
-
     const emojiName = emoji.name;
     this.localEmojiStats = { ...this.emojiUsage };
     this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
     this.localRecentEmojis = [emojiName, ...this.localRecentEmojis.filter(e => e !== emojiName)].slice(0, 2);
-    this.emojiUsageChanged.emit({
-      usage: this.localEmojiStats,
-      recent: this.localRecentEmojis
-    });
-
+    this.emojiUsageChanged.emit({ usage: this.localEmojiStats, recent: this.localRecentEmojis});
     this.mainEmojiMenuOpen = false;
   }
 
@@ -229,7 +219,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
       await this.updateStarterMessage();
       this.resetInputField();
     } catch (error) {
-      console.error('Fehler beim Senden der Nachricht:', error);
       this.resetInputField();
     }
   }
@@ -268,14 +257,12 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   private buildMessage(text: string, threadId: string, channelId: string): Message {
     const isDirect = this.messageContext?.type === 'direct';
     return new Message({
-      name: this.currentUser.displayName,
-      timestamp: Date.now(),
+      name: this.currentUser.displayName, timestamp: Date.now(),
       text,
       userId: this.currentUser.id,
       receiverId: isDirect ? this.messageContext!.receiverId : '',
       isDirectMessage: isDirect,
-      threadId,
-      channelId,
+      threadId, channelId,
       reactions: this.reaction || [],
       replies: 0,
     });
@@ -284,7 +271,6 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   async updateStarterMessage(): Promise<void> {
     if (this.mode === 'thread' && this.starterMessage) {
       await this.messageDataService.updateMessageFields(this.starterMessage.id, {
-        // replies: this.starterMessage.replies,
         lastReplyTimestamp: Date.now(),
       });
     }
@@ -299,39 +285,11 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.chatDiv.nativeElement.focus();
   }
 
-  // Original-Code:
-
-  // async saveAudioMessage(blob: any): Promise<void> {
-  //   const audioData = new FormData();
-  //   audioData.append('audio', blob, 'message.webm');
-  //   if (this.messageContext) {
-  //     if (this.messageContext.receiverId) {
-  //       this.firebase.addAudioMessage(audioData, this.messageContext.receiverId);
-  //     } else if (this.messageContext.id) {
-  //       this.firebase.addAudioMessage(audioData, this.messageContext.id);
-  //     }
-  //   }
-  // }
-
-
-  // async saveAudioMessage(blob: any): Promise<void> {
-  //   const audioData = new FormData();
-  //   audioData.append('audio', blob, 'message.webm');
-  //   if (this.messageContext) {
-  //     if (this.messageContext.receiverId) {
-  //       this.firebase.addDirectAudioMessage(audioData, this.messageContext.receiverId, this.currentUser);
-  //     } else if (this.messageContext.id) {
-  //       this.firebase.addChannelAudioMessage(audioData, this.messageContext.id, this.currentUser);
-  //     }
-  //   }
-  // }
-
   async saveAudioMessage(blob: any): Promise<void> {
     const audioData = new FormData();
     audioData.append('audio', blob, 'message.webm');
     const isDirect = this.messageContext?.type === 'direct';
     const receiverId = isDirect ? this.messageContext!.receiverId : '';
-
     await this.firebase.addAudioMessage(audioData, this.currentUser, {
       channelId: this.findChannelId(),
       threadId: this.findThreadId(),

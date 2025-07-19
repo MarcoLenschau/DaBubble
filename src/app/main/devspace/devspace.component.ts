@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FirebaseService } from '../../core/services/firebase.service';
 import { Observable, Subscription, filter } from 'rxjs';
 import { AddChannelOverlayComponent } from '../../overlays/add-channel-overlay/add-channel-overlay.component';
@@ -13,7 +13,7 @@ import { emitChannelContext, emitDirectUserContext } from '../../core/utils/mess
 
 @Component({
   selector: 'app-devspace',
-  imports: [CommonModule, AddChannelOverlayComponent],
+  imports: [CommonModule],
   templateUrl: './devspace.component.html',
   styleUrl: './devspace.component.scss'
 })
@@ -43,10 +43,22 @@ export class DevspaceComponent {
   users: any;
   currentUser!: User;
 
+  private firebase = inject(FirebaseService);
+  private channelDataService = inject(ChannelDataService);
+  private userDataService = inject(UserDataService);
+  public auth = inject(AuthService);
+  
   private currentUserSubscription?: Subscription;
-  constructor(
-    private firebase: FirebaseService,
-    private channelDataService: ChannelDataService, public auth: AuthService, private userDataService: UserDataService,) {
+  
+
+  /**
+   * Constructor for initializing user and channel data.
+   *
+   * - Retrieves a reference to the "users" collection using Firebase service.
+   * - Filters and stores valid users (with defined email addresses) into the `users` array.
+   * - Subscribes to channel data from the `channelDataService` and stores it in the `channels` array.
+   */
+  constructor() {
     this.user$ = this.firebase.getColRef("users");
     this.users = [];
     this.user$.forEach((users) => {
@@ -165,11 +177,9 @@ export class DevspaceComponent {
   }
 
   /**
- * Shows the add channel overlay by emitting an event.
- */
+   * Shows the add channel overlay by emitting an event.
+   */
   showAddChannelOverlay() {
     this.addChannelRequest.emit(true);
   }
 }
-
-
