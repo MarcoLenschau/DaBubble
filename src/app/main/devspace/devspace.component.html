@@ -58,8 +58,7 @@
                     <span>Entwicklerteam</span>
                 </div> -->
                 <div [class.scrollbar-channel]="channels.length > 4">
-                <ng-container *ngFor="let channel of channels">
-                
+                    <ng-container *ngFor="let channel of channels">
                         <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
                             (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel)" [ngClass]="{
                                 'hovered': hoveredChannel === channel.id,
@@ -73,9 +72,8 @@
                                         : './assets/img/devspace/tag-default.png'
                             " alt="#">
                             <span>{{ channel.name }}</span>
-                        </div>
-                
-                </ng-container>
+                        </div>              
+                    </ng-container>
                 </div>
   
 
@@ -85,14 +83,12 @@
                     <span>Channel hinzufügen</span>
                 </div>
             </div>
-
         </div>
 
 
         <div class="devspace-messages">
             <div class="message-title-arrow" (click)="toggleMessage()" (mouseenter)="isMessageHovered = true"
                 (mouseleave)="isMessageHovered = false">
-
                 <img [src]="getMessageArrowIcon()" alt="arrow">
                 <div class="message-title">
                     <img [src]=" isMessageHovered ?  './assets/img/devspace/account-circle-hover.png': './assets/img/devspace/account-circle-default.png'"
@@ -102,9 +98,7 @@
             </div>
 
             <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users?.length > 6">
-                <div class="profile-user" 
-                *ngFor="let user of users" 
-                (click)="setActiveUser(user)"
+                <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user)"
                 [ngClass]="{'hovered' : activeUser !== user, 'active' : activeUser === user}"
                 [class.active-user]="user?.email && auth.user?.email && user.email === auth.user.email"
                 [class.channel-open]="user?.email && auth.user?.email && user.email === auth.user.email && isChannelOpen">

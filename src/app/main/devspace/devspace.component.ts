@@ -71,42 +71,59 @@ export class DevspaceComponent {
    */
   async ngOnInit(): Promise<void> {
     this.currentUserSubscription = this.userDataService.currentUser$
-      .pipe(filter(user => !!user && user.id !== 'default'))
       .subscribe(user => {
         this.currentUser = user;
-        this.channels$ = this.channelDataService.getChannels();
-        this.channels$.subscribe(channels => {
-          channels.forEach(channel => {
-            channel.members.forEach((member: any) => {
-              const obj = JSON.parse(member);
-              if (obj.email === this.currentUser.email) {
-                this.channels.push(channel);
-              }
-            });
-          });
-        });
+        this.searchChannelForUser();
       });
-
+  }
+  
+  /**
+   * Searches all available channels for the current user and adds matching channels to the `channels` array.
+   *
+   * This method subscribes to the observable `channels$` from the `channelDataService`, iterates over each
+   * channel and its members (stored as JSON strings), parses them, and checks if the member's email matches
+   * the current user's email. If a match is found, the channel is added to the `channels` array.
+   */
+  searchChannelForUser(): void {
+    this.channelDataService.getChannels().subscribe(channels => {
+      channels.forEach(channel => {
+        this.currentUser.id === "default" ? this.channels = channels : this.isUserInChannel(channel);
+      });
+    });
   }
 
   /**
+   * Checks if the current user is a member of the given channel.
+   * If the user is found among the channel's members, the channel is added to the user's list of channels.
+   *
+   * @param {any} channel - The channel object containing a `members` array of JSON stringified user objects.
+   */
+  isUserInChannel(channel: any) {
+    const members = channel.members.map((memberStr: string) => JSON.parse(memberStr));
+    const member = members.find((member: any) => member.email === this.currentUser.email);
+    if (member) {
+      this.channels.push(channel);
+    }
+  }
+  
+  /**
    * Angular lifecycle hook that unsubscribes from the current user observable.
    */
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.currentUserSubscription?.unsubscribe();
   }
 
   /**
    * Toggles the visibility of the channels section.
    */
-  toggleChannels() {
+  toggleChannels(): void {
     this.isChannelOpen = !this.isChannelOpen;
   }
 
   /**
    * Toggles the visibility of the messages section.
    */
-  toggleMessage() {
+  toggleMessage(): void {
     this.isMessageOpen = !this.isMessageOpen;
   }
 
@@ -146,11 +163,8 @@ export class DevspaceComponent {
    * Sets the active user and emits the corresponding events and context.
    * @param user The user to set as active.
    */
-  setActiveUser(user: any) {
+  setActiveUser(user: any): void {
     if (!user || !user.email) return;
-    // this.userSelected.emit(user);
-    // this.activeUser = { ...user };
-    // this.activeChannel = null;
     this.activeUser = user.id === this.currentUser?.id ? this.currentUser : { ...user };
     this.userSelected.emit(this.activeUser ?? undefined);
     this.activeChannel = null;
@@ -162,7 +176,7 @@ export class DevspaceComponent {
    * Sets the active channel and emits the corresponding events and context.
    * @param channel The channel to set as active.
    */
-  selectChannel(channel: any) {
+  selectChannel(channel: any): void {
     this.activeChannel = channel;
     this.activeUser = null;
     this.channelSelected.emit(channel);
@@ -173,21 +187,21 @@ export class DevspaceComponent {
   /**
    * Emits an event to close the thread window.
    */
-  closeThread() {
+  closeThread(): void {
     this.closeThreadWindow.emit();
   }
 
   /**
    * Toggles the visibility of the workspace section.
    */
-  toggleWorkspace() {
+  toggleWorkspace(): void {
     this.isWorkspaceOpen = !this.isWorkspaceOpen;
   }
 
   /**
    * Shows the add channel overlay by emitting an event.
    */
-  showAddChannelOverlay() {
+  showAddChannelOverlay(): void {
     this.addChannelRequest.emit(true);
   }
 }
