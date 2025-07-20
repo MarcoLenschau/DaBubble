@@ -64,10 +64,6 @@ export class DevspaceComponent {
     this.user$.forEach((users) => {
       this.users = (users || []).filter(u => !!u && !!u.email);
     });
-    this.channels$ = this.channelDataService.getChannels();
-    this.channels$.subscribe(channels => {
-      this.channels = channels;
-    });
   }
 
   /**
@@ -78,7 +74,19 @@ export class DevspaceComponent {
       .pipe(filter(user => !!user && user.id !== 'default'))
       .subscribe(user => {
         this.currentUser = user;
+        this.channels$ = this.channelDataService.getChannels();
+        this.channels$.subscribe(channels => {
+          channels.forEach(channel => {
+            channel.members.forEach((member: any) => {
+              const obj = JSON.parse(member);
+              if (obj.email === this.currentUser.email) {
+                this.channels.push(channel);
+              }
+            });
+          });
+        });
       });
+
   }
 
   /**

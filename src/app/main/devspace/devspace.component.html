@@ -58,8 +58,8 @@
                     <span>Entwicklerteam</span>
                 </div> -->
                 <div [class.scrollbar-channel]="channels.length > 4">
-                    <ng-container *ngFor="let channel of channels">
-                    <div>
+                <ng-container *ngFor="let channel of channels">
+                
                         <div class="devspace-channel-content" (mouseenter)="hoveredChannel = channel.id"
                             (mouseleave)="hoveredChannel = null" (click)="selectChannel(channel)" [ngClass]="{
                                 'hovered': hoveredChannel === channel.id,
@@ -74,7 +74,7 @@
                             " alt="#">
                             <span>{{ channel.name }}</span>
                         </div>
-                    </div>
+                
                 </ng-container>
                 </div>
   
