@@ -8,7 +8,7 @@
   </div>
   <div class="d_flex_s_b">
     <b><span>{{ user.displayName }}</span></b>
-    <a (click)="openEditDialog();">Bearbeiten</a>
+    <a *ngIf="!directMessage" (click)="openEditDialog();">Bearbeiten</a>
   </div>
   <div class="status">
     <div></div>
@@ -19,12 +19,14 @@
       <img src="./assets/img/input/email.svg" alt="email" />
       <span>E-Mail Adresse</span>
     </div>
-    <a *ngIf="!user.emailVerified || !user.provider " (click)="sendMail();" class="send-button" [class.grey-send-button]="sendMailStatus">Bestätigen</a>
-    <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png" alt="edit" />
+    <a *ngIf="!user.emailVerified || !user.provider " (click)="sendMail();" class="send-button"
+      [class.grey-send-button]="sendMailStatus">Bestätigen</a>
+    <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png"
+      alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
-  <button *ngIf="directMessage" class="profile-message-btn">
-    <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon"/>
+  <button *ngIf="directMessage" class="profile-message-btn" (click)="closeProfilView()">
+    <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon" />
     Nachricht
   </button>
 </div>

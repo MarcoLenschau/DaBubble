@@ -236,7 +236,7 @@ export class SingleMessageComponent {
   async openUserDialog(userId: any) {
     this.activeUser = await this.firebase.searchUsersById(userId);
     const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
-    dialogDetails.componentInstance.directMessage = true;
+    dialogDetails.componentInstance.directMessage = userId !== this.currentUser.id;
     dialogDetails.componentInstance.user = this.activeUser;
   }
 
