@@ -17,7 +17,7 @@ export class DialogUserOptionsComponent {
   private dialog = inject(MatDialog);
   private auth = inject(AuthService);
   public router = inject(RouterService);
-  
+
   /**
    * Logs the user out via the authentication service and closes the current dialog.
    *
