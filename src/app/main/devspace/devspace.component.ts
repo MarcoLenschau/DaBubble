@@ -47,9 +47,9 @@ export class DevspaceComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
   public auth = inject(AuthService);
-
+  
   private currentUserSubscription?: Subscription;
-
+  
 
   /**
    * Constructor for initializing user and channel data.
@@ -87,7 +87,7 @@ export class DevspaceComponent {
   searchChannelForUser(): void {
     this.channelDataService.getChannels().subscribe(channels => {
       channels.forEach(channel => {
-        this.currentUser.id === "default" ? this.channels = channels : this.isUserInChannel(channel);
+        this.isUserInChannel(channel);
       });
     });
   }
@@ -169,8 +169,6 @@ export class DevspaceComponent {
     this.userSelected.emit(this.activeUser ?? undefined);
     this.activeChannel = null;
     emitDirectUserContext(this.contextSelected, this.currentUser.id, this.activeUser?.id ?? '');
-    console.log('DevSpace: CurrentUser, activeUser: ', this.currentUser.id, this.activeUser?.id);
-
     this.closeThread();
   }
 
