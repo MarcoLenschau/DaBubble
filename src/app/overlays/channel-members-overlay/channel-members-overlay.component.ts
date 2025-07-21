@@ -12,5 +12,4 @@ export class ChannelMembersOverlayComponent {
   @Input() members: any;
   @Output() close = new EventEmitter<void>;
   @Output() addMembers = new EventEmitter<void>;
-  
 }

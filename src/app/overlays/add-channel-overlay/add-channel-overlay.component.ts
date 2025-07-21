@@ -19,7 +19,12 @@ export class AddChannelOverlayComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
 
-  async createChannel() {
+  /**
+   * Creates a new channel if a valid name is provided.
+   * Retrieves the current user, creates a new channel object including a guest user,
+   * adds it to the channel data service, and emits a close event.
+   */
+  async createChannel(): Promise<void> {
     if (!this.channelName.trim()) {
       return;
     }
@@ -29,15 +34,20 @@ export class AddChannelOverlayComponent {
     await this.channelDataService.addChannel(newChannel);
     this.close.emit();
   }
-  
-  createNewChannel(currentUser: any) {
+
+  /**
+   * Constructs a new Channel object using the current user and a guest user.
+   *
+   * @param {any} currentUser - The current user object, used as the channel creator and member.
+   */
+  createNewChannel(currentUser: any): any {
     const guestUser = this.userDataService.createGuestUser('guest');
     return new Channel({
       name: this.channelName.trim(),
       description: this.description.trim(),
       members: [JSON.stringify(currentUser), JSON.stringify(guestUser)],
       messages: [],
-      createdBy: currentUser.displayName, // wird benötigt?
+      createdBy: currentUser.displayName,
       createdById: currentUser.id,
       createdAt: Date.now(),
     });
