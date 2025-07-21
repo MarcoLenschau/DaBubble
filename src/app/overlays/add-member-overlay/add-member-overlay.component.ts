@@ -14,7 +14,11 @@ export class AddMemberOverlayComponent {
   @Output() add = new EventEmitter<string>;
 
   username: string = '';
-
+  
+  /**
+   * Emits the entered username if it is not empty,
+   * then resets the input field.
+   */
   addUser() {
     if (!this.username) return;
     this.add.emit(this.username);
