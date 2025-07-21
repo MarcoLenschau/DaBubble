@@ -17,7 +17,7 @@ import { AddChannelOverlayComponent } from '../overlays/add-channel-overlay/add-
 
 @Component({
   selector: 'app-main',
-  imports: [ DevspaceComponent, MessageWindowComponent, ThreadWindowComponent, CommonModule, MessageWindowComponent, ThreadWindowComponent, AddChannelOverlayComponent ],
+  imports: [DevspaceComponent, MessageWindowComponent, ThreadWindowComponent, CommonModule, MessageWindowComponent, ThreadWindowComponent, AddChannelOverlayComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
@@ -93,8 +93,8 @@ export class MainComponent implements OnInit {
       .observe([mobileQuery, tabletQuery])
       .subscribe(result => {
         result.breakpoints[mobileQuery] ? this.showMobileView() :
-        result.breakpoints[tabletQuery] ? this.showTabletView() :
-        this.showDesktopView();
+          result.breakpoints[tabletQuery] ? this.showTabletView() :
+            this.showDesktopView();
       });
   }
 
@@ -215,6 +215,8 @@ export class MainComponent implements OnInit {
    * @param context The selected message context.
    */
   onContextSelected(context: MessageContext): void {
+    console.log('Main: context: ', context);
+
     const same =
       this.messageContext?.type === context.type &&
       this.messageContext?.id === context.id &&
@@ -237,13 +239,13 @@ export class MainComponent implements OnInit {
       this.showThread = false;
     }
   }
-  
+
   /**
    * Handles the visibility of the "Add Channel" overlay.
    * 
    * @param {boolean} show - Determines whether the "Add Channel" overlay should be shown (`true`) or hidden (`false`).
    */
   onAddChannelRequest(show: boolean) {
-  this.showAddChannelOverlay = show;
-}
+    this.showAddChannelOverlay = show;
+  }
 }

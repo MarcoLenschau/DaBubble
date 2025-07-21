@@ -45,7 +45,7 @@
         background-color: $grey;
       }
 
-      h2 {
+      h2, .header-user-name {
         @include text-style(24px, 700, $black);
         font-family: 'Nunito';
       }

@@ -21,7 +21,8 @@ export class MessageWindowComponent {
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
 
-  @Output() contextSelected = new EventEmitter<MessageContext>();
+  @Output() windowContextSelected = new EventEmitter<MessageContext>();
+  @Output() headerUserSelected = new EventEmitter<User>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
     userId: string;
@@ -49,6 +50,10 @@ export class MessageWindowComponent {
    * @param context The selected message context.
    */
   onContextSelectedFromPanel(context: MessageContext): void {
-    this.contextSelected.emit(context);
+    this.windowContextSelected.emit(context);
+  }
+
+  onUserSelectedFromPanel(user: User) {
+    this.headerUserSelected.emit(user);
   }
 }

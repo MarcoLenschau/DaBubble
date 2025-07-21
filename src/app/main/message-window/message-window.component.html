@@ -1,4 +1,5 @@
 <app-message-panel [mode]="'message'" [starterMessage]="starterMessage" [userId]="userId"
-  (threadStart)="threadOpen($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"  [activeUser]="activeUser"
-  (closeThreadPanelWindow)="onInnerClose()" [messageContext]="messageContext"
-  (contextSelected)="onContextSelectedFromPanel($event)" [viewMode]="viewMode"></app-message-panel>
+  (threadStart)="threadOpen($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"
+  [activeUser]="activeUser" (closeThreadPanelWindow)="onInnerClose()" [messageContext]="messageContext"
+  (panelContextSelected)="onContextSelectedFromPanel($event)" (panelUserSelected)="onUserSelectedFromPanel($event)"
+  [viewMode]="viewMode"></app-message-panel>

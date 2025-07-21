@@ -41,6 +41,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
   @Output() starterMessageChange = new EventEmitter<Message>();
   @Output() sortedEmojisChange = new EventEmitter<Emoji[]>();
   @Output() emojiStatsChanged = new EventEmitter<{ usage: { [emojiName: string]: number }; recent: string[]; }>();
+  @Output() messagesUserSelected = new EventEmitter<User>();
+  @Output() messagesContextSelected = new EventEmitter<MessageContext>();
+
   @ViewChildren('emojiTooltip') emojiTooltips!: QueryList<ElementRef>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
@@ -169,6 +172,9 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
    * @param changes - Object containing the changed input properties.
    */
   ngOnChanges(changes: SimpleChanges): void {
+
+    console.log('MessagesComponent: Context: ', this.messageContext);
+
     const currentJson = JSON.stringify(this.messageContext ?? {});
     if (
       this.isMessage &&
@@ -388,6 +394,14 @@ export class MessagesComponent implements OnChanges, OnInit, OnDestroy {
     } else {
       this.messages[index].text = newText;
     }
+  }
+
+  onContextSelected(context: MessageContext): void {
+    this.messagesContextSelected.emit(context);
+  }
+
+  onUserSelected(user: User) {
+    this.messagesUserSelected.emit(user);
   }
 
   formatDate = formatDate;

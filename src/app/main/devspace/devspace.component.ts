@@ -47,9 +47,9 @@ export class DevspaceComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
   public auth = inject(AuthService);
-  
+
   private currentUserSubscription?: Subscription;
-  
+
 
   /**
    * Constructor for initializing user and channel data.
@@ -76,7 +76,7 @@ export class DevspaceComponent {
         this.searchChannelForUser();
       });
   }
-  
+
   /**
    * Searches all available channels for the current user and adds matching channels to the `channels` array.
    *
@@ -105,7 +105,7 @@ export class DevspaceComponent {
       this.channels.push(channel);
     }
   }
-  
+
   /**
    * Angular lifecycle hook that unsubscribes from the current user observable.
    */
@@ -169,6 +169,8 @@ export class DevspaceComponent {
     this.userSelected.emit(this.activeUser ?? undefined);
     this.activeChannel = null;
     emitDirectUserContext(this.contextSelected, this.currentUser.id, this.activeUser?.id ?? '');
+    console.log('DevSpace: CurrentUser, activeUser: ', this.currentUser.id, this.activeUser?.id);
+
     this.closeThread();
   }
 
