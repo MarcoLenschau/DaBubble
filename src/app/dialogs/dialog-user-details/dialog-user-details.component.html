@@ -25,7 +25,7 @@
       alt="edit" />
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
-  <button *ngIf="directMessage" class="profile-message-btn" (click)="closeProfilView()">
+  <button *ngIf="directMessage" class="profile-message-btn" (click)="selectUserForDirectMessage()">
     <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon" />
     Nachricht
   </button>

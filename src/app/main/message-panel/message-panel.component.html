@@ -2,7 +2,8 @@
   <div class="message-content">
     <app-messages-header [mode]="mode" [starterMessage]="starterMessage" (closeThreadWindow)="onCloseClick()"
       [activeChannel]="activeChannel" [activeUser]="activeUser"
-      (contextSelected)="onContextSelectedFromHeader($event)"></app-messages-header>
+      (contextSelected)="onContextSelectedFromChildren($event)"
+      (headerUserSelected)="onUserSelectedFromChildren($event)"></app-messages-header>
 
     <app-messages [mode]="mode" [starterMessage]="starterMessage" [userId]="userId" [messageContext]="messageContext"
       (threadStart)="onStartThread($event.starterMessage, $event.userId)" [activeChannel]="activeChannel"
@@ -13,8 +14,9 @@
       <app-messages-textarea [mode]="mode" [starterMessage]="starterMessage" [textInput]="textInput"
         [placeholder]="messageContext?.type === 'direct' && activeUser ? 'Nachricht an ' + activeUser.displayName : 'Nachricht an...'"
         [messageContext]="messageContext" [sortedEmojis]="sortedEmojis"
-        (emojiUsageChanged)="onEmojiUsageChanged($event)" [emojiUsage]="emojiUsage"
-        [recentEmojis]="recentEmojis"></app-messages-textarea>
+        (emojiUsageChanged)="onEmojiUsageChanged($event)" [emojiUsage]="emojiUsage" [recentEmojis]="recentEmojis"
+        (textareaContextSelected)="onContextSelectedFromChildren($event)"
+        (textareaUserSelected)="onUserSelectedFromChildren($event)"></app-messages-textarea>
     </div>
   </div>
 </div>

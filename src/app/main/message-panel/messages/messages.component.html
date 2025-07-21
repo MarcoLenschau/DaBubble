@@ -74,7 +74,8 @@
     <app-single-message [currentUser]="currentUser" [msg]="msg" [i]="i" [users]="users" [isThread]="isThread"
       [messages]="messages" [isMessage]="isMessage" (messageEdited)="onMessageEdited($event)"
       (threadStart)="openThread($event)" (emojiUsageChanged)="onEmojiUsageChanged($event)" [sortedEmojis]="sortedEmojis"
-      [emojis]="emojis" [viewMode]="viewMode" [activeUser]="activeUser">
+      [emojis]="emojis" [viewMode]="viewMode" [activeUser]="activeUser" (contextSelected)="onContextSelected($event)"
+      (userSelected)="onUserSelected($event)">
     </app-single-message>
 
     <!-- Trennlinie für Antworten im Thread -->

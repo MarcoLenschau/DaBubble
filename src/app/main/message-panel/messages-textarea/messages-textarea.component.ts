@@ -13,6 +13,7 @@ import { Reaction } from '../../../core/interfaces/reaction.interface';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
 import { FirebaseService } from '../../../core/services/firebase.service';
 import { MessageAudioService } from '../../../core/services/message-audio.service';
+import { emitChannelContext, emitDirectUserContext } from '../../../core/utils/messages.utils';
 
 @Component({
   selector: 'app-messages-textarea',
@@ -34,6 +35,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
   @Input() sortedEmojis: Emoji[] = [];
   @Input() emojiUsage: { [emojiName: string]: number } = {};
   @Input() recentEmojis: string[] = [];
+  @Output() textareaContextSelected = new EventEmitter<MessageContext>();
+  @Output() textareaUserSelected = new EventEmitter<User>();
 
 
   @Output() emojiUsageChanged = new EventEmitter<{
@@ -142,7 +145,8 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.textInput = newText;
     this.showMentionDropdown = false;
     this.filteredMentionUsers = [];
-    this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id };
+    // this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id };
+    this.emitDirectContextAndUser(user);
   }
 
   toggleUserDropdown(event: MouseEvent): void {
@@ -166,7 +170,20 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     sel?.addRange(range);
     this.textInput = editable.innerText;
     this.showUserDropdown = false;
-    this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id,};
+    // this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id, };
+    this.emitDirectContextAndUser(user);
+  }
+
+  emitDirectContextAndUser(user: User) {
+    emitDirectUserContext(this.textareaContextSelected, this.currentUser.id, user.id);
+    this.textareaUserSelected.emit(user);
+  }
+
+
+  // TODO: Dropdown-#-Funktion
+
+  emitChannelContext(channel: Channel) { // TODO: in Dropdown-#-Funktion aufrufen
+    emitChannelContext(this.textareaContextSelected, channel.id);
   }
 
   placeCursorAtEnd(el: HTMLElement) {
@@ -194,7 +211,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.localEmojiStats = { ...this.emojiUsage };
     this.localEmojiStats[emojiName] = (this.localEmojiStats[emojiName] ?? 0) + 1;
     this.localRecentEmojis = [emojiName, ...this.localRecentEmojis.filter(e => e !== emojiName)].slice(0, 2);
-    this.emojiUsageChanged.emit({ usage: this.localEmojiStats, recent: this.localRecentEmojis});
+    this.emojiUsageChanged.emit({ usage: this.localEmojiStats, recent: this.localRecentEmojis });
     this.mainEmojiMenuOpen = false;
   }
 

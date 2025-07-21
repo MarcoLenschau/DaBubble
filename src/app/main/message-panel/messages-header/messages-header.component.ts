@@ -18,7 +18,7 @@ import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [ NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent, ChannelDetailsOverlayComponent ],
+  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent, ChannelDetailsOverlayComponent],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })
@@ -29,6 +29,7 @@ export class MessagesHeaderComponent {
   @Input() activeUser: User | null = null;
   @Output() closeThreadWindow = new EventEmitter<boolean>();
   @Output() contextSelected = new EventEmitter<MessageContext>();
+  @Output() headerUserSelected = new EventEmitter<User>();
   @Output() searchResultSelected = new EventEmitter<Message>();
 
   arrowHover = false;
@@ -126,54 +127,54 @@ export class MessagesHeaderComponent {
   }
 
   onSearch(event: Event) {
-  const inputElement = event.target as HTMLInputElement;
-  const term = inputElement.value.trim();
-  this.textInput = term;
+    const inputElement = event.target as HTMLInputElement;
+    const term = inputElement.value.trim();
+    this.textInput = term;
 
-  this.calculateMentionBoxPosition(inputElement);
+    this.calculateMentionBoxPosition(inputElement);
 
-  clearTimeout(this.searchDebounceTimer);
-  this.searchDebounceTimer = setTimeout(() => {
-    if (!term) {
+    clearTimeout(this.searchDebounceTimer);
+    this.searchDebounceTimer = setTimeout(() => {
+      if (!term) {
+        this.clearResults();
+        return;
+      }
+
+      // Suche nach @username (nur displayName)
+      if (term.startsWith('@')) {
+        const query = term.slice(1).toLowerCase();
+        this.searchResultsUser = this.allUsers.filter((user) =>
+          user.displayName?.toLowerCase().includes(query)
+        );
+        this.searchResultsEmail = []; // Keine E-Mail bei @
+        this.searchResultsChannels = [];
+        return;
+      }
+
+      // Suche nach direkter E-Mail (z. B. mark@example.com)
+      if (term.includes('@')) {
+        this.searchResultsUser = this.allUsers.filter((user) =>
+          user.email?.toLowerCase().includes(term.toLowerCase())
+        );
+        this.searchResultsEmail = []; // nicht separat anzeigen
+        this.searchResultsChannels = [];
+        return;
+      }
+
+      // Suche nach #channel
+      if (term.startsWith('#')) {
+        const query = term.slice(1).toLowerCase();
+        this.searchResultsChannels = this.allChannels.filter((channel) =>
+          channel.name?.toLowerCase().includes(query)
+        );
+        this.searchResultsUser = [];
+        this.searchResultsEmail = [];
+        return;
+      }
+
       this.clearResults();
-      return;
-    }
-
-    // Suche nach @username (nur displayName)
-    if (term.startsWith('@')) {
-      const query = term.slice(1).toLowerCase();
-      this.searchResultsUser = this.allUsers.filter((user) =>
-        user.displayName?.toLowerCase().includes(query)
-      );
-      this.searchResultsEmail = []; // Keine E-Mail bei @
-      this.searchResultsChannels = [];
-      return;
-    }
-
-    // Suche nach direkter E-Mail (z. B. mark@example.com)
-    if (term.includes('@')) {
-      this.searchResultsUser = this.allUsers.filter((user) =>
-        user.email?.toLowerCase().includes(term.toLowerCase())
-      );
-      this.searchResultsEmail = []; // nicht separat anzeigen
-      this.searchResultsChannels = [];
-      return;
-    }
-
-    // Suche nach #channel
-    if (term.startsWith('#')) {
-      const query = term.slice(1).toLowerCase();
-      this.searchResultsChannels = this.allChannels.filter((channel) =>
-        channel.name?.toLowerCase().includes(query)
-      );
-      this.searchResultsUser = [];
-      this.searchResultsEmail = [];
-      return;
-    }
-
-    this.clearResults();
-  }, 100);
-}
+    }, 100);
+  }
 
 
 
@@ -191,18 +192,18 @@ export class MessagesHeaderComponent {
   }
 
   selectUserByEmail(user: User) {
-  this.textInput += `@${user.displayName} `;
+    this.textInput += `@${user.displayName} `;
 
-  this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
+    this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
 
-  emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
+    emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
 
-  setTimeout(() => {
-    this.textInput = '';
-    this.clearResults();
-    this.closeThread();
-  }, 1);
-}
+    setTimeout(() => {
+      this.textInput = '';
+      this.clearResults();
+      this.closeThread();
+    }, 1);
+  }
 
 
   selectUser(user: User) {
@@ -216,6 +217,7 @@ export class MessagesHeaderComponent {
     this.selectedRecipients.push({ id: user.id, displayName: user.displayName });
 
     emitDirectUserContext(this.contextSelected, this.currentUser.id, user.id);
+    this.headerUserSelected.emit(user);
 
     setTimeout(() => {
       this.textInput = '';
@@ -278,7 +280,7 @@ export class MessagesHeaderComponent {
 
   openUserProfileOverlay() {
     const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
-    dialogDetails.componentInstance.directMessage = true;
+    dialogDetails.componentInstance.directMessage = (this.activeUser?.id ?? '') !== this.currentUser.id;
     dialogDetails.componentInstance.user = this.activeUser;
   }
 

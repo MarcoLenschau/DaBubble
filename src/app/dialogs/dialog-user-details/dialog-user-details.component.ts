@@ -18,7 +18,7 @@ export class DialogUserDetailsComponent {
   @Input() user: any = {};
   @Input() directMessage = false;
   sendMailStatus = false;
-  
+
   /**
    * Closes the profile view dialog.
    *
@@ -44,7 +44,7 @@ export class DialogUserDetailsComponent {
    * Opens the email edit dialog and closes the current profile view.
    *
    * @return {void}
-   */ 
+   */
   openEmailDialog(): void {
     const dialogRef = this.dialog.open(DialogEmailEditComponent);
     this.closeProfilView();
@@ -65,13 +65,17 @@ export class DialogUserDetailsComponent {
       }, 10000);
     }
   }
-  
+
   /**
    * Triggers the email verification process through the authentication service.
    *
    * @return {void}
-   */  
+   */
   sendEmailVerfication(): void {
     this.auth.sendEmailVerification();
+  }
+
+  selectUserForDirectMessage(): void {
+    this.dialogRef.close(this.user);
   }
 }

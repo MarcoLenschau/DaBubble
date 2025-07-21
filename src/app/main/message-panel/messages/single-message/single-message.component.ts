@@ -14,8 +14,9 @@ import { User } from '../../../../core/models/user.model';
 import { Emoji } from '../../../../core/interfaces/emojis.interface';
 import { ViewMode } from '../../../../core/enums/view-mode.enum';
 import { Reaction } from '../../../../core/interfaces/reaction.interface';
+import { MessageContext } from '../../../../core/interfaces/message-context.interface';
 
-import { isOwnMessage, getUserById, setTooltipHoveredState, } from '../../../../core/utils/messages.utils';
+import { isOwnMessage, getUserById, setTooltipHoveredState, emitDirectUserContext } from '../../../../core/utils/messages.utils';
 import { formatRelativeTimeSimple, formatTime } from '../../../../core/utils/date.utils';
 import { addEmojiToMessage, getVisibleReactions, getHiddenReactionCount, shouldShowCollapseButton, getEmojiByName, applyTooltipOverflowAdjustment, } from '../../../../core/utils/emojis.utils';
 import { FirebaseService } from '../../../../core/services/firebase.service';
@@ -44,6 +45,8 @@ export class SingleMessageComponent {
   @Output() messageEdited = new EventEmitter<{ index: number; newText: string; isThread: boolean }>();
   @Output() threadStart = new EventEmitter<{ starterMessage: Message; userId: string }>();
   @Output() emojiUsageChanged = new EventEmitter<{ usage: { [emojiName: string]: number }; recent: string[]; }>();
+  @Output() userSelected = new EventEmitter<User>();
+  @Output() contextSelected = new EventEmitter<MessageContext>();
 
   localEmojiStats: { [emojiName: string]: number } = {};
   localRecentEmojis: string[] = [];
@@ -238,6 +241,11 @@ export class SingleMessageComponent {
     const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
     dialogDetails.componentInstance.directMessage = userId !== this.currentUser.id;
     dialogDetails.componentInstance.user = this.activeUser;
+    dialogDetails.afterClosed().subscribe((selectedUser: User | undefined) => {
+      if (!selectedUser) return;
+      this.userSelected.emit(this.activeUser ?? undefined);
+      emitDirectUserContext(this.contextSelected, this.currentUser.id, this.activeUser?.id ?? '');
+    });
   }
 
   /**

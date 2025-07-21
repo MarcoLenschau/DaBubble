@@ -12,7 +12,7 @@ import { Emoji } from '../../core/interfaces/emojis.interface';
 
 @Component({
   selector: 'app-message-panel',
-  imports: [ MessagesHeaderComponent, MessagesComponent, MessagesTextareaComponent, NgClass ],
+  imports: [MessagesHeaderComponent, MessagesComponent, MessagesTextareaComponent, NgClass],
   templateUrl: './message-panel.component.html',
   styleUrl: './message-panel.component.scss',
 })
@@ -25,7 +25,8 @@ export class MessagePanelComponent {
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
   // @Input() sortedEmojis: Emoji[] = [];
-  @Output() contextSelected = new EventEmitter<MessageContext>();
+  @Output() panelContextSelected = new EventEmitter<MessageContext>();
+  @Output() panelUserSelected = new EventEmitter<User>();
   @Output() threadStart = new EventEmitter<{
     starterMessage: Message;
     userId: string;
@@ -93,8 +94,14 @@ export class MessagePanelComponent {
    * Emits the selected context from the header component.
    * @param context - The selected message context.
    */
-  onContextSelectedFromHeader(context: MessageContext): void {
-    this.contextSelected.emit(context);
+  onContextSelectedFromChildren(context: MessageContext): void {
+    this.panelContextSelected.emit(context);
+    console.log('Panel: onContextSelectedFromHeader: ', context);
+  }
+
+  onUserSelectedFromChildren(user: User) {
+    console.log('Panel: userSelectedFromHeader', user);
+    this.panelUserSelected.emit(user);
   }
 
   /**
@@ -126,5 +133,4 @@ export class MessagePanelComponent {
     this.emojiUsage = event.usage;
     this.recentEmojis = event.recent;
   }
-
 }
