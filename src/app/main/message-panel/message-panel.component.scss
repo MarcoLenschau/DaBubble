@@ -14,8 +14,8 @@
 
 .thread-container {
   background-color: #ffffff;
-  width: 485px;
-  width: 100%;
+  // width: 485px;
+  // width: 100%;
   height: 940px;
   border-radius: 30px;
 }
@@ -31,7 +31,36 @@
   padding: 24px 40px;
 }
 
+.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.message-textarea.hidden,
+.thread-container.hidden {
+  opacity: 0;
+  transform: translateX(300px);
+  pointer-events: none;
+  width: 0;
+  max-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+@media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
+  .message-textarea {
+    padding-left: 3vw;
+    padding-right: 3vw;
+  }
+}
+
 @media (max-width: $mobile-xl) {
+  .message-textarea {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
   .message-container, .thread-container {
     height: calc(100vh - 80px);
     border-radius: 0;

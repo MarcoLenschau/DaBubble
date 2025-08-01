@@ -42,14 +42,9 @@
 
     <!-- Empfänger-Eingabe -->
     <div class="recipient-search">
-      <input
-        #searchInput
-        type="search"
-        placeholder="An: #channel oder @jemand oder E-Mail Adresse"
-        [(ngModel)]="textInput"
-        (input)="onSearch($event)"
-      />
-    </div> 
+      <input #searchInput type="search" placeholder="An: #channel oder @jemand oder E-Mail Adresse"
+        [(ngModel)]="textInput" (input)="onSearch($event)" />
+    </div>
   </ng-container>
 
   <ng-container *ngIf="isThread">
@@ -72,20 +67,20 @@
   [style.left.px]="mentionBoxPosition.left">
   <ul>
     <!-- Treffer: Email -->
- <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
-  <strong>{{ user.displayName }} ({{ user.email }})</strong>
-</li>
+    <li *ngFor="let user of searchResultsEmail" (click)="selectUser(user)">
+      <strong>{{ user.displayName }} ({{ user.email }})</strong>
+    </li>
 
 
 
     <!-- Treffer: @User mit Bild & Online-Status -->
- <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
-  <div class="profile-icon">
-    <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'" />
-    <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" />
-  </div>
-  <div class="mention-user-name">{{ user.displayName }}</div>
-</li>
+    <li class="profile-user" *ngFor="let user of searchResultsUser" (click)="selectUser(user)">
+      <div class="profile-icon">
+        <img class="profile-pic" [src]="user.photoURL || 'assets/img/profilepic/fallback.png'" />
+        <img *ngIf="user.state" class="profile-online" src="./assets/img/profilepic/online-user.png" />
+      </div>
+      <div class="mention-user-name">{{ user.displayName }}</div>
+    </li>
 
 
 

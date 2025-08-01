@@ -105,6 +105,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    width: 0;
   }
 
   &::-webkit-scrollbar {
@@ -173,7 +174,19 @@
   align-items: center;
 }
 
+
+@media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
+  .message-header .message-header-content, .recipient-search {
+    padding-left: 3vw;
+    padding-right: 3vw;
+  }
+}
+
 @media (max-width: $mobile-xl) {
+  .message-header .message-header-content, .recipient-search {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
 
   .message-header .message-header-content .message-header-content-text h2 {
     font-size: 20px;
