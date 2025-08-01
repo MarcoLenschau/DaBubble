@@ -24,7 +24,7 @@ export class MessagePanelComponent {
   @Input() activeUser: User | null = null;
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
-  @Input() makeVisible: boolean = false;
+  // @Input() makeVisible: boolean = false;
 
   // @Input() sortedEmojis: Emoji[] = [];
   @Output() panelContextSelected = new EventEmitter<MessageContext>();
