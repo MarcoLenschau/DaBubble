@@ -14,7 +14,7 @@ export class ThreadWindowComponent {
   @Input() starterMessage?: Message;
   @Input() userId?: string;
   @Input() viewMode!: ViewMode;
-  @Input() showThread = false;
+  // @Input() showThread = false;
 
   @Output() showThreadClosing = new EventEmitter<boolean>();
   @Output() starterMessageChange = new EventEmitter<Message>();

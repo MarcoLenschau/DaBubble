@@ -17,13 +17,12 @@
   <app-message-window (threadStart)="onThreadStart($event)" [activeChannel]="activeChannel" [activeUser]="activeUser"
     (showThreadClosing)="onThreadClose()" [messageContext]="messageContext"
     (windowContextSelected)="onContextSelected($event)" (headerUserSelected)="onUserSelected($event)"
-    [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }" [showMessage]="showMessageWindow"
-    [viewMode]="viewMode"></app-message-window>
+    [ngClass]="{ visible: showMessageWindow, hidden: !showMessageWindow }" [viewMode]="viewMode"></app-message-window>
 
   <div class="spacer" *ngIf="showMessageWindow && showThreadWindow"></div>
 
   <app-thread-window [starterMessage]="starterMessage"
     (starterMessageChange)="onStarterMessageChangedFromThread($event)" [userId]="userId"
-    [ngClass]="{ visible: showThreadWindow, hidden: !showThreadWindow }" [showThread]="showThreadWindow"
-    (showThreadClosing)="onThreadClose()" [viewMode]="viewMode"></app-thread-window>
+    [ngClass]="{ visible: showThreadWindow, hidden: !showThreadWindow }" (showThreadClosing)="onThreadClose()"
+    [viewMode]="viewMode"></app-thread-window>
 </div>
