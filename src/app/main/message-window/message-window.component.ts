@@ -20,6 +20,7 @@ export class MessageWindowComponent {
   @Input() activeUser: User | null = null;
   @Input() messageContext?: MessageContext;
   @Input() viewMode!: ViewMode;
+  @Input() showMessage = true;
 
   @Output() windowContextSelected = new EventEmitter<MessageContext>();
   @Output() headerUserSelected = new EventEmitter<User>();
