@@ -32,11 +32,11 @@ jobs:
         run: ng build --configuration production --base-href="/"
 
       - name: Copy files via SCP
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: marco-lenschau.de
           username: github
           key: ${{ secrets.SECRET_KEY }}
           port: 22
-          source: "./dist/dabubble/browser/*"
+          source: "./dist/dabubble/browser/"
           target: "/var/www/html/dabubble/"
