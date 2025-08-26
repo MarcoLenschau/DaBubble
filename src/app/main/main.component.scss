@@ -6,6 +6,7 @@
   box-sizing: border-box;
   @include dFlex($jc: flex-start, $ai: center, $g: 0, $f: row);
   padding: 20px;
+  overflow: hidden;
   // padding: 20px 28px; //margin -8px miteingerechnet
 }
 

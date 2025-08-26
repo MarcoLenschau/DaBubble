@@ -1,0 +1,75 @@
+.datenschutz-container {
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Nunito';
+}
+
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6366F1;
+
+    &:hover {
+        color: #4F46E5;
+    }
+}
+
+.datenschutz-content {
+    background: white;
+    padding: 60px 40px 30px 40px;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+}
+
+h1 {
+    color: #6366F1;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #1F2937;
+    font-size: 18px;
+    margin-bottom: 15px;
+    margin-top: 30px;
+}
+
+.privacy-info,
+.data-collection {
+    margin-bottom: 20px;
+
+    p {
+        margin: 8px 0;
+        color: #374151;
+        line-height: 1.5;
+    }
+}
+
+.contact-info {
+    .email-list {
+        p {
+            margin: 10px 0;
+            color: #374151;
+        }
+
+        a {
+            color: #6366F1;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

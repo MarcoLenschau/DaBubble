@@ -11,17 +11,18 @@
 
 :host(.visible) {
   opacity: 1;
-    pointer-events: auto;
+  pointer-events: auto;
   flex: 1;
   min-width: 0;
 }
 
 :host(.hidden) {
   opacity: 0;
-    pointer-events: none;
+  pointer-events: none;
   flex: 0 !important;
   width: 0 !important;
   overflow: hidden;
+  max-width: 0;
 }
 
 @media (max-width: $mobile-xl) {
