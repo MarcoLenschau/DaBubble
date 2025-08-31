@@ -12,6 +12,6 @@ export const routes: Routes = [
     { path: 'sign-up', component: SignUpComponent},
     { path: 'message', component: MainComponent, canActivate: [authGuard]},
     { path: 'reset', component: PasswordResetComponent},
-    { path: 'impressum', component: ImpressumComponent},
-    { path: 'datenschutz', component: DatenschutzComponent}
+    { path: 'impress', component: ImpressumComponent},
+    { path: 'privacy', component: DatenschutzComponent}
 ];

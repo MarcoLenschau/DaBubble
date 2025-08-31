@@ -4,7 +4,7 @@
     <button (click)="closeProfilView()">X</button>
   </div>
   <div class="user-image-container">
-    <img src="{{ user.photoURL }}" alt="" />
+    <img src="{{ user.photoURL }}" alt="user-picture"/>
   </div>
   <div class="d_flex_s_b">
     <b><span>{{ user.displayName }}</span></b>
@@ -22,11 +22,11 @@
     <a *ngIf="!user.emailVerified || !user.provider " (click)="sendMail();" class="send-button"
       [class.grey-send-button]="sendMailStatus">Bestätigen</a>
     <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png"
-      alt="edit" />
+      alt="edit"/>
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>
   <button *ngIf="directMessage" class="profile-message-btn" (click)="selectUserForDirectMessage()">
-    <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon" />
+    <img src="./assets/img/message-icons/mode_comment.svg" alt="Nachricht" class="message-icon"/>
     Nachricht
   </button>
 </div>
