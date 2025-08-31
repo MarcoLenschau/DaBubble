@@ -67,17 +67,11 @@ export class AuthService {
       if (user) {
         this.userSubject.next(user);
         this.user = user;
-
-        if (user.displayName) {
-          await this.restoreProviderAuth(user);
-        } else {
-          await this.restoreEmailAuth(user);
-        }
+        user.displayName ? await this.restoreProviderAuth(user) : await this.restoreEmailAuth(user);
       } else {
         this.user = null;
         this.userSubject.next(null);
       }
-
       this.authReadySubject.next(true);
     });
   }
@@ -96,7 +90,7 @@ export class AuthService {
    */
   async restoreEmailAuth(user: any): Promise<void> {
     if (user.email) {
-      let userData = await this.firebase.searchUsersByEmail(user.email);
+      const userData = await this.firebase.searchUsersByEmail(user.email);
       this.userSubject.next(user);
     }
   }
@@ -125,16 +119,24 @@ export class AuthService {
     this.users.forEach(async (user) => {
       if (user.email === this.user.email) {
         await this.firebase.updateUserState(user, false);
-        this.auth.signOut()
-          .then(() => {
+        this.auth.signOut().then(() => {
             localStorage.setItem("loggedIn", "false");
-            this.router.switchRoute('/');
-          })
-          .catch((error) => {
-            console.error('Logout-Fehler:', error);
+          }).catch((error) => {
+            localStorage.setItem("loggedIn", "false");
+            
           });
+        this.router.switchRoute('/');
       }
     });
+  }
+
+  /**
+   * Logs out the current user by updating the local storage and navigating to the root route.
+   *
+   * Sets the "loggedIn" flag in local storage to "false" and redirects the user to the home page.
+   */
+  logoutUser(): void {
+  
   }
 
   /**
@@ -270,7 +272,7 @@ export class AuthService {
    */
   editEmail(email: string, user: any): void {
     updateEmail(user, email).then(() => {
-      console.log("Email ist geupdatet")
+      console.log("Email wurde geupdatet");
     });
   }
 
