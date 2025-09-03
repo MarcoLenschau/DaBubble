@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
-          BASE_BRANCH: main  # target branch of the
+          BASE_BRANCH: main
         run: |
           BRANCH_NAME=$(echo "${GITHUB_REF}" | sed 's|refs/heads/||')
           curl -X POST \
@@ -34,7 +34,7 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls \
             -d "$(jq -n \
-              --arg title "PR for $BRANCH_NAME" \
+              --arg title "PR from $BRANCH_NAME" \
               --arg head "$BRANCH_NAME" \
               --arg base "$BASE_BRANCH" \
               '{title: $title, head: $head, base: $base, body: "Automatically created Pull Request to merge $head --> $base"}')"
