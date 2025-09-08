@@ -24,8 +24,13 @@ export class DialogUserOptionsComponent {
    * @return {void}
    */
   logOut(): void {
-    this.auth.logout();
-    this.dialogRef.close();
+    if (this.user.displayName != "Gast") {
+      this.auth.logout();
+      this.dialogRef.close();
+    } else {
+      this.dialogRef.close();
+      this.router.switchRoute("/");
+    }
   }
 
   /**
