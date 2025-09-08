@@ -21,6 +21,7 @@ DaBubble enables users to communicate in real-time through channels and private 
   - Real-time messaging with channels and direct messages
   - User authentication with Firebase
   - Responsive design for desktop and mobile
+  - CI/CD pipelines for automatical deployment and notification 
 
 ## 💬 Feedback & Support
 
