@@ -204,4 +204,13 @@ export class DevspaceComponent {
   showAddChannelOverlay(): void {
     this.addChannelRequest.emit(true);
   }
+  
+  /**
+   * Determines whether the current user is a guest user.
+   *
+   * @returns {boolean} `true` if the current user's display name is 'Gast', otherwise `false`.
+   */
+  isGuestUser(): boolean {
+    return this.currentUser?.displayName === 'Gast';
+  }
 }

@@ -221,6 +221,14 @@ nav {
   left: 8px;
 }
 
+.guest-user {
+  margin: -8px 45px;
+}
+
+.guest-only {
+  margin-top: -44px;
+}
+
 // Responsiveness
 
 @media (min-width: ($mobile-xl + 1)) and (max-width: $tablet-md) {
