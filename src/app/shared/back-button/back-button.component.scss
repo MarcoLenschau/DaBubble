@@ -1,0 +1,16 @@
+@import "../../shared/styles/mix-in.scss";
+
+.back-button-container {
+  @include dFlex($jc: center, $g: 48px);
+  width: 500px;
+  >img {
+    position: absolute;
+    height: 26px;
+    margin-right: 470px;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+        border-radius: 24px;
+    }
+  }
+}
