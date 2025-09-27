@@ -34,4 +34,18 @@ export class RouterService {
   isMainPage(): Boolean {
     return this.router.url == "/message";
   }
+
+  navigateToSuggestion(suggestion: any) {
+    // Example: navigate based on suggestion type
+    if (suggestion.type === 'contact') {
+      this.router.navigate(['/contacts', suggestion.id]);
+    } else if (suggestion.type === 'channel') {
+      this.router.navigate(['/channels', suggestion.id]);
+    } else {
+      // fallback
+      this.router.navigate(['/profile', suggestion.id]);
+    }
+  }
 }
+
+

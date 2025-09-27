@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, doc, updateDoc, getDocs, query, where, setDoc, writeBatch } from '@angular/fire/firestore';
 import { MessageAudioService } from './message-audio.service';
 import { User } from '../models/user.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,8 @@ import { User } from '../models/user.model';
 export class FirebaseService {
   private messageAudio = inject(MessageAudioService);
   private firebase = inject(Firestore);
+   private contactsSubject = new BehaviorSubject<any[]>([]);
+  private channelsSubject = new BehaviorSubject<any[]>([]);
 
   /**
    * Returns a Firestore collection reference for the specified document path.
@@ -196,5 +199,23 @@ export class FirebaseService {
       { id: messageRef.id, user, channelId: opts.channelId ?? '', threadId: opts.threadId ?? '', 
         receiverId: opts.receiverId ?? '', isDirect: opts.isDirect });
     await setDoc(messageRef, cleanMessage);
+  }
+
+
+   getContactsObservable() {
+    return this.contactsSubject.asObservable();
+  }
+
+  getChannelsObservable() {
+    return this.channelsSubject.asObservable();
+  }
+
+  // Diese Methoden aufrufen, wenn Daten geladen werden:
+  setContacts(contacts: any[]) {
+    this.contactsSubject.next(contacts);
+  }
+
+  setChannels(channels: any[]) {
+    this.channelsSubject.next(channels);
   }
 }

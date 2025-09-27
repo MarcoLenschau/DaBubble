@@ -2,5 +2,5 @@
     <img  *ngIf="prefixIcon && img !== 'none'" class="input-prefix-icon" [src]="prefixIcon" alt="icon">
     <img *ngIf="(img || activeImg) && img !== 'none'" class="input-icon" [src]="currentIcon" alt="icon">
     <input #inputRef [style.height.px]="height" [style.width.px]="width" [class.input-distance]="reverse" [class.distance]="img === 'none'"
-      [type]="type" [placeholder]="placeholder" [value]="value" (input)="addData($event)" (focus)="onFocus()" (blur)="onBlur()">
+      [type]="type" [placeholder]="placeholder" [value]="value" (input)="addData($event)" (focus)="onFocus()" (blur)="onBlur()" (onChange)="inputEvent">
 </div>

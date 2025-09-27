@@ -70,9 +70,10 @@
                                         : './assets/img/devspace/tag-default.png'
                             " alt="#">
                             <span>{{ channel.name }}</span>
-                        </div>              
+                        </div>
                     </ng-container>
                 </div>
+
 
                 <div class="devspace-channel-add" (click)="showAddChannelOverlay()" style="cursor:pointer;">
                     <img [src]=" isChannelHovered ? './assets/img/devspace/add_circle-hover.png' : './assets/img/devspace/add-circle.png'"
@@ -92,15 +93,23 @@
                     <h2>Direktnachrichten</h2>
                 </div>
             </div>         
+      
+            <div class="profile-user hovered guest-user" *ngIf="isGuestUser()">
+                <div class="profile-icon">
+                    <img alt="gast-user" class="profile-pic" src="./assets/img/profilepic/profile.svg">
+                </div>
+                <p>Gast</p>
+            </div>
             
             <div class="profile-users" *ngIf="isMessageOpen" [class.scrollbar]="users?.length > 6" [class.guest-only]="isGuestUser()">
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user)"
-                [ngClass]="{'hovered' : activeUser !== user, 'active' : activeUser === user}"
-                [class.active-user]="user?.email && auth.user?.email && user.email === auth.user.email"
-                [class.channel-open]="user?.email && auth.user?.email && user.email === auth.user.email && isChannelOpen">
+                    [ngClass]="{'hovered' : activeUser !== user, 'active' : activeUser === user}"
+                    [class.active-user]="user?.email && auth.user?.email && user.email === auth.user.email"
+                    [class.channel-open]="user?.email && auth.user?.email && user.email === auth.user.email && isChannelOpen">
                     <div class="profile-icon">
-                        <img  class="profile-pic" [src]="user?.photoURL" alt="user">
-                        <img *ngIf="user?.state" class="profile-online" src="./assets/img/profilepic/online-user.png" alt="online">
+                        <img class="profile-pic" [src]="user?.photoURL" alt="user">
+                        <img *ngIf="user?.state" class="profile-online" src="./assets/img/profilepic/online-user.png"
+                            alt="online">
                     </div>
                     <p>{{user?.displayName}}</p>
                     <span *ngIf="user?.email && auth.user?.email && user.email === auth.user.email">(Du)</span>
