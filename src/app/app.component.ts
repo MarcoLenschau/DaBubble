@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/header/header.component';
 import { FooterComponent } from './shared/footer/footer.component';
@@ -12,8 +12,10 @@ import { MessageCacheService } from './core/services/message-cache.service';
 })
 export class AppComponent implements OnInit {
   title = 'dabubble';
-
-  constructor(private messageCacheService: MessageCacheService) { }
+    
+  constructor(private messageCacheService: MessageCacheService) { 
+    
+  }
 
   /**
    * Lifecycle hook that runs once after component initialization.

@@ -48,14 +48,13 @@ export class HeaderComponent {
 
 
   onSearch(query: any) {
-    console.log('Such-Query:', query.value);
     const allItems = [...this.contacts, ...this.channels, ...this.allMessages];
-    console.log('Alle Items:', allItems);
     this.searchSuggestions = allItems.filter(item =>
       (item.name && item.name.toLowerCase().includes(String(query.value).toLowerCase())) ||
       (item.email && item.email.toLowerCase().includes(String(query.value).toLowerCase())) ||
       (item.text && item.text.toLowerCase().includes(String(query.value).toLowerCase()))
     );
+    this.firebase.allSearchSuggestions = this.searchSuggestions;
     console.log('Suchvorschläge:', this.searchSuggestions);
     this.showOverlay = true;
   }

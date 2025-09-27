@@ -12,6 +12,7 @@ export class FirebaseService {
   private firebase = inject(Firestore);
   private contactsSubject = new BehaviorSubject<any[]>([]);
   private channelsSubject = new BehaviorSubject<any[]>([]);
+  allSearchSuggestions: any = [];
 
   /**
    * Returns a Firestore collection reference for the specified document path.

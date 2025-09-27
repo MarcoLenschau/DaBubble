@@ -10,6 +10,7 @@ import { User } from '../../core/models/user.model';
 import { AuthService } from '../../core/services/auth.service';
 import { MessageContext } from '../../core/interfaces/message-context.interface';
 import { emitChannelContext, emitDirectUserContext } from '../../core/utils/messages.utils';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-devspace',
@@ -47,7 +48,7 @@ export class DevspaceComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
   public auth = inject(AuthService);
-
+  private router = inject(Router);
   private currentUserSubscription?: Subscription;
 
 
@@ -71,6 +72,7 @@ export class DevspaceComponent {
    * Angular lifecycle hook that subscribes to the current user observable.
    */
   async ngOnInit(): Promise<void> {
+    this.openChannelFromRoute();
     this.currentUserSubscription = this.userDataService.currentUser$
       .subscribe(user => {
         this.currentUser = user;
@@ -83,6 +85,26 @@ export class DevspaceComponent {
           console.log('setContacts wurde ausgeführt');
         });
       });
+  }
+
+  openChannelFromRoute() {
+    const channelId = this.router.url.split('/')[2];
+    if (this.router.url.match(/^\/message\/[\w-]+$/)) {
+        this.whichElementisInTheSearchSuggestions(channelId);
+    } 
+  }
+
+  whichElementisInTheSearchSuggestions(channelId: string) {
+    const result = this.firebase.allSearchSuggestions.find((channel: any) => channel.id === channelId);
+    if (result.name) {
+      if (result.receiverId) {
+        
+      } else {
+        result ? this.selectChannel(result) : null; 
+      }
+    } else {
+      result.receiverId ? this.setActiveUser(result) : null;
+    }
   }
 
   /**
