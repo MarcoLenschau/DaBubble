@@ -242,6 +242,7 @@ export class AuthService {
    */
   async createUserWithEmail(email: string, password: string): Promise<User> {
     const result = await createUserWithEmailAndPassword(this.auth, email, password);
+    console.log("User mit Email erstellt: ", result.user);
     let user: any = { ...result.user };
     user = this.firebase.toObj(user, false, false);
     await this.firebase.addUser(user, false);

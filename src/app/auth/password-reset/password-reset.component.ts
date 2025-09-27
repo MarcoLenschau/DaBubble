@@ -4,10 +4,11 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { validateEmail, validateError } from '../../core/utils/message-validate.utils';
+import { BackButtonComponent } from "../../shared/back-button/back-button.component";
 
 @Component({
   selector: 'app-password-reset',
-  imports: [CommonModule, InputComponent, ButtonComponent],
+  imports: [CommonModule, InputComponent, ButtonComponent, BackButtonComponent],
   templateUrl: './password-reset.component.html',
   styleUrl: './password-reset.component.scss'
 })

@@ -14,16 +14,15 @@
             <div class="search-overlay" *ngIf="showOverlay">
                 <div class="search-suggestions">
                     <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
-                        {{ suggestion.name || suggestion.email }}
+                        <p *ngIf="suggestion.text">
+                            Message: {{ suggestion.text }}
+                            From: {{ suggestion.name }}
+                            At: {{ getReciverNameById(suggestion.receiverId) }} 
+                        </p>
+                        <p *ngIf="!suggestion.text">{{ suggestion.name || suggestion.email }}</p> 
                     </div>
                 </div>
             </div>
-        </div>
-
-    </div>
-    <div class="search-suggestions" *ngIf="searchSuggestions.length > 0">
-        <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
-            {{ suggestion.name }}
         </div>
     </div>
     <div class="user-login-menu" *ngIf="router.isMainPage()">
@@ -31,6 +30,4 @@
         <img class="user-image" *ngIf="user" [src]="user.photoURL" alt="user-image">
         <img (click)="openDialog();" src="./assets/img/header/arrow-down.svg" alt="arrow-down">
     </div>
-
-
 </header>

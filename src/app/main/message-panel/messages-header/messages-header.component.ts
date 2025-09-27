@@ -176,8 +176,6 @@ export class MessagesHeaderComponent {
     }, 100);
   }
 
-
-
   private calculateMentionBoxPosition(inputElement: HTMLInputElement) {
     const rect = inputElement.getBoundingClientRect();
     this.mentionBoxPosition = {
@@ -280,8 +278,8 @@ export class MessagesHeaderComponent {
 
   openUserProfileOverlay() {
     const dialogDetails = this.dialog.open(DialogUserDetailsComponent);
-    dialogDetails.componentInstance.directMessage = (this.activeUser?.id ?? '') !== this.currentUser.id;
     dialogDetails.componentInstance.user = this.activeUser;
+    dialogDetails.componentInstance.directMessage = (this.activeUser?.id ?? '') !== this.currentUser.id;
   }
 
   closeUserProfileOverlay() {

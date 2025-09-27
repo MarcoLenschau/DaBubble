@@ -5,10 +5,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { validateEmail, validateError } from '../../../core/utils/message-validate.utils';
+import { BackButtonComponent } from "../../../shared/back-button/back-button.component";
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, InputComponent, FormsModule],
+  imports: [CommonModule, InputComponent, FormsModule, BackButtonComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })

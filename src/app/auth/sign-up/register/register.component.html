@@ -1,9 +1,6 @@
 <div class="main-container">
     <div class="main-container register-container">
-        <div class="back-button-container">
-            <img (click)="router.switchRoute('/')" src="assets/img/arrow_back.svg" alt="back">
-            <h2 class="color-blue">Konto erstellen</h2>
-        </div>
+        <app-back-button [headline]="'Konto erstellen'" [fontSize]="54"></app-back-button>
         <span>Mit deinem Namen und deiner E-Mail Adresse hast du dein neues DABubble-Konto.</span>
 
         <div class="register-input-container">

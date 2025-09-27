@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { DevspaceComponent } from './devspace/devspace.component';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -14,6 +14,7 @@ import { User } from '../core/models/user.model';
 import { Channel } from '../core/models/channel.model';
 import { areUsersEqual } from '../core/utils/messages.utils';
 import { AddChannelOverlayComponent } from '../overlays/add-channel-overlay/add-channel-overlay.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -22,6 +23,7 @@ import { AddChannelOverlayComponent } from '../overlays/add-channel-overlay/add-
   styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit {
+  router = inject(Router);
   viewMode: ViewMode = ViewMode.Desktop;
   showDevSpace = true;
   showMessage = true;
@@ -37,6 +39,7 @@ export class MainComponent implements OnInit {
   mobileMaxWidth = 896;
   tabletMaxWidth = 1440;
 
+  
   /**
    * Creates an instance of the class and initializes the required services.
    * 
@@ -97,6 +100,8 @@ export class MainComponent implements OnInit {
             this.showDesktopView();
       });
   }
+
+  loadChannels() {}
 
   /**
    * Switches the view to desktop mode.

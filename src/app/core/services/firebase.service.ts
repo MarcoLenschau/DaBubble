@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, doc, updateDoc, getDocs, query, where, setDoc, writeBatch } from '@angular/fire/firestore';
 import { MessageAudioService } from './message-audio.service';
 import { User } from '../models/user.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +10,9 @@ import { BehaviorSubject } from 'rxjs';
 export class FirebaseService {
   private messageAudio = inject(MessageAudioService);
   private firebase = inject(Firestore);
-   private contactsSubject = new BehaviorSubject<any[]>([]);
+  private contactsSubject = new BehaviorSubject<any[]>([]);
   private channelsSubject = new BehaviorSubject<any[]>([]);
+  allSearchSuggestions: any = [];
 
   /**
    * Returns a Firestore collection reference for the specified document path.
@@ -202,7 +203,7 @@ export class FirebaseService {
   }
 
 
-   getContactsObservable() {
+  getContactsObservable() {
     return this.contactsSubject.asObservable();
   }
 
@@ -217,5 +218,10 @@ export class FirebaseService {
 
   setChannels(channels: any[]) {
     this.channelsSubject.next(channels);
+  }
+
+  getAllMessagesObservable(): Observable<any[]> {
+    const messagesCollection = collection(this.firebase, 'messages');
+    return collectionData(messagesCollection);
   }
 }

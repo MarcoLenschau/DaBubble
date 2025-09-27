@@ -18,7 +18,7 @@ export class DialogUserDetailsComponent {
   @Input() user: any = {};
   @Input() directMessage = false;
   sendMailStatus = false;
-
+  
   /**
    * Closes the profile view dialog.
    *
