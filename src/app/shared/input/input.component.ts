@@ -21,6 +21,7 @@ export class InputComponent {
   @Input() prefixIcon: string = '';
   @Input() activeImg: string = '';
   @Output() valueChange = new EventEmitter<string>();
+  @Input() inputEvent: string = '';
 
   private isActive: boolean = false;
 
@@ -28,10 +29,10 @@ export class InputComponent {
    * Emits the value of the input field when the user types.
    * @param event The input event from the input field.
    */
-  addData(event: Event) {  
+  addData(event: Event) {
     const eventTarget = event.target as HTMLInputElement;
     this.valueChange.emit(eventTarget.value);
-  }    
+  }
 
   /**
    * Sets the input as active (focused).
@@ -45,6 +46,11 @@ export class InputComponent {
    */
   onBlur() {
     this.isActive = false;
+  }
+
+  onInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.inputEvent = value;
   }
 
   /**

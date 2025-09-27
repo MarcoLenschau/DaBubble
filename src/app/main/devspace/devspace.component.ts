@@ -47,9 +47,9 @@ export class DevspaceComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
   public auth = inject(AuthService);
-  
+
   private currentUserSubscription?: Subscription;
-  
+
 
   /**
    * Constructor for initializing user and channel data.
@@ -63,6 +63,7 @@ export class DevspaceComponent {
     this.users = [];
     this.user$.forEach((users) => {
       this.users = (users || []).filter(u => !!u && !!u.email);
+      this.firebase.setContacts(this.users);
     });
   }
 
@@ -74,6 +75,13 @@ export class DevspaceComponent {
       .subscribe(user => {
         this.currentUser = user;
         this.searchChannelForUser();
+
+        this.user$.subscribe(users => {
+          const filteredContacts = users.filter(u => !!u && !!u.email);
+          console.log('Gefilterte Kontakte:', filteredContacts);
+          this.firebase.setContacts(filteredContacts);
+          console.log('setContacts wurde ausgeführt');
+        });
       });
   }
 
@@ -86,24 +94,26 @@ export class DevspaceComponent {
    */
   searchChannelForUser(): void {
     this.channelDataService.getChannels().subscribe(channels => {
+      const userChannels: Channel[] = [];
       channels.forEach(channel => {
-        this.isUserInChannel(channel);
+        if (this.isUserInChannel(channel)) {
+          userChannels.push(channel);
+        }
       });
+      this.channels = userChannels;
+      this.firebase.setChannels(this.channels); // <--- Channels setzen
     });
   }
 
   /**
    * Checks if the current user is a member of the given channel.
-   * If the user is found among the channel's members, the channel is added to the user's list of channels.
    *
    * @param {any} channel - The channel object containing a `members` array of JSON stringified user objects.
+   * @returns {boolean} True if the user is in the channel, false otherwise.
    */
-  isUserInChannel(channel: any) {
+  isUserInChannel(channel: any): boolean {
     const members = channel.members.map((memberStr: string) => JSON.parse(memberStr));
-    const member = members.find((member: any) => member.email === this.currentUser.email);
-    if (member) {
-      this.channels.push(channel);
-    }
+    return members.some((member: any) => member.email === this.currentUser.email);
   }
 
   /**
@@ -204,7 +214,7 @@ export class DevspaceComponent {
   showAddChannelOverlay(): void {
     this.addChannelRequest.emit(true);
   }
-  
+
   /**
    * Determines whether the current user is a guest user.
    *
