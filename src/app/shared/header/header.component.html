@@ -5,11 +5,32 @@
         <a (click)="router.switchRoute('sign-up')">Konto erstellen</a>
     </div>
     <div *ngIf="router.isMainPage()">
-        <app-input [placeholder]="'Devspace durchsuchen'" [img]="'./assets/img/input/search.svg'" [reverse]="true" [height]="48"></app-input>
+        <!-- <app-input [placeholder]="'Devspace durchsuchen'" [img]="'./assets/img/input/search.svg'" [reverse]="true"
+            [height]="48" (inputEvent)="onSearch($event)">
+        </app-input> -->
+        <div class="header-search-input">
+            <input (input)="onSearch($event.target)" placeholder="Devspace durchsuchen" type="text">
+            <img src="./assets/img/input/search.svg" alt="search">
+            <div class="search-overlay" *ngIf="showOverlay">
+                <div class="search-suggestions">
+                    <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
+                        {{ suggestion.name || suggestion.email }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="search-suggestions" *ngIf="searchSuggestions.length > 0">
+        <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
+            {{ suggestion.name }}
+        </div>
     </div>
     <div class="user-login-menu" *ngIf="router.isMainPage()">
-        <span>{{user.displayName}}</span>
-        <img class="user-image" [src]="user.photoURL" alt="user-image">
+        <span *ngIf="user">{{user.displayName}}</span>
+        <img class="user-image" *ngIf="user" [src]="user.photoURL" alt="user-image">
         <img (click)="openDialog();" src="./assets/img/header/arrow-down.svg" alt="arrow-down">
     </div>
+
+
 </header>
