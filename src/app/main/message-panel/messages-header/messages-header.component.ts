@@ -59,7 +59,7 @@ export class MessagesHeaderComponent {
   searchResultsMessages: Message[] = [];
   allChannels: Channel[] = [];
   allUsers: User[] = [];
-
+  
   mentionBoxPosition = { top: 0, left: 0 };
   private searchDebounceTimer?: any;
 
