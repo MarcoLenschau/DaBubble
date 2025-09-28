@@ -36,16 +36,10 @@ export class HeaderComponent {
 
 
   ngOnInit() {
-    this.firebase.getContactsObservable().subscribe(contacts => {
-      this.contacts = contacts;
-    });
+    this.firebase.getContactsObservable().subscribe(contacts => this.contacts = contacts);
     this.firebase.getChannelsObservable().subscribe(channels => this.channels = channels);
-    this.firebase.getAllMessagesObservable().subscribe((messages: any)  => {
-      this.allMessages = messages;
-    });
+    this.firebase.getAllMessagesObservable().subscribe(messages => this.allMessages = messages);
   }
-
-
 
   onSearch(query: any) {
     const allItems = [...this.contacts, ...this.channels, ...this.allMessages];
@@ -76,5 +70,9 @@ export class HeaderComponent {
   getReciverNameById(id: any): any {
     const reciver: any = this.contacts.find(contact => contact.id === id);
     return reciver.displayName;
+  }
+
+  toggleOverlay() {
+    this.showOverlay = !this.showOverlay;
   }
 }

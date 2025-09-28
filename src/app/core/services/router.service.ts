@@ -32,12 +32,10 @@ export class RouterService {
    * @return {boolean} Returns true if the current route is the main message page, otherwise false.
    */
   isMainPage(): Boolean {
-    return this.router.url == "/message";
+    return this.router.url == "/message" || this.router.url.startsWith("/message/");
   }
 
   navigateToSuggestion(suggestion: any) {
     this.router.navigate(['message', suggestion.id]);
   }
 }
-
-

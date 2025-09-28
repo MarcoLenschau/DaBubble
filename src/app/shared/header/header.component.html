@@ -9,11 +9,11 @@
             [height]="48" (inputEvent)="onSearch($event)">
         </app-input> -->
         <div class="header-search-input">
-            <input (input)="onSearch($event.target)" placeholder="Devspace durchsuchen" type="text">
+            <input placeholder="Devspace durchsuchen" type="text" (input)="onSearch($event.target)" (click)="toggleOverlay()">
             <img src="./assets/img/input/search.svg" alt="search">
-            <div class="search-overlay" *ngIf="showOverlay">
+            <div class="search-overlay" *ngIf="showOverlay" tabindex="1">
                 <div class="search-suggestions">
-                    <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)">
+                    <div *ngFor="let suggestion of searchSuggestions" (click)="selectSuggestion(suggestion)" (keydown.enter)="selectSuggestion(suggestion)" tabindex="0" class="search-suggestion">
                         <p *ngIf="suggestion.text">
                             Message: {{ suggestion.text }}
                             From: {{ suggestion.name }}
