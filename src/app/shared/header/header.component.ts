@@ -11,7 +11,7 @@ import { onSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, InputComponent],
+  imports: [CommonModule,],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
