@@ -224,4 +224,8 @@ export class FirebaseService {
     const messagesCollection = collection(this.firebase, 'messages');
     return collectionData(messagesCollection);
   }
+
+  updateChannel(channelId: string, data: any) {
+    updateDoc(doc(this.firebase, `channels/${channelId}`), data);
+  }
 }

@@ -120,6 +120,7 @@ export class MessagesHeaderComponent {
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;
     });
+    console.log(this.allUsers);
   }
 
   ngOnDestroy(): void {
@@ -253,11 +254,8 @@ export class MessagesHeaderComponent {
     this.closeThreadWindow.emit(false);
   }
 
-  loadMember() {
-    if (this.activeChannel) {
-      const members = JSON.parse(this.activeChannel.members);
-      return members.photoURL || './assets/img/profilepic/frederik.png';
-    }
+  loadMemberPhoto(member: any) {
+    return JSON.parse(member).photoURL;
   }
 
   openChannelOverlay() {
