@@ -100,9 +100,7 @@ export class MainComponent implements OnInit {
             this.showDesktopView();
       });
   }
-
-  loadChannels() {}
-
+  
   /**
    * Switches the view to desktop mode.
    */

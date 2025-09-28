@@ -72,7 +72,6 @@ export class DevspaceComponent {
    * Angular lifecycle hook that subscribes to the current user observable.
    */
   async ngOnInit(): Promise<void> {
-    this.openChannelFromRoute();
     this.currentUserSubscription = this.userDataService.currentUser$
       .subscribe(user => {
         this.currentUser = user;
@@ -85,26 +84,6 @@ export class DevspaceComponent {
           console.log('setContacts wurde ausgeführt');
         });
       });
-  }
-
-  openChannelFromRoute() {
-    const channelId = this.router.url.split('/')[2];
-    if (this.router.url.match(/^\/message\/[\w-]+$/)) {
-        this.whichElementisInTheSearchSuggestions(channelId);
-    } 
-  }
-
-  whichElementisInTheSearchSuggestions(channelId: string) {
-    const result = this.firebase.allSearchSuggestions.find((channel: any) => channel.id === channelId);
-    if (result.name) {
-      if (result.receiverId) {
-        
-      } else {
-        result ? this.selectChannel(result) : null; 
-      }
-    } else {
-      result.receiverId ? this.setActiveUser(result) : null;
-    }
   }
 
   /**

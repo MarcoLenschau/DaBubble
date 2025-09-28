@@ -1,5 +1,5 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../../core/models/message.model';
 import { MessageContext } from '../../../core/interfaces/message-context.interface';
@@ -14,6 +14,9 @@ import { ChannelMembersOverlayComponent } from '../../../overlays/channel-member
 import { AddMemberOverlayComponent } from '../../../overlays/add-member-overlay/add-member-overlay.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details/dialog-user-details.component';
+import { FirebaseService } from '../../../core/services/firebase.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-messages-header',
@@ -39,13 +42,13 @@ export class MessagesHeaderComponent {
   showUserProfileOverlay = false;
 
   private currentUserSubscription?: Subscription;
-
-  constructor(
-    private userDataService: UserDataService,
-    private channelDataService: ChannelDataService,
-    private dialog: MatDialog
-  ) { }
-
+  private firebase = inject(FirebaseService);
+  public auth = inject(AuthService);
+  private router = inject(Router);
+  private userDataService = inject(UserDataService);
+  private channelDataService = inject(ChannelDataService);
+  private dialog = inject(MatDialog);
+  
   textInput = '';
   currentUser!: User;
   selectedRecipients: { id: string; displayName: string }[] = [];
@@ -56,7 +59,7 @@ export class MessagesHeaderComponent {
   searchResultsMessages: Message[] = [];
   allChannels: Channel[] = [];
   allUsers: User[] = [];
-
+  
   mentionBoxPosition = { top: 0, left: 0 };
   private searchDebounceTimer?: any;
 
@@ -104,6 +107,7 @@ export class MessagesHeaderComponent {
 
 
   ngOnInit() {
+    this.openChannelFromRoute();
     this.channelDataService.getChannels().subscribe((channels) => {
       this.allChannels = channels;
       this.searchResultsChannels = [];
@@ -120,7 +124,6 @@ export class MessagesHeaderComponent {
     this.userDataService.getUsers().subscribe((users) => {
       this.allUsers = users;
     });
-    console.log(this.allUsers);
   }
 
   ngOnDestroy(): void {
@@ -282,5 +285,24 @@ export class MessagesHeaderComponent {
 
   closeUserProfileOverlay() {
     this.showUserProfileOverlay = false;
+  }
+    openChannelFromRoute() {
+    const channelId = this.router.url.split('/')[2];
+    if (this.router.url.match(/^\/message\/[\w-]+$/)) {
+        this.whichElementisInTheSearchSuggestions(channelId);
+    } 
+  }
+
+  whichElementisInTheSearchSuggestions(channelId: string) {
+    const result = this.firebase.allSearchSuggestions.find((channel: any) => channel.id === channelId);
+    if (result.name) {
+      if (result.receiverId) {
+        
+      } else {
+        result ? this.selectChannel(result) : null; 
+      }
+    } else {
+      result.receiverId ? this.selectUser(result) : null;
+    }
   }
 }

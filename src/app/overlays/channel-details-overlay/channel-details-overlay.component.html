@@ -56,11 +56,11 @@
             <div class="section-sub">
                 <span>Erstellt von</span>
                 <div class="creator">
-                    <a href="#" class="creator-link">{{ channel?.creatorName }}</a>
+                    <a class="creator-link">{{ channel.createdBy }}</a>
                 </div>
             </div>
         </div>
 
-        <button class="leave-btn">Channel verlassen</button>
+        <button class="leave-btn" (click)="deleteUserFromChannel()">Channel verlassen</button>
     </div>
 </div>

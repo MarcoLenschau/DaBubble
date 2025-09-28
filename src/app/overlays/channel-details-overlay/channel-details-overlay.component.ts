@@ -3,6 +3,7 @@ import { Input } from '@angular/core';
 import { ChannelDataService } from '../../core/services/channel-data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FirebaseService } from '../../core/services/firebase.service';
 
 
 
@@ -14,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ChannelDetailsOverlayComponent {
   @Input() channel: any;
+  @Input() user: any;
   @Output() close = new EventEmitter<void>;
   editName = false;
   editDescription = false;
@@ -21,7 +23,8 @@ export class ChannelDetailsOverlayComponent {
   newDescription = '';
   
   private channelDataService = inject(ChannelDataService);
-  
+  private firebase = inject(FirebaseService);
+
   /**
    * Enables name editing mode and sets the input field to the current channel name.
    */
@@ -62,5 +65,17 @@ export class ChannelDetailsOverlayComponent {
         this.editDescription = false;
       });
     }
+  }
+  
+  deleteUserFromChannel() { 
+    this.firebase.getContactsObservable().subscribe(contacts => {
+      const currentUser = contacts.find(contact => contact.email === this.user.email);
+      if (currentUser) {
+        const modifiedMember = this.channel.members.filter((member: any) => JSON.parse(member).email !== currentUser.email);
+        this.channel.members = modifiedMember;
+        this.firebase.updateChannel(this.channel.id, this.channel);
+        this.close.emit();
+      }
+    });        
   }
 }
