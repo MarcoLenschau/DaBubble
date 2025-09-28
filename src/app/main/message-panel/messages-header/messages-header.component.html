@@ -30,7 +30,7 @@
       <div class="channel-members-row" *ngIf="activeChannel">
         <div class="members-overview" (click)="openMembersOverlay()">
           <ng-container *ngFor="let member of activeChannel.members">
-            <img class="member-picture" [src]="loadMember()" />
+            <img class="member-picture" [src]="loadMemberPhoto(member)" />
           </ng-container>
         </div>
 
