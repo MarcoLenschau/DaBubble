@@ -19,7 +19,7 @@
       <img src="./assets/img/input/email.svg" alt="email" />
       <span>E-Mail Adresse</span>
     </div>
-    <a *ngIf="!user.emailVerified || !user.provider " (click)="sendMail();" class="send-button"
+    <a *ngIf="user.id != 'guest' && user.emailVerified && !user.provider" (click)="sendMail();" class="send-button"
       [class.grey-send-button]="sendMailStatus">Bestätigen</a>
     <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png"
       alt="edit"/>
