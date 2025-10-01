@@ -3,17 +3,19 @@
     <div class="members-overlay-header">
       <span class="members-title">Mitglieder</span>
       <button class="close-btn" (click)="close.emit()">
-        <img src="assets/img/close/close.svg" alt="Schließen" />
+        <img src="assets/img/close/close.svg" alt="Schließen"/>
       </button>
     </div>
-    <div class="members-list">
+    <div class="members-list" [class.scrollbar]="members.length > 3">
       <div class="member-name" *ngFor="let member of members">
-        {{ member.displayName }}<span *ngIf="member.isCurrentUser"> (Du)</span>
+        <img src="{{ member.photoURL }}" alt="profile-picture">
+        {{ member.displayName }}
+        <span *ngIf="auth.user.email === member.email"> (Du)</span>
       </div>
     </div>
-    <button class="add-members-btn" (click)="addMembers.emit()">
+    <button class="add-members-btn" (click)="addMember.emit()">
       <span class="add-members-icon">
-        <img src="assets/img/channel/members-add-button.png" alt="Mitglieder hinzufügen" />
+        <img src="assets/img/channel/members-add-button.png" alt="Mitglieder hinzufügen"/>
       </span>
       Mitglieder hinzufügen
     </button>

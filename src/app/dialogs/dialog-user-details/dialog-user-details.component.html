@@ -21,7 +21,7 @@
     </div>
     <a *ngIf="user.id != 'guest' && user.emailVerified && !user.provider" (click)="sendMail();" class="send-button"
       [class.grey-send-button]="sendMailStatus">Bestätigen</a>
-    <img *ngIf="!user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png"
+    <img *ngIf="user.id != 'guest' && !user.emailVerified && !user.provider" (click)="openEmailDialog();" src="./assets/img/devspace/edit.png"
       alt="edit"/>
   </div>
   <a href="mailto: {{ user.email }}">{{ user.email }}</a>

@@ -18,6 +18,12 @@
 
 .profile {
     @include dFlex($jc: space-between);
+    button {
+        font-size: 22px;
+        background-color: white;
+        border: 0;
+        border-radius: 12px;
+    }
 }
 
 .user-image-container {
