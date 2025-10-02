@@ -7,7 +7,7 @@
       </button>
     </div>
     <div class="members-list" [class.scrollbar]="members.length > 3">
-      <div class="member-name" *ngFor="let member of members">
+      <div class="member-name" *ngFor="let member of members" [class.current-user]="auth.user.email === member.email">
         <img src="{{ member.photoURL }}" alt="profile-picture">
         {{ member.displayName }}
         <span *ngIf="auth.user.email === member.email"> (Du)</span>

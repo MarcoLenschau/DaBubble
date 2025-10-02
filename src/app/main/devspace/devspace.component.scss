@@ -112,11 +112,9 @@ nav {
 }
 
 .profile-users {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 13px;
-  margin: 64px 6px;
 }
 
 .profile-user {
@@ -216,9 +214,15 @@ nav {
 }
 
 .active-user {
-  position: absolute;
-  top: -76px !important;
-  left: 0px;
+  order: 0 !important;
+}
+
+.online-user {
+  order: 1;
+}
+
+.offline-user {
+  order: 2;
 }
 
 // Responsiveness

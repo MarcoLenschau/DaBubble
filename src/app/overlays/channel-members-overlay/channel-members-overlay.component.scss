@@ -51,10 +51,6 @@
   }
 }
 
-.scrollbar {
-  overflow-y: scroll;
-}
-
 .members-list {
   display: flex;
   flex-direction: column;
@@ -67,12 +63,22 @@
     gap: 12px;
     font-size: 1.2rem;
     font-weight: 400;
+    order: 1;
+
     img {
       height: 54px;
       width: 54px;
       border-radius: 50%;
     }
   }
+}
+
+.scrollbar {
+  overflow-y: scroll;
+}
+
+.current-user {
+  order: 0 !important;
 }
 
 .add-members-btn {

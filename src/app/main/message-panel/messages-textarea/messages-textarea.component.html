@@ -24,7 +24,7 @@
   </div>
 
   <!-- Benutzer-Dropdown durch Icon -->
-  <div class="search-results" *ngIf="showUserDropdown" style="top: 100%; left: 16px;">
+  <div class="search-results" *ngIf="showUserDropdown">
     <ul>
       <li class="profile-user" *ngFor="let user of allUsers" (click)="selectUserFromSmiley(user)">
         <div class="profile-icon">

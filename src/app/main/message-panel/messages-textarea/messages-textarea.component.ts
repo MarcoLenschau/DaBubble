@@ -146,7 +146,7 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     this.showMentionDropdown = false;
     this.filteredMentionUsers = [];
     // this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id };
-    this.emitDirectContextAndUser(user);
+    // this.emitDirectContextAndUser(user);
   }
 
   toggleUserDropdown(event: MouseEvent): void {
@@ -170,15 +170,14 @@ export class MessagesTextareaComponent implements OnInit, OnDestroy {
     sel?.addRange(range);
     this.textInput = editable.innerText;
     this.showUserDropdown = false;
-    // this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id, };
-    this.emitDirectContextAndUser(user);
+    this.messageContext = { type: 'direct', id: this.currentUser.id, receiverId: user.id, };
+    // this.emitDirectContextAndUser(user);
   }
 
   emitDirectContextAndUser(user: User) {
     emitDirectUserContext(this.textareaContextSelected, this.currentUser.id, user.id);
     this.textareaUserSelected.emit(user);
   }
-
 
   // TODO: Dropdown-#-Funktion
 
