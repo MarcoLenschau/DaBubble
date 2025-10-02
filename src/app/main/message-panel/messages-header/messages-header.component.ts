@@ -17,11 +17,12 @@ import { DialogUserDetailsComponent } from '../../../dialogs/dialog-user-details
 import { FirebaseService } from '../../../core/services/firebase.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { CdkObserveContent } from "@angular/cdk/observers";
 
 @Component({
   selector: 'app-messages-header',
   standalone: true,
-  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent, ChannelDetailsOverlayComponent],
+  imports: [NgIf, CommonModule, NgFor, FormsModule, ChannelMembersOverlayComponent, AddMemberOverlayComponent, ChannelDetailsOverlayComponent, CdkObserveContent],
   templateUrl: './messages-header.component.html',
   styleUrl: './messages-header.component.scss',
 })

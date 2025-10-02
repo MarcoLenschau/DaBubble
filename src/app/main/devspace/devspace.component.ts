@@ -48,9 +48,7 @@ export class DevspaceComponent {
   private channelDataService = inject(ChannelDataService);
   private userDataService = inject(UserDataService);
   public auth = inject(AuthService);
-  private router = inject(Router);
   private currentUserSubscription?: Subscription;
-
 
   /**
    * Constructor for initializing user and channel data.
@@ -76,12 +74,9 @@ export class DevspaceComponent {
       .subscribe(user => {
         this.currentUser = user;
         this.searchChannelForUser();
-
         this.user$.subscribe(users => {
           const filteredContacts = users.filter(u => !!u && !!u.email);
-          console.log('Gefilterte Kontakte:', filteredContacts);
           this.firebase.setContacts(filteredContacts);
-          console.log('setContacts wurde ausgeführt');
         });
       });
   }
@@ -95,14 +90,9 @@ export class DevspaceComponent {
    */
   searchChannelForUser(): void {
     this.channelDataService.getChannels().subscribe(channels => {
-      const userChannels: Channel[] = [];
-      channels.forEach(channel => {
-        if (this.isUserInChannel(channel)) {
-          userChannels.push(channel);
-        }
-      });
-      this.channels = userChannels;
-      this.firebase.setChannels(this.channels); // <--- Channels setzen
+      this.channels = channels.filter(channel => this.isUserInChannel(channel));
+      this.channels = channels.sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+      this.firebase.setChannels(this.channels); 
     });
   }
 

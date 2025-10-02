@@ -45,8 +45,8 @@
     justify-content: center;
 
     img {
-      width: 24px;
-      height: 24px;
+      width: 64px;
+      height: 48px;
     }
   }
 }
@@ -54,12 +54,31 @@
 .members-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
+  height: 192px;
 
   .member-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-size: 1.2rem;
     font-weight: 400;
+    order: 1;
+
+    img {
+      height: 54px;
+      width: 54px;
+      border-radius: 50%;
+    }
   }
+}
+
+.scrollbar {
+  overflow-y: scroll;
+}
+
+.current-user {
+  order: 0 !important;
 }
 
 .add-members-btn {

@@ -98,6 +98,7 @@
                 <div class="profile-user" *ngFor="let user of users" (click)="setActiveUser(user)"
                     [ngClass]="{'hovered' : activeUser !== user, 'active' : activeUser === user}"
                     [class.active-user]="user?.email && auth.user?.email && user.email === auth.user.email"
+                    [class.online-user]="user?.state" [class.offline-user]="!user?.state"
                     [class.channel-open]="user?.email && auth.user?.email && user.email === auth.user.email && isChannelOpen">
                     <div class="profile-icon">
                         <img class="profile-pic" [src]="user?.photoURL" alt="user">
