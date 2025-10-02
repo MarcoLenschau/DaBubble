@@ -63,7 +63,8 @@ export class HeaderComponent {
    *                of each item in the combined list.
    */
   onSearch(query: any) {
-    const allItems = [...this.contacts, ...this.channels, ...this.allMessages];
+    this.filterMessages();
+    const allItems = this.getAllItems();
     this.searchSuggestions = allItems.filter(item =>
       (item.name && item.name.toLowerCase().includes(String(query.value).toLowerCase())) ||
       (item.email && item.email.toLowerCase().includes(String(query.value).toLowerCase())) ||
@@ -71,6 +72,27 @@ export class HeaderComponent {
     );
     this.firebase.allSearchSuggestions = this.searchSuggestions;
     this.showOverlay = true;
+  }
+
+  /**
+   * Filters the `allMessages` array to include only messages where the current user is either the receiver or the sender.
+   * The current user is determined by matching the user's email with the contacts list.
+   * This method updates the `allMessages` property to contain only relevant messages for the current user.
+   *
+   * @returns void
+   */
+  filterMessages(): void {
+    const currentUser: any = this.contacts.find(contact => contact.email === this.user.email);
+    this.allMessages = this.allMessages.filter((message: any) => message.receiverId === currentUser.id || message.userId === currentUser.id);
+  }
+
+  /**
+   * Returns a combined array containing all contacts, channels, and messages.
+   *
+   * @returns An array consisting of all items from `contacts`, `channels`, and `allMessages`.
+   */
+  getAllItems() {
+    return [...this.contacts, ...this.channels, ...this.allMessages];
   }
 
   /**

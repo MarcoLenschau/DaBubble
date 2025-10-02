@@ -64,12 +64,14 @@ a {
 
 .search-overlay {
     position: absolute;
-    top: 60px; // Passe ggf. an deine Header-Höhe an
-    left: 0;
-    width: 100%;
+    top: 68px;
+    left: 24px;
+    width: 95%;
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    border-bottom-left-radius: 38px;
+    border-bottom-right-radius: 38px;
 }
 
 .search-suggestions {
