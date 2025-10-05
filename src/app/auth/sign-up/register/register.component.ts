@@ -6,10 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { validateEmail, validateError } from '../../../core/utils/message-validate.utils';
 import { BackButtonComponent } from "../../../shared/back-button/back-button.component";
+import { ErrorMessageComponent } from "../../../shared/error-message/error-message.component";
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, InputComponent, FormsModule, BackButtonComponent],
+  imports: [CommonModule, InputComponent, FormsModule, BackButtonComponent, ErrorMessageComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -41,13 +42,11 @@ export class RegisterComponent {
    */
   registerUser(): void {
     this.auth.register(this.user.email, this.user.password).then(user => {
-      if (user) {
-        this.sendData();
-      } 
+      user ? this.sendData() : this.error = true;
     });
   }
 
-  /**
+  /** 
    * Updates a property of the user object based on the input type.
    *
    * @param {string} eventValue - The input value from the event.
@@ -70,6 +69,7 @@ export class RegisterComponent {
    * @return {void} This function does not return a value.
    */
   sendData(): void {
+    this.error = false;
     this.dataReady.emit(true);
     this.userData.emit(this.user);
   }

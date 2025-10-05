@@ -24,7 +24,7 @@
             <img src="./assets/img/logos/github.svg" class="github-logo" alt="github-logo">
             <span>Anmelden mit Github</span>
         </div>
-        <span *ngIf="error" class="error-message">Email oder Password sind falsch !</span>
+        <app-error-message *ngIf="error" [message]="'Email oder Password sind falsch !'"></app-error-message>
         <div class="button-container">
             <app-button [text]="'Anmelden'" [color]="'primary'" (clicked)="loginWithEmail();"></app-button>
             <app-button [text]="'Gäste Login'" [color]="'secondary'"

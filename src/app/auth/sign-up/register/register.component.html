@@ -22,7 +22,7 @@
                 <span> zu.</span>
             </div>
         </div>
-        <span *ngIf="error" class="error-message">Email oder Password sind falsch !</span>
+        <app-error-message *ngIf="error" [message]="'Email oder Password sind falsch !'"></app-error-message>
         <div class="button-container">
             <button (click)="registerUser()">Weiter</button>
         </div>
