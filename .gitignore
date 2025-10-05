@@ -41,13 +41,12 @@ testem.log
 .DS_Store
 Thumbs.db
 
-push.sh
-
 # Personal scripts
-push.dev.bat
-update-dev-with-main.bat
-*bat
+*.bat 
+*.sh
+
 # Firebase
 .firebase
 *-debug.log
 .runtimeconfig.json
+src/envenvironments/

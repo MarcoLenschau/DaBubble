@@ -24,14 +24,12 @@ a {
 
 .main-container {
   @include dFlex($jc: none, $g: 18px, $f: column);
-  height: 100vh;
   padding: 18px;
   font-family: 'Nunito';
   > .main-container {
     background-color: $white;
     border-radius: 24px;
     padding: 30px 30px;
-    height: 660px;
   }
   > span {
     text-align: center;

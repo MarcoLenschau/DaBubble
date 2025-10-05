@@ -287,7 +287,8 @@ export class MessagesHeaderComponent {
   closeUserProfileOverlay() {
     this.showUserProfileOverlay = false;
   }
-    openChannelFromRoute() {
+
+  openChannelFromRoute() {
     const channelId = this.router.url.split('/')[2];
     if (this.router.url.match(/^\/message\/[\w-]+$/)) {
         this.whichElementisInTheSearchSuggestions(channelId);
