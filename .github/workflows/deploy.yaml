@@ -28,6 +28,22 @@ jobs:
       - name: ⚙️ Install Angular CLI
         run: npm install -g @angular/cli
 
+      - name: Generate environment.ts from secrets
+        run: mkdir src/envenvironments
+
+      - name: Generate environment.ts from secrets
+        run: |
+          echo "export const environment = {
+            firebase: {
+              projectId: '${{ env.PROJECT_ID }}',
+              appId: '${{ env.APP_ID }}',
+              storageBucket: '${{ env.STORAGE_BUCKET }}',
+              apiKey: '${{ secrets.API_KEY }}',
+              authDomain: '${{ env.AUTH_DOMAIN }}',
+              messagingSenderId: '${{ env.MESSAGING_SENDER_ID }}'
+            }
+          };" > src/envenvironments/environment.ts
+
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
 
