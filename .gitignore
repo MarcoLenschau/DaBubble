@@ -49,4 +49,9 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
-src/envenvironments/
+src/envenvironments
+
+# Cordova
+mobile-app/www/
+mobile-app/platforms/
+mobile-app/node_modules/

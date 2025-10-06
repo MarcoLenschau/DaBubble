@@ -28,7 +28,7 @@ jobs:
       - name: ⚙️ Install Angular CLI
         run: npm install -g @angular/cli
 
-      - name: Generate environment.ts from secrets
+      - name: Create environments folder
         run: mkdir src/envenvironments
 
       - name: Generate environment.ts from secrets
