@@ -23,8 +23,16 @@ DaBubble enables users to communicate in real-time through channels and private 
   - Responsive design for desktop and mobile
   - CI/CD pipelines for automatical deployment and notification 
 
+## 💬 Download
+
+| Platform |    Link   |
+|:----------:|:-----------:|
+| Android  | [APK](https://dabubble.marco-lenschau.de/app.apk) |
+
 ## 💬 Feedback & Support
 
 If you have suggestions or find bugs, please open an issue or pull request on [GitHub](https://github.com/MarcoLenschau/DaBubble). Your feedback is appreciated!
+
+
 
 ## 🚀 Stay connected with DaBubble!
