@@ -7,10 +7,11 @@ import { FirebaseService } from '../../core/services/firebase.service';
 import { UserDataService } from '../../core/services/user-data.service';
 import { deleteLocalStorage } from '../../core/utils/auth.utils';
 import { CommonModule } from '@angular/common';
+import { ErrorMessageComponent } from "../../shared/error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-in',
-  imports: [CommonModule, InputComponent, ButtonComponent],
+  imports: [CommonModule, InputComponent, ButtonComponent, ErrorMessageComponent],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss'
 })

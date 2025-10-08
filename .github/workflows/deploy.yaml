@@ -28,8 +28,39 @@ jobs:
       - name: ⚙️ Install Angular CLI
         run: npm install -g @angular/cli
 
+      - name: Create environments folder
+        run: mkdir src/envenvironments
+
+      - name: Generate environment.ts from secrets
+        run: |
+          echo "export const environment = {
+            firebase: {
+              projectId: '${{ env.PROJECT_ID }}',
+              appId: '${{ env.APP_ID }}',
+              storageBucket: '${{ env.STORAGE_BUCKET }}',
+              apiKey: '${{ secrets.API_KEY }}',
+              authDomain: '${{ env.AUTH_DOMAIN }}',
+              messagingSenderId: '${{ env.MESSAGING_SENDER_ID }}'
+            }
+          };" > src/envenvironments/environment.ts
+
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
+ 
+      - name: 🔨 Build Docker image
+        run: |
+          docker build -t cordova mobile-app/
+ 
+      - name: 📦 Create app folder
+        run: |
+          mkdir app
+          mkdir app/www
+          cp mobile-app/config.xml app/
+          cp -r dist/dabubble/browser/* app/www/
+
+      - name: Run container
+        run: |
+          docker run -v $(pwd)/app:/app cordova
 
       - name: Copy files via SCP
         uses: appleboy/scp-action@v1
@@ -41,3 +72,14 @@ jobs:
           source: "dist/dabubble/browser/*"
           target: "/var/www/html/dabubble/"
           strip_components: 3
+
+      - name: Copy apk file via SCP
+        uses: appleboy/scp-action@v1
+        with:
+          host: marco-lenschau.de
+          username: github
+          key: ${{ secrets.SECRET_KEY }}
+          port: 22
+          source: "app/apk/app.apk"
+          target: "/var/www/html/dabubble/"
+          strip_components: 2

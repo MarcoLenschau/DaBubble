@@ -1,16 +1,9 @@
 @import "./shared/styles/breakpoint.scss";
 
 .main-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   background-color: #eceefe;
-  height: 100vh;
-  min-height: 1070px; // anpassen
-  // width: 100vw;
-  // margin: -8px;
-}
-
-@media (max-width: $mobile-xl) {
-  .main-page {
-      height: 100vh;
-      min-height: 100vh;
-  }
 }

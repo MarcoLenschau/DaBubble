@@ -41,13 +41,17 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Personal scripts
+*.bat 
 push.sh
 
-# Personal scripts
-push.dev.bat
-update-dev-with-main.bat
-*bat
 # Firebase
 .firebase
 *-debug.log
 .runtimeconfig.json
+src/envenvironments
+
+# Cordova
+mobile-app/www/
+mobile-app/platforms/
+mobile-app/node_modules/
