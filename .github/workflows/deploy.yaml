@@ -47,11 +47,11 @@ jobs:
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
  
-      - name: Build Docker image
+      - name: 🔨 Build Docker image
         run: |
-          docker build -t cordova .
+          docker build -t cordova mobile-app/
  
-      - name: Create app folder
+      - name: 📦 Create app folder
         run: |
           mkdir /app
           mkdir /app/www
