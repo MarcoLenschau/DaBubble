@@ -46,6 +46,21 @@ jobs:
 
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
+ 
+      - name: Build Docker image
+        run: |
+          docker build -t cordova .
+ 
+      - name: Create app folder
+        run: |
+          mkdir /app
+          mkdir /app/www
+          cp mobile-app/config.yml /app/
+          cp dist/dabubble/browser/* /app/www/
+
+      - name: Run container
+        run: |
+          docker run -v /app:/app cordova
 
       - name: Copy files via SCP
         uses: appleboy/scp-action@v1
@@ -57,3 +72,14 @@ jobs:
           source: "dist/dabubble/browser/*"
           target: "/var/www/html/dabubble/"
           strip_components: 3
+
+      - name: Copy apk file via SCP
+        uses: appleboy/scp-action@v1
+        with:
+          host: marco-lenschau.de
+          username: github
+          key: ${{ secrets.SECRET_KEY }}
+          port: 22
+          source: "app/apk/app.apk"
+          target: "/var/www/html/dabubble/"
+          strip_components: 2
