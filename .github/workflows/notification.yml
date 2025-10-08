@@ -5,11 +5,11 @@ on:
   pull_request:
 
 jobs:
-  auto-merge:
+  notification:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Discord Notification
+      - name: 🌐 Send Discord Notification
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_ACTOR: ${{ github.actor }}

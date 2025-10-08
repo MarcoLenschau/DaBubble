@@ -1,6 +1,13 @@
 # DaBubble
 
-DaBubble is a Slack clone built with Angular and Firebase. It provides real-time messaging with channels and direct messages in a clean, responsive interface.
+## 🧭 Table of contents
+
+- [✨ About the Application](#-about-the-application)
+- [🔧 Technologies](#-technologies)
+- [⭐ Features](#-features)
+- [📥 Download](#-download)
+- [💬 Feedback & Support](#-feedback--support)
+- [🚀 Stay connected with DaBubble!](#-stay-connected-with-dabubble)
 
 ## ✨ About the Application
 
@@ -23,7 +30,7 @@ DaBubble enables users to communicate in real-time through channels and private 
   - Responsive design for desktop and mobile
   - CI/CD pipelines for automatical deployment and notification 
 
-## 💬 Download
+## 📥 Download
 
 | Platform |    Link   |
 |:----------:|:-----------:|

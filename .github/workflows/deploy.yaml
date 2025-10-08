@@ -9,11 +9,12 @@ on:
       - main
       
 jobs:
-  build:
+  deploy:
     name: Build DaBubble
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -28,10 +29,10 @@ jobs:
       - name: ⚙️ Install Angular CLI
         run: npm install -g @angular/cli
 
-      - name: Create environments folder
+      - name: 📁 Create environments folder
         run: mkdir src/envenvironments
 
-      - name: Generate environment.ts from secrets
+      - name: 🔒 Generate environment.ts from secrets
         run: |
           echo "export const environment = {
             firebase: {
@@ -47,22 +48,22 @@ jobs:
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
  
-      - name: 🔨 Build Docker image
+      - name: 🐳 Build Docker image
         run: |
           docker build -t cordova mobile-app/
  
-      - name: 📦 Create app folder
+      - name: 📁 Create app folder
         run: |
           mkdir app
           mkdir app/www
           cp mobile-app/config.xml app/
           cp -r dist/dabubble/browser/* app/www/
 
-      - name: Run container
+      - name: 🚀 Run container
         run: |
           docker run -v $(pwd)/app:/app cordova
 
-      - name: Copy files via SCP
+      - name: 📋 Copy files via SCP
         uses: appleboy/scp-action@v1
         with:
           host: marco-lenschau.de
@@ -73,7 +74,7 @@ jobs:
           target: "/var/www/html/dabubble/"
           strip_components: 3
 
-      - name: Copy apk file via SCP
+      - name: 📋 Copy apk file via SCP
         uses: appleboy/scp-action@v1
         with:
           host: marco-lenschau.de

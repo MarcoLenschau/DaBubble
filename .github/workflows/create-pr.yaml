@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref != github.event.repository.default_branch }}
     steps:
-      - name: Checkout repository
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up NodeJS environment
+      - name: 🟢 Set up Node.js
         uses: actions/setup-node@v4
 
-      - name: Create Pull Request with GitHub API
+      - name: ⚙️ Create Pull Request with GitHub API
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_OWNER: ${{ github.repository_owner }}
