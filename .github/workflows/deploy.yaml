@@ -53,14 +53,14 @@ jobs:
  
       - name: 📦 Create app folder
         run: |
-          mkdir /app
-          mkdir /app/www
-          cp mobile-app/config.yml /app/
-          cp dist/dabubble/browser/* /app/www/
+          mkdir app
+          mkdir app/www
+          cp mobile-app/config.xml app/
+          cp -r dist/dabubble/browser/* app/www/
 
       - name: Run container
         run: |
-          docker run -v /app:/app cordova
+          docker run -v $(pwd)/app:/app cordova
 
       - name: Copy files via SCP
         uses: appleboy/scp-action@v1
