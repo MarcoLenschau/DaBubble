@@ -29,6 +29,9 @@ jobs:
       - name: ⚙️ Install Angular CLI
         run: npm install -g @angular/cli
 
+      - name: 📦 Install Electron
+        run: npm install --save-dev electron-builder
+
       - name: 📁 Create environments folder
         run: mkdir src/envenvironments
 
@@ -47,7 +50,10 @@ jobs:
 
       - name: 🔨 Build Angular App
         run: ng build --configuration production --base-href="/"
- 
+
+      - name: 🐧 Build Linux packages
+        run: npx electron-builder --linux
+
       - name: 🐳 Build Docker image
         run: |
           docker build -t cordova mobile-app/
@@ -63,6 +69,8 @@ jobs:
         run: |
           docker run -v $(pwd)/app:/app cordova
           cp app/apk/app.apk dist/dabubble/browser/
+          cp dist/*.deb dist/dabubble/browser/
+          cp dist/*.rpm dist/dabubble/browser/
 
       - name: 📋 Copy files via SCP
         uses: appleboy/scp-action@v1
