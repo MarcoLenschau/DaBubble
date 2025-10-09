@@ -49,7 +49,7 @@ jobs:
           };" > src/envenvironments/environment.ts
 
       - name: 🔨 Build Angular App
-        run: ng build --configuration production --base-href="/"
+        run: ng build --configuration production --base-href="./"
 
       - name: 🐧 Build Linux packages
         run: npx electron-builder --linux
@@ -69,8 +69,8 @@ jobs:
         run: |
           docker run -v $(pwd)/app:/app cordova
           cp app/apk/app.apk dist/dabubble/browser/
-          cp dist/*.deb dist/dabubble/browser/
-          cp dist/*.rpm dist/dabubble/browser/
+          cp dist/*.deb dist/dabubble/browser/dabubble_amd64.deb
+          cp dist/*.rpm dist/dabubble/browser/dabubble_x86_64.rpm
 
       - name: 📋 Copy files via SCP
         uses: appleboy/scp-action@v1

@@ -34,7 +34,9 @@ DaBubble enables users to communicate in real-time through channels and private 
 
 | Platform |    Link   |
 |:----------:|:-----------:|
-| Android  | [APK](https://dabubble.marco-lenschau.de/app.apk) |
+| Android | [APK](https://dabubble.marco-lenschau.de/app.apk) |
+| Linux   | [DEB](https://dabubble.marco-lenschau.de/dabubble_amd64.deb) |
+| Linux   | [RPM](https://dabubble.marco-lenschau.de/dabubble_x86_64.rpm) |
 
 ## 💬 Feedback & Support
 
