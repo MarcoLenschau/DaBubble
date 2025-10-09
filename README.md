@@ -21,7 +21,7 @@ DaBubble enables users to communicate in real-time through channels and private 
   <img src="https://skillicons.dev/icons?i=sass" height="75" style="margin-right: 6px;" alt="Sass" />
   <img src="https://skillicons.dev/icons?i=html" height="75" style="margin-right: 6px;" alt="HTML5" />
   <img src="https://skillicons.dev/icons?i=firebase" height="75" alt="Firebase" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/electron/electron-original.svg" height="55" style="margin-right: 6px;" alt="Electron"/>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/electron/electron-original.svg" height="50" style="margin-right: 6px;" alt="Electron"/>
 </div>
 
 ## ⭐ Features
