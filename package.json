@@ -5,7 +5,7 @@
   "main": "main.js",
   "author": {
     "name": "Marco Lenschau",
-    "email": "marco@example.com"
+    "email": "contact@marco-lenschau.de"
   },
   "scripts": {
     "electron": "npx electron .",

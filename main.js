@@ -7,6 +7,7 @@ function createWindow() {
   })
   
   window.loadFile('dist/dabubble/browser/index.html')
+  window.webContents.openDevTools();
 }
 
 app.whenReady().then(createWindow)

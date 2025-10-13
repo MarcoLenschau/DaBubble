@@ -49,7 +49,7 @@ jobs:
           };" > src/envenvironments/environment.ts
 
       - name: 🔨 Build Angular App
-        run: ng build --configuration production --base-href="./"
+        run: ng build --configuration production --base-href="/"
 
       - name: 🐧 Build Linux packages
         run: npx electron-builder --linux
