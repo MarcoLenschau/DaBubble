@@ -16,7 +16,7 @@
 
 .main-container {
   >span {
-    width: 370px;
+    width: 340px;
   }
 }
 
@@ -138,5 +138,11 @@ app-input {
 
   100% {
     background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+@media (max-width: 500px) {
+  app-input {
+    width: 340px !important;
   }
 }

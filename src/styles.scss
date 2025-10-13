@@ -29,7 +29,6 @@ a {
   > .main-container {
     background-color: $white;
     border-radius: 24px;
-    padding: 30px 30px;
   }
   > span {
     text-align: center;
@@ -66,9 +65,8 @@ body {
 @media (max-width: 500px) {
   .main-container {
     >.main-container {
-      width: 350px;
+      width: 330px;
     }
-
     .google-sign-in {
       width: 300px !important;
     }
